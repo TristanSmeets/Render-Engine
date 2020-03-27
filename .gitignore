@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+Renderer/.vs/
+*.filters
+*.vcxproj
+*.sln
