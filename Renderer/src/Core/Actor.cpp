@@ -34,7 +34,7 @@ void Actor::AddChild(Actor & actor)
 
 const unsigned int Actor::GetChildCount()
 {
-    return children.size();
+    return (unsigned int)children.size();
 }
 
 Actor & Actor::GetChild(unsigned int index)
@@ -75,16 +75,19 @@ const std::string & Actor::GetName() const
     return name;
 }
 
+Transform & Actor::GetTransform()
+{
+    return transform;
+}
+
 const Transform & Actor::GetTransform() const
 {
     return transform;
 }
 
-glm::mat4 Actor::GetWorldMatrix()
+const glm::mat4& Actor::GetWorldMatrix() const
 {
-    glm::mat4 worldMatrix = glm::mat4(1.0f);
 
-    worldMatrix = parent->GetWorldMatrix() * transform.GetMatrix();
     if (parent == nullptr)
     {
         return transform.GetMatrix();

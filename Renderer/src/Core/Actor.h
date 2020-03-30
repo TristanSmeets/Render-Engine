@@ -11,19 +11,20 @@ class Actor
 public:
     Actor(const std::string& name = "Actor", const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f));
     Actor(const Actor& rhs);
-    ~Actor();
-    void AddChild(Actor& actor);
-    const unsigned int GetChildCount();
-    Actor& GetChild(unsigned int index);
-    void RemoveChild(const Actor& actor);
-    void SetParent(Actor& actor);
-    const Actor& GetParent();
-    void RemoveParent();
-    const std::string& GetName() const;
-    const Transform& GetTransform() const;
-    glm::mat4 GetWorldMatrix();
+    virtual ~Actor();
+    virtual void AddChild(Actor& actor);
+    virtual const unsigned int GetChildCount();
+    virtual Actor& GetChild(unsigned int index);
+    virtual void RemoveChild(const Actor& actor);
+    virtual void SetParent(Actor& actor);
+    virtual const Actor& GetParent();
+    virtual void RemoveParent();
+    virtual const std::string& GetName() const;
+    virtual const Transform& GetTransform() const;
+    virtual Transform& GetTransform();
+    virtual const glm::mat4& GetWorldMatrix() const;
 
-private:
+protected:
     Actor* parent = nullptr; 
     Transform transform = Transform();
     //Insert RenderComponent

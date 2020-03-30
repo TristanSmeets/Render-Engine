@@ -49,7 +49,7 @@ void Transform::Scale(const glm::vec3 & scale)
 
 const glm::vec3 & Transform::GetPosition() const
 {
-    return matrix[3];
+    return GetMatrix()[3];
 }
 
 const glm::vec3 & Transform::GetRotation() const
