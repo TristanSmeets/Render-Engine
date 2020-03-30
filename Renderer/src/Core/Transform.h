@@ -4,8 +4,7 @@
 class Transform
 {
 public:
-    Transform();
-    Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
+    Transform(const glm::vec3& position = glm::vec3(0.0f), const glm::vec3& rotation = glm::vec3(0.0f), const glm::vec3& scale = glm::vec3(1.0f));
     Transform(const Transform& rhs);
     ~Transform();
     void Translate(const glm::vec3& translation);
