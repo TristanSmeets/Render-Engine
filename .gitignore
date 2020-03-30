@@ -34,3 +34,6 @@ Renderer/.vs/
 *.filters
 *.vcxproj
 *.sln
+*.user
+Renderer/bin/
+Renderer/bin-obj/
