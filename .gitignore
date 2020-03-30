@@ -35,3 +35,5 @@ Renderer/.vs/
 *.vcxproj
 *.sln
 *.user
+Renderer/bin/
+Renderer/bin-obj/
