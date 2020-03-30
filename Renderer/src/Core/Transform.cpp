@@ -2,10 +2,6 @@
 
 #include <gtx/transform.hpp>
 
-Transform::Transform()
-{
-}
-
 Transform::Transform(const glm::vec3 & position, const glm::vec3 & rotation, const glm::vec3 & scale)
 {
     Rotate(rotation);
