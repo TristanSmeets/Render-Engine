@@ -61,28 +61,46 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 {
 	float mSpeed = moveSpeed * deltaTime;
 	float rSpeed = rotationSpeed * deltaTime;
+	//Translation
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
+		transform.Translate(mSpeed * GetCameraFront());
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
+		transform.Translate(mSpeed * GetCameraFront());
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
+		transform.Translate(glm::normalize(glm::cross(GetCameraFront(), GetCameraUp())) * mSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-	{
-	}
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-	{
+		transform.Translate(glm::normalize(glm::cross(GetCameraFront(), GetCameraUp())) * mSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
 	{
+		transform.Translate(mSpeed * GetCameraUp());
 	}
 	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
 	{
+		transform.Translate(mSpeed * GetCameraUp());
+	}
+	//Rotation
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		transform.Rotate(glm::vec3(0.0f, rSpeed, 0.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		transform.Rotate(glm::vec3(0.0f, -rSpeed, 0.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		transform.Rotate(glm::vec3(rSpeed, 0.0f, 0.0f));
+	}
+	if (glfwGetKey(window,GLFW_KEY_F) == GLFW_PRESS)
+	{
+		transform.Rotate(glm::vec3(-rSpeed, 0.0f, 0.0f));
 	}
 }
