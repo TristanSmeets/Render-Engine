@@ -6,13 +6,14 @@ Camera::Frustum::Frustum(float nearPlane, float farPlane, float fieldOfView, flo
 {
 }
 
-Camera::Camera(const glm::vec3 & position, const glm::vec3 & rotationInEulerAngles, const Frustum & frustum, GLFWwindow * window) :
+Camera::Camera(GLFWwindow * window, const glm::vec3 & position, const glm::vec3 & rotationInEulerAngles, const Frustum & frustum) :
 	Actor("Camera", position, rotationInEulerAngles), frustum(frustum), window(window)
 {
 }
 
 Camera::~Camera()
 {
+	Actor::~Actor();
 }
 
 const glm::mat4 Camera::GetViewMatrix()
@@ -48,7 +49,7 @@ const glm::vec3 Camera::GetCameraFront() const
 
 const glm::vec3 Camera::GetCameraSide() const
 {
-	return glm::normalize(glm::cross(GetCameraFront(), glm::vec3(0.0f,1.0f,0.0f)));
+	return glm::normalize(glm::cross(GetCameraFront(), glm::vec3(0.0f, 1.0f, 0.0f)));
 }
 
 const glm::vec3 Camera::GetCameraUp() const
