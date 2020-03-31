@@ -1,3 +1,4 @@
+#include "Rendererpch.h"
 #include "Actor.h"
 
 Actor::Actor(const std::string & name, const glm::vec3 & position, const glm::vec3 & rotation, const glm::vec3 & scale) :

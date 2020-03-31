@@ -17,6 +17,9 @@ project (projectName)
     targetdir (projectName .. "/bin/" .. outputFolder .. "/%{prj.name}")
     objdir (projectName .. "/bin-obj/" .. outputFolder .. "/%{prj.name}")
 
+    pchheader "%{prj.name}pch.h"
+    pchsource "%{prj.name}/src/%{prj.name}pch.cpp"
+
     files
     {
         "dependencies/imgui/**.h",
@@ -62,3 +65,10 @@ project (projectName)
     filter "configurations:Release"
         runtime "Release"
         optimize "on"
+
+    filter "files:dependencies/glad/src/glad.c"
+        flags {"NoPCH"}
+
+    filter "files:dependencies/imgui/**.cpp"
+        flags {"NoPCH"}
+        
