@@ -22,7 +22,8 @@ public:
     virtual const std::string& GetName() const;
     virtual const Transform& GetTransform() const;
     virtual Transform& GetTransform();
-    virtual const glm::mat4& GetWorldMatrix() const;
+    virtual const glm::mat4 GetWorldMatrix() const;
+	virtual const glm::vec3 GetWorldPosition() const;
 
 protected:
     Actor* parent = nullptr; 

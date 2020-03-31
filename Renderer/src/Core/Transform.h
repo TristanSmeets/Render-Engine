@@ -10,10 +10,10 @@ public:
     void Translate(const glm::vec3& translation);
     void Rotate(const glm::vec3& eulerAngles);
     void Scale(const glm::vec3& scale);
-    const glm::vec3& GetPosition() const;
-    const glm::vec3& GetRotation() const;
-    const glm::vec3& GetScale() const;
-    const glm::mat4& GetMatrix() const;
+    const glm::vec3 GetPosition() const;
+    const glm::vec3 GetRotation() const;
+    const glm::vec3 GetScale() const;
+    const glm::mat4 GetMatrix() const;
 
 private:
     glm::mat4 matrix = glm::mat4(1.0f);
