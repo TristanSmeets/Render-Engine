@@ -9,7 +9,7 @@ class Texture
 	Texture(const std::string& filepath, bool usingLinearSpace = false);
 	Texture(const Texture& rhs);
 	~Texture();
-	static Texture& CreateEmpty(const std::string& name, int width, int height, GLenum format);
+	static Texture CreateEmpty(const std::string& name, int width, int height, GLenum format);
 	const GLuint& GetID() const;
 	const std::string& GetName() const;
 
