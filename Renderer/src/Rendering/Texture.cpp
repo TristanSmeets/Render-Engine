@@ -17,7 +17,7 @@ Texture::Texture(const std::string & name, GLuint id) :
 Texture::Texture(const std::string & filepath, bool usingLinearSpace)
 {
 	GenerateTexture();
-	load(filepath, usingLinearSpace);
+	Load(filepath, usingLinearSpace);
 
 	size_t position = filepath.find_last_of("/");
 	name = filepath.substr(position + 1);
@@ -33,7 +33,7 @@ Texture::~Texture()
 	//TODO: Add glDeleteTextures. Need to figure out how to delete a texture without it breaking for all the copies as well.
 }
 
-Texture & Texture::CreateEmpty(const std::string& name, int width, int height, GLenum format)
+Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLenum format)
 {
 	Texture emptyTexture;
 	emptyTexture.name = name;
