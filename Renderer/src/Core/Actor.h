@@ -3,9 +3,6 @@
 #include "Core/Transform.h"
 #include "glm.hpp"
 
-#include <string>
-#include <vector>
-
 class Actor
 {
 public:
