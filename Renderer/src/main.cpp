@@ -1,8 +1,9 @@
+#include "Rendererpch.h"
+
 #include "Core/Actor.h"
 #include "Core/Light.h"
 #include "Core/Window.h"
 
-#include <iostream>
 
 int main()
 {

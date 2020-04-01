@@ -1,3 +1,4 @@
+#include "Rendererpch.h"
 #include "Camera.h"
 #include <gtx/rotate_vector.hpp>
 
