@@ -55,6 +55,24 @@ const std::string & Texture::GetName() const
 	return name;
 }
 
+void Texture::Bind(Shader & shader, Type type)
+{
+	glActiveTexture(GL_TEXTURE + type);
+	shader.SetInt(EnumToString(type), type);
+
+	if (type == Type::Irradiance || type == Type::Prefilter)
+	{
+		glBindTexture(GL_TEXTURE_CUBE_MAP, GetID());
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, GetID());
+	}
+
+	//Return back to default texture
+	glActiveTexture(GL_TEXTURE0);
+}
+
 void Texture::GenerateTexture()
 {
 	glGenTextures(1, &id);
@@ -114,4 +132,29 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 	}
 
 	stbi_set_flip_vertically_on_load(false);
+}
+
+const std::string Texture::EnumToString(Type type) const
+{
+	switch (type)
+	{
+	case Albedo:
+		return "material.Albedo";
+	case Normal:
+		return "material.Normal";
+	case Metallic:
+		return "material.Metallic";
+	case Roughness:
+		return "material.Roughness";
+	case AmbientOcclusion:
+		return "material.AO";
+	case Irradiance:
+		return "irradianceMap";
+	case Prefilter:
+		return "prefilterMap";
+	case LookUp:
+		return "brdfLUT";
+	default:
+		return "";
+	}
 }
