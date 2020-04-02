@@ -29,7 +29,7 @@ protected:
 	void LoadBufferData(GLenum format, const std::vector<T>& vector, GLuint& buffer);
 
 	Data data;
-	std::string name = "Mesh";
+	std::string name = "Empty";
 	GLuint VAO = 0;
 	GLuint positionBuffer = 0;
 	GLuint normalBuffer = 0;
