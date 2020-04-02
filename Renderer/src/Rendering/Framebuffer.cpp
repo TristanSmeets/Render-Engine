@@ -26,6 +26,11 @@ void Framebuffer::AttachTexture(const Texture & texture)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.GetID(), 0);
 }
 
+void Framebuffer::AttachRenderbuffer(GLenum attachment, const Renderbuffer & buffer)
+{
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, buffer.GetID());
+}
+
 GLuint Framebuffer::GetBuffer() const
 {
 	return buffer;
