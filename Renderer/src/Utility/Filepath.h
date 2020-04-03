@@ -1,5 +1,5 @@
 #pragma once
-#include "Rendererpch.h"s
+#include "Rendererpch.h"
 
 namespace Filepath
 {
