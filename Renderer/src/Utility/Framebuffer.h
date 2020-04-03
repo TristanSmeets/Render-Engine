@@ -2,8 +2,8 @@
 
 #include "glad/glad.h"
 #include "Rendering/Texture.h"
-#include "Rendering/Renderbuffer.h"
-#include "Rendering/Cubemap.h"
+#include "Utility/Renderbuffer.h"
+#include "Utility/Cubemap.h"
 
 class Framebuffer
 {
