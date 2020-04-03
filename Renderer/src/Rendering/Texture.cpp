@@ -23,6 +23,15 @@ Texture::Texture(const std::string & filepath, bool usingLinearSpace)
 	name = filepath.substr(position + 1);
 }
 
+Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum format, GLenum type)
+{
+	GenerateTexture();
+	Load(filepath, internalformat, format, type);
+
+	size_t position = filepath.find_last_of("/");
+	name = filepath.substr(position + 1);
+}
+
 Texture::Texture(const Texture & rhs) :
 	id(rhs.id), name("[COPY]" + rhs.name)
 {
@@ -33,15 +42,12 @@ Texture::~Texture()
 	//TODO: Add glDeleteTextures. Need to figure out how to delete a texture without it breaking for all the copies as well.
 }
 
-Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLenum format)
+Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLenum internalformat, GLenum format, GLenum type)
 {
 	Texture emptyTexture;
 	emptyTexture.name = name;
 	emptyTexture.GenerateTexture();
-
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, 0);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
+	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, 0);
 	return emptyTexture;
 }
 
@@ -57,17 +63,10 @@ const std::string & Texture::GetName() const
 
 void Texture::Bind(Shader & shader, Type type)
 {
-	glActiveTexture(GL_TEXTURE + type);
+	glActiveTexture(GL_TEXTURE0 + type);
 	shader.SetInt(EnumToString(type), type);
 
-	if (type == Type::Irradiance || type == Type::Prefilter)
-	{
-		glBindTexture(GL_TEXTURE_CUBE_MAP, GetID());
-	}
-	else
-	{
-		glBindTexture(GL_TEXTURE_2D, GetID());
-	}
+	glBindTexture(GL_TEXTURE_2D, GetID());
 
 	//Return back to default texture
 	glActiveTexture(GL_TEXTURE0);
@@ -134,6 +133,27 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 	stbi_set_flip_vertically_on_load(false);
 }
 
+void Texture::Load(const std::string & filepath, GLenum internalformat, GLenum format, GLenum type)
+{
+	int width;
+	int height;
+	int nrChannels;
+
+	stbi_set_flip_vertically_on_load(true);
+
+	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glBindTexture(GL_TEXTURE_2D, id);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(data);
+	}
+
+	stbi_set_flip_vertically_on_load(false);
+}
+
 const std::string Texture::EnumToString(Type type) const
 {
 	switch (type)
@@ -148,10 +168,6 @@ const std::string Texture::EnumToString(Type type) const
 		return "material.Roughness";
 	case AmbientOcclusion:
 		return "material.AO";
-	case Irradiance:
-		return "irradianceMap";
-	case Prefilter:
-		return "prefilterMap";
 	case LookUp:
 		return "brdfLUT";
 	default:

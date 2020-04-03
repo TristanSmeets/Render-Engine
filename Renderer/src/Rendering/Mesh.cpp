@@ -8,6 +8,14 @@ Mesh::Mesh()
 Mesh::Mesh(const std::string & name, const Data & meshData) :
 	name(name), data(meshData)
 {
+	SetupMesh();
+}
+
+Mesh::Mesh(const Mesh & rhs) : 
+	data(rhs.data), name(rhs.name), VAO(rhs.VAO), 
+	positionBuffer(rhs.positionBuffer), normalBuffer(rhs.normalBuffer), 
+	uvBuffer(rhs.uvBuffer), indicesBuffer(rhs.indicesBuffer)
+{
 }
 
 Mesh::~Mesh()

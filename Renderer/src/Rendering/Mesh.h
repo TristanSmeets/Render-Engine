@@ -16,6 +16,7 @@ public:
 public:
 	Mesh();
 	Mesh(const std::string& name, const Data& meshData);
+	Mesh(const Mesh& rhs);
 	virtual ~Mesh();
 	virtual void Draw();
 	virtual const std::string& GetName() const;
