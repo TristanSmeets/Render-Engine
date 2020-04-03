@@ -41,6 +41,13 @@ Cubemap & Skybox::GetEnvironment()
 	return environment;
 }
 
+void Skybox::Draw()
+{
+	glActiveTexture(GL_TEXTURE0);
+	environment.Bind();
+	skyboxMesh.Draw();
+}
+
 void Skybox::ConvertHDRTextureToCubemap(Texture && texture)
 {
 	Shader equirectangularToCubemap(Filepath::Shader + "Cubemap.vs",
@@ -143,8 +150,7 @@ void Skybox::CreateLookupTexture()
 	glViewport(0, 0, 512, 512);
 	Shader brdf(Filepath::Shader + "brdf.vs", Filepath::Shader + "brdf.fs");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//TODO render quad here.
+	ndcQuad.Draw();
 
 	framebuffer.Unbind();
-
 }
