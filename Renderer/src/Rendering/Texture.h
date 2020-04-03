@@ -24,7 +24,7 @@ public:
 	Texture(const std::string& filepath, GLenum internalformat, GLenum format, GLenum type);
 	Texture(const Texture& rhs);
 	~Texture();
-	static Texture CreateEmpty(const std::string& name, int width, int height, GLenum format);
+	static Texture CreateEmpty(const std::string& name, int width, int height, GLenum internalformat, GLenum format, GLenum type);
 	const GLuint& GetID() const;
 	const std::string& GetName() const;
 	void Bind(Shader& shader, Type type);

@@ -42,15 +42,12 @@ Texture::~Texture()
 	//TODO: Add glDeleteTextures. Need to figure out how to delete a texture without it breaking for all the copies as well.
 }
 
-Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLenum format)
+Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLenum internalformat, GLenum format, GLenum type)
 {
 	Texture emptyTexture;
 	emptyTexture.name = name;
 	emptyTexture.GenerateTexture();
-
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, 0);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
+	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, 0);
 	return emptyTexture;
 }
 
