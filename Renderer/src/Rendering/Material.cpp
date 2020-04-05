@@ -32,7 +32,7 @@ void Material::AddTexture(Texture::Type type, const Texture & texture)
 	textures[type] = texture;
 }
 
-Texture & Material::GetTexture(Texture::Type type)
+const Texture & Material::GetTexture(Texture::Type type) const
 {
 	return textures[type];
 }

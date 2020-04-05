@@ -10,7 +10,7 @@ public:
 	~Material();
 	void AddTexture(Texture::Type type, const std::string& filepath, bool usingLinearSpace = false);
 	void AddTexture(Texture::Type type, const Texture& texture);
-	Texture& GetTexture(Texture::Type type);
+	const Texture& GetTexture(Texture::Type type) const;
 
 private:
 	Texture textures[Texture::Type::Count];

@@ -27,7 +27,7 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &indicesBuffer);
 }
 
-void Mesh::Draw()
+void Mesh::Draw() const
 {
 	BindVAO();
 	glDrawElements(GL_TRIANGLES, (GLsizei)data.Indices.size(), GL_UNSIGNED_INT, 0);
@@ -77,7 +77,7 @@ void Mesh::CreateVAO()
 	glGenVertexArrays(1, &VAO);
 }
 
-void Mesh::BindVAO()
+void Mesh::BindVAO() const
 {
 	glBindVertexArray(VAO);
 }
