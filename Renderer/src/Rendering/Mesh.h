@@ -1,6 +1,6 @@
 #pragma once
-#include "glm.hpp"
 #include "glad/glad.h"
+#include "glm.hpp"
 
 class Mesh
 {
