@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Core/Transform.h"
 #include "glm.hpp"
+#include "Core/Transform.h"
+#include "Rendering/RenderComponent.h"
 
 class Actor
 {
@@ -21,11 +22,12 @@ public:
     virtual Transform& GetTransform();
     virtual const glm::mat4 GetWorldMatrix() const;
 	virtual const glm::vec3 GetWorldPosition() const;
+	virtual const RenderComponent& GetRenderComponent() const;
 
 protected:
     Actor* parent = nullptr; 
     Transform transform = Transform();
-    //Insert RenderComponent
+	RenderComponent renderComponent;
     std::vector<Actor*> children;
     std::string name = "";
     
