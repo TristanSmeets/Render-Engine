@@ -1,7 +1,8 @@
 #include "Rendererpch.h"
 #include "Scene.h"
 
-Scene::Scene()
+Scene::Scene(Window & window) : 
+	camera(Camera(window.GetGLFWwindow()))
 {
 }
 
