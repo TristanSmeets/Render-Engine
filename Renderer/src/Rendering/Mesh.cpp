@@ -48,7 +48,7 @@ void Mesh::SetupMesh()
 	CreateBuffer(indicesBuffer);
 
 	BindVAO();
-	LoadBufferData(GL_ARRAY_BUFFER, data.Positions, positionBuffer);
+	LoadBufferData(GL_ARRAY_BUFFER, data.Vertices, positionBuffer);
 	LoadBufferData(GL_ARRAY_BUFFER, data.Normals, normalBuffer);
 	LoadBufferData(GL_ARRAY_BUFFER, data.UVs, uvBuffer);
 	LoadBufferData(GL_ELEMENT_ARRAY_BUFFER, data.Indices, indicesBuffer);
@@ -85,4 +85,13 @@ void Mesh::BindVAO()
 void Mesh::CreateBuffer(GLuint& buffer)
 {
 	glGenBuffers(1, &buffer);
+}
+
+Mesh::Data::Data()
+{
+}
+
+Mesh::Data::Data(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, std::vector<glm::vec2>& uvs, std::vector<unsigned int> indices) :
+	Vertices(vertices), Normals(normals), UVs(uvs), Indices(indices)
+{
 }
