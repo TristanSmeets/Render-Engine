@@ -3,6 +3,8 @@
 #include "Utility/MeshLoader.h"
 #include "Utility/Filepath.h"
 
+static int counter = 0;
+
 Scene::Scene()
 {
 }
@@ -10,6 +12,7 @@ Scene::Scene()
 Scene::Scene(Window & window) :
 	camera(Camera(window.GetGLFWwindow()))
 {
+	printf("Creating Scene\n");
 }
 
 Scene::Scene(const Scene & rhs) :
@@ -21,6 +24,7 @@ Scene::Scene(const Scene & rhs) :
 
 Scene::~Scene()
 {
+	printf("Destroying Scene\n");
 }
 
 
@@ -46,21 +50,22 @@ const Skybox & Scene::GetSkybox() const
 
 void Scene::Initialize()
 {
-	printf("Initializing Scene\n");
+	printf("\nInitializing Scene\n");
 	InitializeMeshes();
 	InitializeMaterials();
 	InitializeActors();
+	skybox.Initialize();
 	printf("Initializing complete\n\n");
 }
 
 Scene & Scene::operator=(const Scene & rhs)
 {
-	actors = rhs.actors;
-	lights = rhs.lights;
-	materials = rhs.materials;
-	meshes = rhs.meshes;
-	camera = rhs.camera;
-	skybox = rhs.skybox;
+	this->actors = rhs.actors;
+	this->lights = rhs.lights;
+	this->materials = rhs.materials;
+	this->meshes = rhs.meshes;
+	this->camera = rhs.camera;
+	this->skybox = rhs.skybox;
 	return *this;
 }
 
@@ -97,7 +102,7 @@ void Scene::InitializeMaterials()
 
 void Scene::InitializeActors()
 {
-	printf("Initializing actors");
+	printf("Initializing actors\n");
 	Light light = Light("Light", glm::vec3(7.4f, 6.0f, .6f), glm::vec3(81.0f, 57.0f, 11.0f));
 	light.GetRenderComponent().SetMesh(meshes[0]);
 	lights.push_back(light);

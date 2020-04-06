@@ -16,6 +16,7 @@ Mesh::Mesh(const Mesh & rhs) :
 	positionBuffer(rhs.positionBuffer), normalBuffer(rhs.normalBuffer), 
 	uvBuffer(rhs.uvBuffer), indicesBuffer(rhs.indicesBuffer)
 {
+	SetupMesh();
 }
 
 Mesh::~Mesh()

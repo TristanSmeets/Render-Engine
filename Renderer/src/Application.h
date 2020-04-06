@@ -15,8 +15,7 @@ public:
 
 private:
 	bool InitializeGlad();
-
-	Window window = Window();
-	Scene scene;
+	Scene* scene = nullptr;
 	RenderTechnique* renderTechnique = nullptr;
+	Window window = Window();
 };
