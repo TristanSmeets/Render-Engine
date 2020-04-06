@@ -11,6 +11,7 @@ Window::Window() :
 
 Window::~Window()
 {
+	printf("Destroying Window");
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }

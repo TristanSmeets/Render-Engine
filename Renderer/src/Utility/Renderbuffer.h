@@ -7,6 +7,7 @@ class Renderbuffer
 public:
 	Renderbuffer();
 	~Renderbuffer();
+	void Generate();
 	void Bind() const;
 	void Unbind() const;
 	void SetStorage(GLenum format, GLsizei width, GLsizei height);

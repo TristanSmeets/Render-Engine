@@ -3,12 +3,16 @@
 
 Renderbuffer::Renderbuffer()
 {
-	glGenRenderbuffers(1, &id);
 }
 
 Renderbuffer::~Renderbuffer()
 {
 	glDeleteRenderbuffers(1, &id);
+}
+
+void Renderbuffer::Generate()
+{
+	glGenRenderbuffers(1, &id);
 }
 
 void Renderbuffer::Bind() const

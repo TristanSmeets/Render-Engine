@@ -8,17 +8,24 @@
 
 Skybox::Skybox()
 {
-	framebuffer.Bind();
-	renderbuffer.Bind();
-	renderbuffer.SetStorage(GL_DEPTH_COMPONENT24, 512, 512);
-	framebuffer.AttachRenderbuffer(GL_DEPTH_ATTACHMENT, renderbuffer);
-	environment.CreateTexture(renderbuffer.GetWidth(), renderbuffer.GetHeight(), GL_RGB16F, GL_RGB, GL_FLOAT);
 }
 
 Skybox::~Skybox()
 {
 	printf("Destroying Skybox\n");
 	//TODO: Implement deletion of things that need to be deleted.
+}
+
+void Skybox::Initialize()
+{
+	framebuffer.Generate();
+	renderbuffer.Generate();
+	framebuffer.Bind();
+	renderbuffer.Bind();
+	renderbuffer.SetStorage(GL_DEPTH_COMPONENT24, 512, 512);
+	framebuffer.AttachRenderbuffer(GL_DEPTH_ATTACHMENT, renderbuffer);
+	environment.CreateTexture(renderbuffer.GetWidth(), renderbuffer.GetHeight(), GL_RGB16F, GL_RGB, GL_FLOAT);
+	ndcQuad.Initialize();
 }
 
 void Skybox::LoadHDR(const std::string & filepath)

@@ -1,10 +1,20 @@
 #include "Rendererpch.h"
 #include "NDCQuad.h"
 
-NDCQuad::NDCQuad()
+NDCQuad::NDCQuad() : 
+	Mesh()
+{
+}
+
+NDCQuad::~NDCQuad()
+{
+	Mesh::~Mesh();
+}
+
+void NDCQuad::Initialize()
 {
 	Data quadData;
-	quadData.Vertices = 
+	quadData.Vertices =
 	{
 		glm::vec3(-1.0f,  1.0f, 0.0f),
 		glm::vec3(-1.0f, -1.0f, 0.0f),
@@ -24,9 +34,4 @@ NDCQuad::NDCQuad()
 		1,2,3,
 	};
 	Mesh("NDCQuad", quadData);
-}
-
-NDCQuad::~NDCQuad()
-{
-	Mesh::~Mesh();
 }

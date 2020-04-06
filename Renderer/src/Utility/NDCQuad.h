@@ -6,4 +6,5 @@ class NDCQuad : public Mesh
 public:
 	NDCQuad();
 	virtual ~NDCQuad();
+	void Initialize();
 };

@@ -10,6 +10,7 @@ class Framebuffer
 public:
 	Framebuffer();
 	~Framebuffer();
+	void Generate();
 	void Bind();
 	void Unbind();
 	void AttachTexture(const Texture& texture);

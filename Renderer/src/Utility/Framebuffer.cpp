@@ -3,12 +3,16 @@
 
 Framebuffer::Framebuffer()
 {
-	glGenFramebuffers(1, &buffer);
 }
 
 Framebuffer::~Framebuffer()
 {
 	glDeleteFramebuffers(1, &buffer);
+}
+
+void Framebuffer::Generate()
+{
+	glGenFramebuffers(1, &buffer);
 }
 
 void Framebuffer::Bind()

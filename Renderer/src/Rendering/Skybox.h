@@ -14,6 +14,7 @@ class Skybox
 public:
 	Skybox();
 	~Skybox();
+	void Initialize();
 	void LoadHDR(const std::string& filepath);
 	Framebuffer& GetFramebuffer();
 	Renderbuffer& GetRenderbuffer();

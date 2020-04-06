@@ -14,6 +14,7 @@ ForwardPBR::~ForwardPBR()
 
 void ForwardPBR::Initialize(Scene & scene)
 {
+	printf("Initializing ForwardPBR\n");
 	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
 	const Skybox& skybox = scene.GetSkybox();
 
@@ -37,6 +38,7 @@ void ForwardPBR::Initialize(Scene & scene)
 	//Configure viewport to original framebuffer
 	Window::Parameters windowParameters = window.GetWindowParameters();
 	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
+	printf("Initializion Complete\n\n");
 }
 
 void ForwardPBR::Render(Scene & scene)

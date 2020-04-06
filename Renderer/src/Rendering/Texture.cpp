@@ -36,10 +36,12 @@ Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum for
 Texture::Texture(const Texture & rhs) :
 	id(rhs.id), name("[COPY]" + rhs.name)
 {
+	printf("Copying Texture: %s\n", rhs.name.c_str());
 }
 
 Texture::~Texture()
 {
+	printf("Destroying Texture: %s\n", name.c_str());
 	//TODO: Add glDeleteTextures. Need to figure out how to delete a texture without it breaking for all the copies as well.
 }
 
