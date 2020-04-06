@@ -1,8 +1,19 @@
 #include "Rendererpch.h"
 #include "Scene.h"
 
-Scene::Scene(Window & window) : 
+Scene::Scene()
+{
+}
+
+Scene::Scene(Window & window) :
 	camera(Camera(window.GetGLFWwindow()))
+{
+}
+
+Scene::Scene(const Scene & rhs) :
+	actors(rhs.actors), lights(rhs.lights),
+	materials(rhs.materials), meshes(rhs.meshes),
+	camera(rhs.camera), skybox(rhs.skybox)
 {
 }
 
@@ -36,4 +47,26 @@ void Scene::Initialize()
 	InitializeMeshes();
 	InitializeMaterials();
 	InitializeActors();
+}
+
+Scene & Scene::operator=(const Scene & rhs)
+{
+	actors = rhs.actors;
+	lights = rhs.lights;
+	materials = rhs.materials;
+	meshes = rhs.meshes;
+	camera = rhs.camera;
+	skybox = rhs.skybox;
+}
+
+void Scene::InitializeMeshes()
+{
+}
+
+void Scene::InitializeMaterials()
+{
+}
+
+void Scene::InitializeActors()
+{
 }

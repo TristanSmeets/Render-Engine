@@ -7,6 +7,14 @@ Camera::Frustum::Frustum(float nearPlane, float farPlane, float fieldOfView, flo
 {
 }
 
+Camera::Frustum & Camera::Frustum::operator=(const Frustum & rhs)
+{
+	NearPlaneCutoff = rhs.NearPlaneCutoff;
+	FarPlaneCutoff = rhs.FarPlaneCutoff;
+	FieldOfView = rhs.FieldOfView;
+	AspectRatio = rhs.AspectRatio;
+}
+
 Camera::Camera() :
 	Actor("Camera")
 {
@@ -51,6 +59,12 @@ const glm::vec3 Camera::GetCameraFront() const
 	direction.y = sin(glm::radians(eulerAngles.x));
 	direction.z = sin(glm::radians(eulerAngles.y)) * cos(glm::radians(eulerAngles.x));
 	return glm::normalize(direction);
+}
+
+Camera & Camera::operator=(const Camera & rhs)
+{
+	window = rhs.window;
+	frustum = rhs.frustum;
 }
 
 const glm::vec3 Camera::GetCameraSide() const

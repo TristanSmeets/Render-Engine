@@ -9,12 +9,13 @@ class Camera : public Actor
 public:
 	struct Frustum
 	{
-		const float NearPlaneCutoff;
-		const float FarPlaneCutoff;
-		const float FieldOfView;
-		const float AspectRatio;
+		float NearPlaneCutoff;
+		float FarPlaneCutoff;
+		float FieldOfView;
+		float AspectRatio;
 
 		Frustum(float nearPlane = 0.1f, float farPlane = 100.0f, float fieldOfView = glm::radians(45.0f), float aspectRatio = (16.0f / 9.0f));
+		Frustum& operator=(const Frustum& rhs);
 	};
 
 public:
@@ -28,6 +29,7 @@ public:
 	const glm::vec3 GetCameraUp() const;
 	const glm::vec3 GetCameraSide() const;
 	const glm::vec3 GetCameraFront() const;
+	Camera& operator=(const Camera& rhs);
 
 private:
 	void ProcessKeyBoardInput(float deltaTime);
