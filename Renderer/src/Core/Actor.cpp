@@ -115,3 +115,8 @@ const RenderComponent & Actor::GetRenderComponent() const
 {
 	return renderComponent;
 }
+
+RenderComponent & Actor::GetRenderComponent()
+{
+	return renderComponent;
+}

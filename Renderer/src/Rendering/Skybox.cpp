@@ -17,11 +17,13 @@ Skybox::Skybox()
 
 Skybox::~Skybox()
 {
+	printf("Destroying Skybox\n");
 	//TODO: Implement deletion of things that need to be deleted.
 }
 
 void Skybox::LoadHDR(const std::string & filepath)
 {
+	printf("Loading HDR texture: %s\n", filepath.c_str());
 	ConvertHDRTextureToCubemap(Texture(filepath, GL_RGB16F, GL_RGB, GL_FLOAT));
 	CreateIrradianceMap();
 	CreatePrefilterMap();

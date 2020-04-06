@@ -25,6 +25,7 @@ Texture::Texture(const std::string & filepath, bool usingLinearSpace)
 
 Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum format, GLenum type)
 {
+	printf("Creating Texture: %s\n", filepath.c_str());
 	GenerateTexture();
 	Load(filepath, internalformat, format, type);
 
@@ -128,6 +129,11 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 		}
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
+		printf("SUCCESS: Loaded: %s\n", filepath.c_str());
+	}
+	else
+	{
+		printf("ERROR: Failed to load texture: %s\n", filepath.c_str());
 	}
 
 	stbi_set_flip_vertically_on_load(false);
@@ -150,6 +156,10 @@ void Texture::Load(const std::string & filepath, GLenum internalformat, GLenum f
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
 	}
+	else
+	{
+		printf("ERROR: Failed to load texture: %s\n", filepath.c_str());
+	}
 
 	stbi_set_flip_vertically_on_load(false);
 }
@@ -168,8 +178,8 @@ const std::string Texture::EnumToString(Type type) const
 		return "material.Roughness";
 	case AmbientOcclusion:
 		return "material.AO";
-	case LookUp:
-		return "brdfLUT";
+	//case LookUp:
+	//	return "brdfLUT";
 	default:
 		return "";
 	}

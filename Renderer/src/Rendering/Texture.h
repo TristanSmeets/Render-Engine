@@ -13,7 +13,6 @@ public:
 		Metallic,
 		Roughness,
 		AmbientOcclusion,
-		LookUp = 7,
 		Count
 	};
 

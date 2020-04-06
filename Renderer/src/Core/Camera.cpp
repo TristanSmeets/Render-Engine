@@ -7,6 +7,11 @@ Camera::Frustum::Frustum(float nearPlane, float farPlane, float fieldOfView, flo
 {
 }
 
+Camera::Camera() :
+	Actor("Camera")
+{
+}
+
 Camera::Camera(GLFWwindow * window, const glm::vec3 & position, const glm::vec3 & rotationInEulerAngles, const Frustum & frustum) :
 	Actor("Camera", position, rotationInEulerAngles), frustum(frustum), window(window)
 {

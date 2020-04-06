@@ -21,6 +21,7 @@ void ForwardPBR::Initialize(Scene & scene)
 	pbr.SetMat4("projection", projection);
 	pbr.SetInt("irradianceMap", 5);
 	pbr.SetInt("prefilterMap", 6);
+	pbr.SetInt("brdfLUT", 7);
 
 	lamp.Use();
 	lamp.SetMat4("projection", projection);
@@ -28,6 +29,10 @@ void ForwardPBR::Initialize(Scene & scene)
 	skyboxShader.Use();
 	skyboxShader.SetInt("environmentMap", 0);
 	skyboxShader.SetMat4("projection", projection);
+
+	//Setup depth testing and culling
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 
 	//Configure viewport to original framebuffer
 	Window::Parameters windowParameters = window.GetWindowParameters();
@@ -75,7 +80,9 @@ void ForwardPBR::Render(Scene & scene)
 		skybox.GetIrradiance().Bind();
 		glActiveTexture(GL_TEXTURE6);
 		skybox.GetPrefilter().Bind();
-		skybox.GetLookup().Bind(pbr,Texture::LookUp);
+		glActiveTexture(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_2D, skybox.GetLookup().GetID());
+		glActiveTexture(GL_TEXTURE0);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 

@@ -15,8 +15,10 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 	const char* fragmentShaderCode = fragmentCode.c_str();
 
 	//Compile Shaders
+	printf("Compiling %s\n", vertexPath.c_str());
 	GLuint vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
 
+	printf("Compiling %s\n", fragmentPath.c_str());
 	GLuint fragmentShader = compileShader(fragmentShaderCode, GL_FRAGMENT_SHADER);
 
 	// Link shaders
@@ -102,6 +104,7 @@ GLuint Shader::compileShader(const char * shaderCode, GLuint shaderType)
 
 	if (success)
 	{
+		printf("SUCCES: Compiled shader\n");
 	}
 	else
 	{
@@ -126,6 +129,7 @@ void Shader::linkShaders(GLuint vertexShader, GLuint fragmentShader)
 	glGetProgramiv(id, GL_LINK_STATUS, &success);
 	if (success)
 	{
+		printf("SUCCESS: Linked shaders\n");
 	}
 	else
 	{
