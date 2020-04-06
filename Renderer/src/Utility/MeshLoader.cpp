@@ -51,7 +51,7 @@ Mesh MeshLoader::processMesh(aiMesh * mesh, const aiScene * scene)
 		normals.push_back(placeholder);
 
 		//UVs
-		if (mesh->HasTextureCoords)
+		if (mesh->mTextureCoords[0])
 		{
 			FillVector2(uv, mesh->mTextureCoords[0][i]);
 			uvs.push_back(uv);

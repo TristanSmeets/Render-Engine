@@ -110,3 +110,8 @@ const glm::vec3 Actor::GetWorldPosition() const
 		return parent->GetWorldPosition() + transform.GetPosition();
 	}
 }
+
+const RenderComponent & Actor::GetRenderComponent() const
+{
+	return renderComponent;
+}

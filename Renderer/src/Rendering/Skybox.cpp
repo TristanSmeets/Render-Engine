@@ -37,12 +37,27 @@ Renderbuffer & Skybox::GetRenderbuffer()
 	return renderbuffer;
 }
 
-Cubemap & Skybox::GetEnvironment()
+const Cubemap & Skybox::GetEnvironment() const
 {
 	return environment;
 }
 
-void Skybox::Draw()
+const Cubemap & Skybox::GetIrradiance() const
+{
+	return irradiance;
+}
+
+const Cubemap & Skybox::GetPrefilter() const
+{
+	return prefilter;
+}
+
+const Texture & Skybox::GetLookup() const
+{
+	return lookup;
+}
+
+void Skybox::Draw() const
 {
 	glActiveTexture(GL_TEXTURE0);
 	environment.Bind();

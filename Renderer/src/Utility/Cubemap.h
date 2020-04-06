@@ -13,7 +13,7 @@ public:
 	GLuint GetID() const;
 	const GLsizei GetWidth() const;
 	const GLsizei GetHeight() const;
-	void Bind();
+	void Bind() const;
 
 private:
 	GLuint id = 0;

@@ -10,8 +10,8 @@ public:
 	~RenderComponent();
 	void SetMesh(const Mesh& mesh);
 	void SetMaterial(const Material& material);
-	const Mesh& GetMesh();
-	const Material& GetMaterial();
+	const Mesh& GetMesh() const;
+	const Material& GetMaterial() const;
 
 private:
 	const Mesh* mesh = nullptr;

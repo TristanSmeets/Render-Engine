@@ -49,7 +49,7 @@ const GLsizei Cubemap::GetHeight() const
 	return height;
 }
 
-void Cubemap::Bind()
+void Cubemap::Bind() const
 {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, id);
 }

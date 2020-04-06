@@ -1,6 +1,6 @@
 #pragma once
-#include "glm.hpp"
 #include "glad/glad.h"
+#include "glm.hpp"
 
 class Mesh
 {
@@ -20,13 +20,13 @@ public:
 	Mesh(const std::string& name, const Data& meshData);
 	Mesh(const Mesh& rhs);
 	virtual ~Mesh();
-	virtual void Draw();
+	virtual void Draw() const;
 	virtual const std::string& GetName() const;
 
 protected:
 	virtual void SetupMesh();
 	virtual void CreateVAO();
-	virtual void BindVAO();
+	virtual void BindVAO() const;
 	virtual void CreateBuffer(GLuint& buffer);
 	template<typename T>
 	void LoadBufferData(GLenum format, const std::vector<T>& vector, GLuint& buffer);

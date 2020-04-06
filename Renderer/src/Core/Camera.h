@@ -20,8 +20,8 @@ public:
 public:
 	Camera(GLFWwindow* window, const glm::vec3& position = glm::vec3(0.0f, 0.0f, 5.0f), const glm::vec3& rotationInEulerAngles = glm::vec3(-90.0f, 0.0f, 0.0f), const Frustum& frustum = Frustum());
 	virtual ~Camera();
-	const glm::mat4 GetViewMatrix();
-	const glm::mat4 GetProjectionMatrix();
+	const glm::mat4 GetViewMatrix() const;
+	const glm::mat4 GetProjectionMatrix() const;
 	void Update(float deltaTime);
 	const Frustum GetFrustum() const;
 	const glm::vec3 GetCameraUp() const;

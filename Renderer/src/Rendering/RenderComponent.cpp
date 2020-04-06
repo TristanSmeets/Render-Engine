@@ -19,12 +19,12 @@ void RenderComponent::SetMaterial(const Material & material)
 	this->material = &material;
 }
 
-const Mesh & RenderComponent::GetMesh()
+const Mesh & RenderComponent::GetMesh() const
 {
 	return *mesh;
 }
 
-const Material & RenderComponent::GetMaterial()
+const Material & RenderComponent::GetMaterial() const
 {
 	return *material;
 }

@@ -17,13 +17,13 @@ Camera::~Camera()
 	Actor::~Actor();
 }
 
-const glm::mat4 Camera::GetViewMatrix()
+const glm::mat4 Camera::GetViewMatrix() const
 {
 	glm::vec3 position = GetWorldPosition();
 	return glm::lookAt(position, position + GetCameraFront(), GetCameraUp());
 }
 
-const glm::mat4 Camera::GetProjectionMatrix()
+const glm::mat4 Camera::GetProjectionMatrix() const
 {
 	return glm::perspective(frustum.FieldOfView, frustum.AspectRatio, frustum.NearPlaneCutoff, frustum.FarPlaneCutoff);
 }

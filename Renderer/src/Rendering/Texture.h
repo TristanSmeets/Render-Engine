@@ -13,7 +13,7 @@ public:
 		Metallic,
 		Roughness,
 		AmbientOcclusion,
-		LookUp,
+		LookUp = 7,
 		Count
 	};
 
@@ -27,7 +27,7 @@ public:
 	static Texture CreateEmpty(const std::string& name, int width, int height, GLenum internalformat, GLenum format, GLenum type);
 	const GLuint& GetID() const;
 	const std::string& GetName() const;
-	void Bind(Shader& shader, Type type);
+	void Bind(Shader& shader, Type type) const;
 
 private:
 	void GenerateTexture();

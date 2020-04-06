@@ -17,8 +17,11 @@ public:
 	void LoadHDR(const std::string& filepath);
 	Framebuffer& GetFramebuffer();
 	Renderbuffer& GetRenderbuffer();
-	Cubemap& GetEnvironment();
-	void Draw();
+	const Cubemap& GetEnvironment() const;
+	const Cubemap& GetIrradiance() const;
+	const Cubemap& GetPrefilter() const;
+	const Texture& GetLookup() const;
+	void Draw() const;
 
 private:
 	void ConvertHDRTextureToCubemap(Texture&& texture);

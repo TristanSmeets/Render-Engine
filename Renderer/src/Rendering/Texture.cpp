@@ -61,7 +61,7 @@ const std::string & Texture::GetName() const
 	return name;
 }
 
-void Texture::Bind(Shader & shader, Type type)
+void Texture::Bind(Shader & shader, Type type) const
 {
 	glActiveTexture(GL_TEXTURE0 + type);
 	shader.SetInt(EnumToString(type), type);
