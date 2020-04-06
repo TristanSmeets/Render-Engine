@@ -59,6 +59,7 @@ Scene & Scene::operator=(const Scene & rhs)
 	meshes = rhs.meshes;
 	camera = rhs.camera;
 	skybox = rhs.skybox;
+	return *this;
 }
 
 void Scene::InitializeMeshes()

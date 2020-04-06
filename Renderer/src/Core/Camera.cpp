@@ -13,6 +13,7 @@ Camera::Frustum & Camera::Frustum::operator=(const Frustum & rhs)
 	FarPlaneCutoff = rhs.FarPlaneCutoff;
 	FieldOfView = rhs.FieldOfView;
 	AspectRatio = rhs.AspectRatio;
+	return *this;
 }
 
 Camera::Camera() :
@@ -65,6 +66,7 @@ Camera & Camera::operator=(const Camera & rhs)
 {
 	window = rhs.window;
 	frustum = rhs.frustum;
+	return *this;
 }
 
 const glm::vec3 Camera::GetCameraSide() const
