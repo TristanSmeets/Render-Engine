@@ -21,7 +21,7 @@ public:
 	const Camera& GetCamera() const;
 	const Skybox& GetSkybox() const;
 	void Initialize();
-
+	Scene& operator=(const Scene& rhs);
 
 private:
 	void InitializeMeshes();
