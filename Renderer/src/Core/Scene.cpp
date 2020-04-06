@@ -46,9 +46,11 @@ const Skybox & Scene::GetSkybox() const
 
 void Scene::Initialize()
 {
+	printf("Initializing Scene\n");
 	InitializeMeshes();
 	InitializeMaterials();
 	InitializeActors();
+	printf("Initializing complete\n\n");
 }
 
 Scene & Scene::operator=(const Scene & rhs)
@@ -64,21 +66,24 @@ Scene & Scene::operator=(const Scene & rhs)
 
 void Scene::InitializeMeshes()
 {
+	printf("Initializing Meshes\n");
 	const std::vector<Mesh>& lampMeshes = MeshLoader::LoadModel(Filepath::Mesh + "cube.obj");
-	for (unsigned int i = 0; lampMeshes.size(); ++i)
+	for (unsigned int i = 0; i < lampMeshes.size(); ++i)
 	{
 		meshes.push_back(lampMeshes[i]);
 	}
 
 	const std::vector<Mesh>& sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "sphere.obj");
-	for (unsigned int i = 0; sphereMeshes.size(); ++i)
+	for (unsigned int i = 0; i < sphereMeshes.size(); ++i)
 	{
 		meshes.push_back(sphereMeshes[i]);
 	}
+	printf("Created %d meshes\n", (int)meshes.size());
 }
 
 void Scene::InitializeMaterials()
 {
+	printf("Initializing Materials\n");
 	Material material = Material("Sphere");
 	material.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
 	material.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
@@ -86,10 +91,13 @@ void Scene::InitializeMaterials()
 	material.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
 	material.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
 	materials.push_back(material);
+
+	printf("Created %d materials\n", (int)materials.size());
 }
 
 void Scene::InitializeActors()
 {
+	printf("Initializing actors");
 	Light light = Light("Light", glm::vec3(7.4f, 6.0f, .6f), glm::vec3(81.0f, 57.0f, 11.0f));
 	light.GetRenderComponent().SetMesh(meshes[0]);
 	lights.push_back(light);
@@ -98,4 +106,5 @@ void Scene::InitializeActors()
 	sphere.GetRenderComponent().SetMesh(meshes[1]);
 	sphere.GetRenderComponent().SetMaterial(materials[0]);
 	actors.push_back(sphere);
+	printf("Created %d actors\n", (int)actors.size());
 }
