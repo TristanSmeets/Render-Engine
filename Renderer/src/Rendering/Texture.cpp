@@ -49,6 +49,7 @@ Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLe
 	Texture emptyTexture;
 	emptyTexture.name = name;
 	emptyTexture.GenerateTexture();
+	glBindTexture(GL_TEXTURE_2D, emptyTexture.id);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, 0);
 	return emptyTexture;
 }
@@ -72,6 +73,13 @@ void Texture::Bind(Shader & shader, Type type) const
 
 	//Return back to default texture
 	glActiveTexture(GL_TEXTURE0);
+}
+
+Texture & Texture::operator=(const Texture & rhs)
+{
+	this->id = rhs.id;
+	this->name = rhs.name;
+	return *this;
 }
 
 void Texture::GenerateTexture()

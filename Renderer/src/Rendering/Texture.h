@@ -27,6 +27,7 @@ public:
 	const GLuint& GetID() const;
 	const std::string& GetName() const;
 	void Bind(Shader& shader, Type type) const;
+	Texture& operator=(const Texture& rhs);
 
 private:
 	void GenerateTexture();
