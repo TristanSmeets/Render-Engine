@@ -60,6 +60,7 @@ void Scene::Initialize()
 	InitializeMaterials();
 	InitializeActors();
 	skybox.Initialize();
+	skybox.LoadHDR(Filepath::Skybox + "Tropical_Beach/Tropical_Beach_3k.hdr");
 	printf("Initializing complete\n\n");
 }
 

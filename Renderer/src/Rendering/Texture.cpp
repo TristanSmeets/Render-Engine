@@ -26,7 +26,6 @@ Texture::Texture(const std::string & filepath, bool usingLinearSpace)
 Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum format, GLenum type)
 {
 	printf("Creating Texture: %s\n", filepath.c_str());
-	GenerateTexture();
 	Load(filepath, internalformat, format, type);
 
 	size_t position = filepath.find_last_of("/");
@@ -149,14 +148,17 @@ void Texture::Load(const std::string & filepath, GLenum internalformat, GLenum f
 
 	stbi_set_flip_vertically_on_load(true);
 
-	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+	printf("Trying to load Texture: %s\n", filepath.c_str());
+	float *data = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
 
 	if (data)
 	{
+		GenerateTexture();
 		glBindTexture(GL_TEXTURE_2D, id);
 		glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
+		printf("SUCCESS: Loaded: %s\n", filepath.c_str());
 	}
 	else
 	{
