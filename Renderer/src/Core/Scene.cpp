@@ -109,7 +109,7 @@ void Scene::InitializeMaterials()
 void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
-	Light light = Light("Light", glm::vec3(7.4f, 6.0f, .6f), glm::vec3(81.0f, 57.0f, 11.0f));
+	Light light = Light("Light", glm::vec3(-5.0f, 6.0f, 4.0f), glm::vec3(81.0f, 57.0f, 11.0f));
 	light.GetRenderComponent().SetMesh(meshes[0]);
 	lights.push_back(light);
 
