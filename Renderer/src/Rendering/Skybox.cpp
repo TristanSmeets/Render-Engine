@@ -73,6 +73,8 @@ void Skybox::Draw() const
 {
 	glActiveTexture(GL_TEXTURE0);
 	environment.Bind();
+	//irradiance.Bind();
+	//prefilter.Bind();
 	skyboxMesh.Draw();
 }
 
@@ -115,6 +117,9 @@ void Skybox::CreateIrradianceMap()
 	irradianceShader.SetMat4("projection", captureProjection);
 	glActiveTexture(GL_TEXTURE0);
 	environment.Bind();
+
+	glViewport(0, 0, irradiance.GetWidth(), irradiance.GetHeight());
+	framebuffer.Bind();
 
 	for (unsigned int i = 0; i < 6; ++i)
 	{
