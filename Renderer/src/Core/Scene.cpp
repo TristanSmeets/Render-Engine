@@ -43,6 +43,11 @@ const Camera & Scene::GetCamera() const
 	return camera;
 }
 
+Camera & Scene::GetCamera()
+{
+	return camera;
+}
+
 const Skybox & Scene::GetSkybox() const
 {
 	return skybox;

@@ -90,11 +90,11 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		transform.Translate(mSpeed * GetCameraFront());
+		transform.Translate(-mSpeed * GetCameraFront());
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		transform.Translate(glm::normalize(glm::cross(GetCameraFront(), GetCameraUp())) * mSpeed);
+		transform.Translate(glm::normalize(glm::cross(GetCameraFront(), GetCameraUp())) * -mSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
@@ -106,7 +106,7 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 	}
 	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
 	{
-		transform.Translate(mSpeed * GetCameraUp());
+		transform.Translate(-mSpeed * GetCameraUp());
 	}
 	//Rotation
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)

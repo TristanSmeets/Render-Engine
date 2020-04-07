@@ -30,8 +30,14 @@ void Application::Run()
 { 
 	while (window.IsOpen())
 	{
-		renderTechnique->Render(*scene);
+		float timeCurrentFrame = (float)glfwGetTime();
+		deltaTime = timeCurrentFrame - timeLastFrame;
+		timeLastFrame = timeCurrentFrame;
+
+		scene->GetCamera().Update(deltaTime);
+
 		window.ProcessKeyInput();
+		renderTechnique->Render(*scene);
 		window.PollEvents();
 		window.SwapBuffers();
 	}

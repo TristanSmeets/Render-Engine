@@ -19,6 +19,7 @@ public:
 	const std::vector<Actor>& GetActors() const;
 	const std::vector<Light>& GetLights() const;
 	const Camera& GetCamera() const;
+	Camera& GetCamera();
 	const Skybox& GetSkybox() const;
 	void Initialize();
 	Scene& operator=(const Scene& rhs);

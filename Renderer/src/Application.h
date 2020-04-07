@@ -18,4 +18,6 @@ private:
 	Scene* scene = nullptr;
 	RenderTechnique* renderTechnique = nullptr;
 	Window window = Window();
+	float deltaTime = 0.0f;
+	float timeLastFrame = 0.0f;
 };
