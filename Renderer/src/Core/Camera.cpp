@@ -83,6 +83,7 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 {
 	float mSpeed = moveSpeed * deltaTime;
 	float rSpeed = rotationSpeed * deltaTime;
+	glm::vec3 rotation = transform.GetRotation();
 	//Translation
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
@@ -111,18 +112,22 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 	//Rotation
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		transform.Rotate(glm::vec3(0.0f, rSpeed, 0.0f));
+		rotation.y += rSpeed;
+		transform.Rotate(rotation);
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		transform.Rotate(glm::vec3(0.0f, -rSpeed, 0.0f));
+		rotation.y -= rSpeed;
+		transform.Rotate(rotation);
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
-		transform.Rotate(glm::vec3(rSpeed, 0.0f, 0.0f));
+		rotation.x += rSpeed;
+		transform.Rotate(rotation);
 	}
 	if (glfwGetKey(window,GLFW_KEY_F) == GLFW_PRESS)
 	{
-		transform.Rotate(glm::vec3(-rSpeed, 0.0f, 0.0f));
+		rotation.x -= rSpeed;
+		transform.Rotate(rotation);
 	}
 }
