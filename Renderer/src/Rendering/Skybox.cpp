@@ -21,6 +21,9 @@ void Skybox::Initialize()
 {
 	const std::vector<Mesh>& skyboxMeshes = MeshLoader::LoadModel(Filepath::Mesh + "Skybox.obj");
 	skyboxMesh = skyboxMeshes[0];
+	const std::vector<Mesh>& quadMeshes = MeshLoader::LoadModel(Filepath::Mesh + "Quad.obj");
+	quadMesh = quadMeshes[0];
+
 	framebuffer.Generate();
 	renderbuffer.Generate();
 	framebuffer.Bind();
@@ -28,7 +31,6 @@ void Skybox::Initialize()
 	renderbuffer.SetStorage(GL_DEPTH_COMPONENT24, 512, 512);
 	framebuffer.AttachRenderbuffer(GL_DEPTH_ATTACHMENT, renderbuffer);
 	environment.CreateTexture(renderbuffer.GetWidth(), renderbuffer.GetHeight(), GL_RGB16F, GL_RGB, GL_FLOAT);
-	ndcQuad.Initialize();
 }
 
 void Skybox::LoadHDR(const std::string & filepath)
@@ -37,6 +39,7 @@ void Skybox::LoadHDR(const std::string & filepath)
 	ConvertHDRTextureToCubemap(Texture(filepath, GL_RGB16F, GL_RGB, GL_FLOAT));
 	CreateIrradianceMap();
 	CreatePrefilterMap();
+	CreateLookupTexture();
 }
 
 Framebuffer & Skybox::GetFramebuffer()
@@ -181,9 +184,11 @@ void Skybox::CreateLookupTexture()
 	framebuffer.AttachTexture(lookup);
 
 	glViewport(0, 0, 512, 512);
+
 	Shader brdf(Filepath::Shader + "brdf.vs", Filepath::Shader + "brdf.fs");
+	brdf.Use();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	ndcQuad.Draw();
+	//quadMesh.Draw();
 
 	framebuffer.Unbind();
 }

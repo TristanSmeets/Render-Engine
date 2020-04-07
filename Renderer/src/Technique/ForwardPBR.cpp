@@ -2,8 +2,8 @@
 #include "ForwardPBR.h"
 #include "Utility/Filepath.h"
 
-ForwardPBR::ForwardPBR(Window& window) :
-	RenderTechnique(), pbr(Shader(Filepath::Shader + "PBR.vs", Filepath::Shader + "PBR.fs")),
+ForwardPBR::ForwardPBR(Window& window) : RenderTechnique(),
+pbr(Shader(Filepath::Shader + "PBR.vs", Filepath::Shader + "PBR.fs")),
 	window(window)
 {
 }
@@ -20,7 +20,9 @@ void ForwardPBR::Initialize(Scene & scene)
 
 	pbr.Use();
 	pbr.SetMat4("projection", projection);
-	
+	pbr.SetInt("irradianceMap", 5);
+	pbr.SetInt("prefilterMap", 6);
+	pbr.SetInt("brdfLUT", 7);
 
 	lamp.Use();
 	lamp.SetMat4("projection", projection);
@@ -44,7 +46,7 @@ void ForwardPBR::Initialize(Scene & scene)
 
 void ForwardPBR::Render(Scene & scene)
 {
-	glClearColor(1.0f, 0.3f, 0.3f, 1.0f);
+	glClearColor(2.0f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
@@ -81,13 +83,11 @@ void ForwardPBR::Render(Scene & scene)
 		material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
 		material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
 		glActiveTexture(GL_TEXTURE5);
-		pbr.SetInt("irradianceMap", 5);
 		skybox.GetIrradiance().Bind();
 		glActiveTexture(GL_TEXTURE6);
-		pbr.SetInt("prefilterMap", 6);
 		skybox.GetPrefilter().Bind();
 		glActiveTexture(GL_TEXTURE7);
-		pbr.SetInt("brdfLUT", 7);
+		//skybox.GetLookup().Bind(pbr,(Texture::Type)7);
 		glBindTexture(GL_TEXTURE_2D, skybox.GetLookup().GetID());
 		glActiveTexture(GL_TEXTURE0);
 		actors[i].GetRenderComponent().GetMesh().Draw();

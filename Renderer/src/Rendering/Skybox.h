@@ -35,10 +35,10 @@ private:
 	Texture lookup;
 
 	Mesh skyboxMesh;
+	Mesh quadMesh;
 	Framebuffer framebuffer;
 	Renderbuffer renderbuffer;
 	Cubemap environment;
-	NDCQuad ndcQuad;
 
 	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 	glm::mat4 captureViews[6] =
