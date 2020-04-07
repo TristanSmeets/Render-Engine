@@ -12,9 +12,7 @@ Mesh::Mesh(const std::string & name, const Data & meshData) :
 }
 
 Mesh::Mesh(const Mesh & rhs) : 
-	data(rhs.data), name(rhs.name), VAO(rhs.VAO), 
-	positionBuffer(rhs.positionBuffer), normalBuffer(rhs.normalBuffer), 
-	uvBuffer(rhs.uvBuffer), indicesBuffer(rhs.indicesBuffer)
+	data(rhs.data), name(rhs.name)
 {
 	SetupMesh();
 }
@@ -38,6 +36,14 @@ void Mesh::Draw() const
 const std::string & Mesh::GetName() const
 {
 	return name;
+}
+
+Mesh & Mesh::operator=(const Mesh & rhs)
+{
+	this->data = rhs.data;
+	this->name = rhs.name;
+	SetupMesh();
+	return *this;
 }
 
 void Mesh::SetupMesh()

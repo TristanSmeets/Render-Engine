@@ -5,6 +5,7 @@
 #include "Rendering/Shader.h"
 #include "Utility/Filepath.h"
 #include "stb_image.h"
+#include "Utility/MeshLoader.h"
 
 Skybox::Skybox()
 {
@@ -18,6 +19,8 @@ Skybox::~Skybox()
 
 void Skybox::Initialize()
 {
+	const std::vector<Mesh>& skyboxMeshes = MeshLoader::LoadModel(Filepath::Mesh + "Skybox.obj");
+	skyboxMesh = skyboxMeshes[0];
 	framebuffer.Generate();
 	renderbuffer.Generate();
 	framebuffer.Bind();
