@@ -43,6 +43,11 @@ void Framebuffer::AttachCubemap(const Cubemap & cubemap)
 	}
 }
 
+bool Framebuffer::IsCompleted()
+{
+	return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+}
+
 GLuint Framebuffer::GetBuffer() const
 {
 	return buffer;

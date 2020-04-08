@@ -11,6 +11,7 @@ Application::~Application()
 	printf("Destroying application\n");
 	delete scene;
 	delete renderTechnique;
+	delete postProcessing;
 }
 
 void Application::Initialize()
@@ -22,12 +23,15 @@ void Application::Initialize()
 	scene->Initialize();
 	renderTechnique = new ForwardPBR(window);
 	renderTechnique->Initialize(*scene);
+	postProcessing = new PostProcessing();
+	postProcessing->Initialize(Window::Parameters());
 	printf("Application initialization complete\n");
 
 }
 
 void Application::Run()
-{ 
+{
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (window.IsOpen())
 	{
 		float timeCurrentFrame = (float)glfwGetTime();
@@ -37,7 +41,12 @@ void Application::Run()
 		scene->GetCamera().Update(deltaTime);
 
 		window.ProcessKeyInput();
+
+		postProcessing->Bind();
 		renderTechnique->Render(*scene);
+		postProcessing->Unbind();
+		postProcessing->Draw();
+
 		window.PollEvents();
 		window.SwapBuffers();
 	}

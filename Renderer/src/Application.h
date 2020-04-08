@@ -3,7 +3,7 @@
 #include "Core/Window.h"
 #include "Core/Scene.h"
 #include "Technique/RenderTechnique.h"
-#include "Technique/ForwardPBR.h"
+#include "PostProcessing/PostProcessing.h"
 
 class Application
 {
@@ -17,6 +17,7 @@ private:
 	bool InitializeGlad();
 	Scene* scene = nullptr;
 	RenderTechnique* renderTechnique = nullptr;
+	PostProcessing* postProcessing = nullptr;
 	Window window = Window();
 	float deltaTime = 0.0f;
 	float timeLastFrame = 0.0f;

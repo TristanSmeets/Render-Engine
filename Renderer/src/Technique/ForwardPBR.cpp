@@ -39,8 +39,8 @@ void ForwardPBR::Initialize(Scene & scene)
 	Window::Parameters windowParameters = window.GetWindowParameters();
 	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	printf("Initializion Complete\n\n");
 }
 
