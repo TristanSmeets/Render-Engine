@@ -86,9 +86,7 @@ void ForwardPBR::Render(Scene & scene)
 		skybox.GetIrradiance().Bind();
 		glActiveTexture(GL_TEXTURE6);
 		skybox.GetPrefilter().Bind();
-		glActiveTexture(GL_TEXTURE7);
-		//skybox.GetLookup().Bind(pbr,(Texture::Type)7);
-		glBindTexture(GL_TEXTURE_2D, skybox.GetLookup().GetID());
+		skybox.GetLookup().Bind(pbr,(Texture::Type)7);
 		glActiveTexture(GL_TEXTURE0);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}

@@ -30,12 +30,12 @@ private:
 	void CreatePrefilterMap();
 	void CreateLookupTexture();
 
+	NDCQuad ndcQuad;
 	Cubemap irradiance;
 	Cubemap prefilter;
 	Texture lookup;
 
 	Mesh skyboxMesh;
-	Mesh quadMesh;
 	Framebuffer framebuffer;
 	Renderbuffer renderbuffer;
 	Cubemap environment;

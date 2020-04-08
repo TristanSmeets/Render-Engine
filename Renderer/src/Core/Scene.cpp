@@ -91,12 +91,6 @@ void Scene::InitializeMeshes()
 		meshes.push_back(sphereMeshes[i]);
 	}
 
-	const std::vector<Mesh>& quadMeshes = MeshLoader::LoadModel(Filepath::Mesh + "quad.obj");
-	for (unsigned int i = 0; i < quadMeshes.size(); ++i)
-	{
-		meshes.push_back(quadMeshes[i]);
-	}
-
 	printf("Created %d meshes\n", (int)meshes.size());
 }
 

@@ -21,8 +21,6 @@ void Skybox::Initialize()
 {
 	const std::vector<Mesh>& skyboxMeshes = MeshLoader::LoadModel(Filepath::Mesh + "Skybox.obj");
 	skyboxMesh = skyboxMeshes[0];
-	const std::vector<Mesh>& quadMeshes = MeshLoader::LoadModel(Filepath::Mesh + "Quad.obj");
-	quadMesh = quadMeshes[0];
 
 	framebuffer.Generate();
 	renderbuffer.Generate();
@@ -76,8 +74,6 @@ void Skybox::Draw() const
 {
 	glActiveTexture(GL_TEXTURE0);
 	environment.Bind();
-	//irradiance.Bind();
-	//prefilter.Bind();
 	skyboxMesh.Draw();
 }
 
@@ -174,21 +170,22 @@ void Skybox::CreatePrefilterMap()
 
 void Skybox::CreateLookupTexture()
 {
+	Shader brdfShader("shader/brdf.vs",
+		"shader/brdf.fs");
+
 	lookup = Texture::CreateEmpty("Lookup", 512, 512, GL_RG16F, GL_RG, GL_FLOAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+	//Then re-configure capture framebuffer object and render screen-space quad with BRDF shader
 	framebuffer.Bind();
 	renderbuffer.Bind();
 	renderbuffer.SetStorage(GL_DEPTH_COMPONENT24, 512, 512);
 	framebuffer.AttachTexture(lookup);
-
 	glViewport(0, 0, 512, 512);
-
-	Shader brdf(Filepath::Shader + "brdf.vs", Filepath::Shader + "brdf.fs");
-	brdf.Use();
+	brdfShader.Use();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//quadMesh.Draw();
+	ndcQuad.Render();
 
 	framebuffer.Unbind();
 }
