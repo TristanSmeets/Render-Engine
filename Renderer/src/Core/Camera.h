@@ -33,7 +33,6 @@ public:
 
 private:
 	void ProcessKeyBoardInput(float deltaTime);
-
 	GLFWwindow* window;
 	Frustum frustum = Frustum();
 	const float moveSpeed = 2.5f;
