@@ -1,36 +1,40 @@
 #include "Rendererpch.h"
 #include "NDCQuad.h"
 
-NDCQuad::NDCQuad() : 
-	Mesh()
+NDCQuad::NDCQuad()
 {
 }
 
 NDCQuad::~NDCQuad()
 {
-	Mesh::~Mesh();
+	glDeleteVertexArrays(1, &quadVAO);
+	glDeleteBuffers(1, &quadVBO);
 }
 
-void NDCQuad::Initialize()
+void NDCQuad::Render()
 {
-	data.Vertices =
+	if (quadVAO == 0)
 	{
-		glm::vec3(-1.0f,  1.0f, 0.0f),
-		glm::vec3(-1.0f, -1.0f, 0.0f),
-		glm::vec3(1.0f,  1.0f, 0.0f),
-		glm::vec3(1.0f, -1.0f, 0.0f)
-	};
-	data.UVs =
-	{
-		glm::vec2(0.0f, 1.0f),
-		glm::vec2(0.0f, 0.0f),
-		glm::vec2(1.0f, 1.0f),
-		glm::vec2(1.0f, 0.0f)
-	};
-	data.Indices =
-	{
-		0,1,3,
-		1,2,3,
-	};
-	SetupMesh();
+		float quadVertices[] = {
+			// positions        // texture Coords
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+		// setup plane VAO
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	}
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
 }
+
