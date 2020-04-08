@@ -1,6 +1,9 @@
 #pragma once
 #include "glad/glad.h"
 #include "Core/Window.h"
+#include "Core/Scene.h"
+#include "Technique/RenderTechnique.h"
+#include "Technique/ForwardPBR.h"
 
 class Application
 {
@@ -12,7 +15,9 @@ public:
 
 private:
 	bool InitializeGlad();
-
+	Scene* scene = nullptr;
+	RenderTechnique* renderTechnique = nullptr;
 	Window window = Window();
-	//TODO: Add scene and rendering technique here.
+	float deltaTime = 0.0f;
+	float timeLastFrame = 0.0f;
 };

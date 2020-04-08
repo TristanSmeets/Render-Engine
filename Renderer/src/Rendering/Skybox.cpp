@@ -5,9 +5,25 @@
 #include "Rendering/Shader.h"
 #include "Utility/Filepath.h"
 #include "stb_image.h"
+#include "Utility/MeshLoader.h"
 
 Skybox::Skybox()
 {
+}
+
+Skybox::~Skybox()
+{
+	printf("Destroying Skybox\n");
+	//TODO: Implement deletion of things that need to be deleted.
+}
+
+void Skybox::Initialize()
+{
+	const std::vector<Mesh>& skyboxMeshes = MeshLoader::LoadModel(Filepath::Mesh + "Skybox.obj");
+	skyboxMesh = skyboxMeshes[0];
+
+	framebuffer.Generate();
+	renderbuffer.Generate();
 	framebuffer.Bind();
 	renderbuffer.Bind();
 	renderbuffer.SetStorage(GL_DEPTH_COMPONENT24, 512, 512);
@@ -15,16 +31,13 @@ Skybox::Skybox()
 	environment.CreateTexture(renderbuffer.GetWidth(), renderbuffer.GetHeight(), GL_RGB16F, GL_RGB, GL_FLOAT);
 }
 
-Skybox::~Skybox()
-{
-	//TODO: Implement deletion of things that need to be deleted.
-}
-
 void Skybox::LoadHDR(const std::string & filepath)
 {
+	printf("Loading HDR texture: %s\n", filepath.c_str());
 	ConvertHDRTextureToCubemap(Texture(filepath, GL_RGB16F, GL_RGB, GL_FLOAT));
 	CreateIrradianceMap();
 	CreatePrefilterMap();
+	CreateLookupTexture();
 }
 
 Framebuffer & Skybox::GetFramebuffer()
@@ -104,6 +117,9 @@ void Skybox::CreateIrradianceMap()
 	glActiveTexture(GL_TEXTURE0);
 	environment.Bind();
 
+	glViewport(0, 0, irradiance.GetWidth(), irradiance.GetHeight());
+	framebuffer.Bind();
+
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		irradianceShader.SetMat4("view", captureViews[i]);
@@ -154,19 +170,22 @@ void Skybox::CreatePrefilterMap()
 
 void Skybox::CreateLookupTexture()
 {
+	Shader brdfShader("shader/brdf.vs",
+		"shader/brdf.fs");
+
 	lookup = Texture::CreateEmpty("Lookup", 512, 512, GL_RG16F, GL_RG, GL_FLOAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+	//Then re-configure capture framebuffer object and render screen-space quad with BRDF shader
 	framebuffer.Bind();
 	renderbuffer.Bind();
 	renderbuffer.SetStorage(GL_DEPTH_COMPONENT24, 512, 512);
 	framebuffer.AttachTexture(lookup);
-
 	glViewport(0, 0, 512, 512);
-	Shader brdf(Filepath::Shader + "brdf.vs", Filepath::Shader + "brdf.fs");
+	brdfShader.Use();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	ndcQuad.Draw();
+	ndcQuad.Render();
 
 	framebuffer.Unbind();
 }

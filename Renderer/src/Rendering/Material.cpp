@@ -8,10 +8,10 @@ Material::Material(const std::string & name) :
 
 Material::~Material()
 {
-	for (int i = 0; i < Texture::Type::Count; ++i)
-	{
-		glDeleteTextures(1, &textures[i].GetID());
-	}
+	//for (int i = 0; i < Texture::Type::Count; ++i)
+	//{
+	//	glDeleteTextures(1, &textures[i].GetID());
+	//}
 }
 
 void Material::AddTexture(Texture::Type type, const std::string & filepath, bool usingLinearSpace)

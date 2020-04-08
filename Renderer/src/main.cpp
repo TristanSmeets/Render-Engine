@@ -5,7 +5,8 @@
 
 int main()
 {
-	Application appliction;
-	appliction.Initialize();
-	appliction.Run();
+	printf("Starting application\n");
+	Application application;
+	application.Initialize();
+	application.Run();
 }

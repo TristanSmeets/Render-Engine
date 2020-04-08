@@ -10,7 +10,8 @@ Actor::Actor(const std::string & name, const glm::vec3 & position, const glm::ve
 }
 
 Actor::Actor(const Actor & rhs) :
-	name(rhs.name), transform(rhs.transform), children(rhs.children), parent(rhs.parent)
+	name(rhs.name), transform(rhs.transform), children(rhs.children), parent(rhs.parent),
+	renderComponent(rhs.renderComponent)
 {
 }
 
@@ -112,6 +113,11 @@ const glm::vec3 Actor::GetWorldPosition() const
 }
 
 const RenderComponent & Actor::GetRenderComponent() const
+{
+	return renderComponent;
+}
+
+RenderComponent & Actor::GetRenderComponent()
 {
 	return renderComponent;
 }

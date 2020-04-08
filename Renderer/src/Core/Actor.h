@@ -23,6 +23,7 @@ public:
     virtual const glm::mat4 GetWorldMatrix() const;
 	virtual const glm::vec3 GetWorldPosition() const;
 	virtual const RenderComponent& GetRenderComponent() const;
+	virtual RenderComponent& GetRenderComponent();
 
 protected:
     Actor* parent = nullptr; 

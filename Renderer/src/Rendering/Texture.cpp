@@ -25,7 +25,7 @@ Texture::Texture(const std::string & filepath, bool usingLinearSpace)
 
 Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum format, GLenum type)
 {
-	GenerateTexture();
+	printf("Creating Texture: %s\n", filepath.c_str());
 	Load(filepath, internalformat, format, type);
 
 	size_t position = filepath.find_last_of("/");
@@ -35,10 +35,12 @@ Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum for
 Texture::Texture(const Texture & rhs) :
 	id(rhs.id), name("[COPY]" + rhs.name)
 {
+	printf("Copying Texture: %s\n", rhs.name.c_str());
 }
 
 Texture::~Texture()
 {
+	printf("Destroying Texture: %s\n", name.c_str());
 	//TODO: Add glDeleteTextures. Need to figure out how to delete a texture without it breaking for all the copies as well.
 }
 
@@ -47,6 +49,7 @@ Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLe
 	Texture emptyTexture;
 	emptyTexture.name = name;
 	emptyTexture.GenerateTexture();
+	glBindTexture(GL_TEXTURE_2D, emptyTexture.id);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, 0);
 	return emptyTexture;
 }
@@ -70,6 +73,13 @@ void Texture::Bind(Shader & shader, Type type) const
 
 	//Return back to default texture
 	glActiveTexture(GL_TEXTURE0);
+}
+
+Texture & Texture::operator=(const Texture & rhs)
+{
+	this->id = rhs.id;
+	this->name = rhs.name;
+	return *this;
 }
 
 void Texture::GenerateTexture()
@@ -128,6 +138,11 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 		}
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
+		printf("SUCCESS: Loaded: %s\n", filepath.c_str());
+	}
+	else
+	{
+		printf("ERROR: Failed to load texture: %s\n", filepath.c_str());
 	}
 
 	stbi_set_flip_vertically_on_load(false);
@@ -141,14 +156,21 @@ void Texture::Load(const std::string & filepath, GLenum internalformat, GLenum f
 
 	stbi_set_flip_vertically_on_load(true);
 
-	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+	printf("Trying to load Texture: %s\n", filepath.c_str());
+	float *data = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
 
 	if (data)
 	{
+		GenerateTexture();
 		glBindTexture(GL_TEXTURE_2D, id);
 		glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
+		printf("SUCCESS: Loaded: %s\n", filepath.c_str());
+	}
+	else
+	{
+		printf("ERROR: Failed to load texture: %s\n", filepath.c_str());
 	}
 
 	stbi_set_flip_vertically_on_load(false);
@@ -168,8 +190,8 @@ const std::string Texture::EnumToString(Type type) const
 		return "material.Roughness";
 	case AmbientOcclusion:
 		return "material.AO";
-	case LookUp:
-		return "brdfLUT";
+	//case LookUp:
+	//	return "brdfLUT";
 	default:
 		return "";
 	}

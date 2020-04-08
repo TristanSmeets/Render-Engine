@@ -37,3 +37,5 @@ Renderer/.vs/
 *.user
 Renderer/bin/
 Renderer/bin-obj/
+
+Renderer/texture/

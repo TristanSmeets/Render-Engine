@@ -11,6 +11,7 @@ Window::Window() :
 
 Window::~Window()
 {
+	printf("Destroying Window");
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }
@@ -61,6 +62,7 @@ const bool Window::IsOpen() const
 
 bool Window::InitializeGLFW()
 {
+	printf("Initializing GLFW\n");
 	if (glfwInit())
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -70,17 +72,20 @@ bool Window::InitializeGLFW()
 	}
 	else
 	{
+		printf("Error initializing GLFW");
 		return false;
 	}
 }
 
 bool Window::InitializeGLFWwindow(const Parameters& parameters)
 {
+	printf("Initializing GLFWwindow\n");
 	title = parameters.Title;
 	window = glfwCreateWindow(parameters.Width, parameters.Height, parameters.Title.c_str(), nullptr, nullptr);
 
 	if (window == nullptr)
 	{
+		printf("Error initializing GLFWwindow");
 		glfwTerminate();
 		return false;
 	}

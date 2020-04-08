@@ -14,6 +14,7 @@ class Skybox
 public:
 	Skybox();
 	~Skybox();
+	void Initialize();
 	void LoadHDR(const std::string& filepath);
 	Framebuffer& GetFramebuffer();
 	Renderbuffer& GetRenderbuffer();
@@ -29,6 +30,7 @@ private:
 	void CreatePrefilterMap();
 	void CreateLookupTexture();
 
+	NDCQuad ndcQuad;
 	Cubemap irradiance;
 	Cubemap prefilter;
 	Texture lookup;
@@ -37,7 +39,6 @@ private:
 	Framebuffer framebuffer;
 	Renderbuffer renderbuffer;
 	Cubemap environment;
-	NDCQuad ndcQuad;
 
 	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 	glm::mat4 captureViews[6] =

@@ -12,18 +12,22 @@
 class Scene
 {
 public:
+	Scene();
 	Scene(Window& window);
-	virtual ~Scene();
+	Scene(const Scene& rhs);
+	~Scene();
 	const std::vector<Actor>& GetActors() const;
 	const std::vector<Light>& GetLights() const;
 	const Camera& GetCamera() const;
+	Camera& GetCamera();
 	const Skybox& GetSkybox() const;
-	virtual void Initialize();
+	void Initialize();
+	Scene& operator=(const Scene& rhs);
 
-protected:
-	virtual void InitializeMeshes() = 0;
-	virtual void InitializeMaterials() = 0;
-	virtual void InitializeActors() = 0;
+private:
+	void InitializeMeshes();
+	void InitializeMaterials();
+	void InitializeActors();
 
 	std::vector<Actor> actors;
 	std::vector<Light> lights;

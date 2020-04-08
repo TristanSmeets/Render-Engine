@@ -22,6 +22,7 @@ public:
 	virtual ~Mesh();
 	virtual void Draw() const;
 	virtual const std::string& GetName() const;
+	Mesh& operator=(const Mesh& rhs);
 
 protected:
 	virtual void SetupMesh();

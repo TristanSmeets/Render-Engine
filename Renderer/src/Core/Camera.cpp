@@ -7,6 +7,20 @@ Camera::Frustum::Frustum(float nearPlane, float farPlane, float fieldOfView, flo
 {
 }
 
+Camera::Frustum & Camera::Frustum::operator=(const Frustum & rhs)
+{
+	NearPlaneCutoff = rhs.NearPlaneCutoff;
+	FarPlaneCutoff = rhs.FarPlaneCutoff;
+	FieldOfView = rhs.FieldOfView;
+	AspectRatio = rhs.AspectRatio;
+	return *this;
+}
+
+Camera::Camera() :
+	Actor("Camera")
+{
+}
+
 Camera::Camera(GLFWwindow * window, const glm::vec3 & position, const glm::vec3 & rotationInEulerAngles, const Frustum & frustum) :
 	Actor("Camera", position, rotationInEulerAngles), frustum(frustum), window(window)
 {
@@ -48,6 +62,13 @@ const glm::vec3 Camera::GetCameraFront() const
 	return glm::normalize(direction);
 }
 
+Camera & Camera::operator=(const Camera & rhs)
+{
+	window = rhs.window;
+	frustum = rhs.frustum;
+	return *this;
+}
+
 const glm::vec3 Camera::GetCameraSide() const
 {
 	return glm::normalize(glm::cross(GetCameraFront(), glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -62,6 +83,7 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 {
 	float mSpeed = moveSpeed * deltaTime;
 	float rSpeed = rotationSpeed * deltaTime;
+	glm::vec3 rotation = transform.GetRotation();
 	//Translation
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
@@ -69,11 +91,11 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		transform.Translate(mSpeed * GetCameraFront());
+		transform.Translate(-mSpeed * GetCameraFront());
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		transform.Translate(glm::normalize(glm::cross(GetCameraFront(), GetCameraUp())) * mSpeed);
+		transform.Translate(glm::normalize(glm::cross(GetCameraFront(), GetCameraUp())) * -mSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
@@ -85,23 +107,27 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 	}
 	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
 	{
-		transform.Translate(mSpeed * GetCameraUp());
+		transform.Translate(-mSpeed * GetCameraUp());
 	}
 	//Rotation
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		transform.Rotate(glm::vec3(0.0f, rSpeed, 0.0f));
+		rotation.y += rSpeed;
+		transform.Rotate(rotation);
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		transform.Rotate(glm::vec3(0.0f, -rSpeed, 0.0f));
+		rotation.y -= rSpeed;
+		transform.Rotate(rotation);
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
-		transform.Rotate(glm::vec3(rSpeed, 0.0f, 0.0f));
+		rotation.x += rSpeed;
+		transform.Rotate(rotation);
 	}
 	if (glfwGetKey(window,GLFW_KEY_F) == GLFW_PRESS)
 	{
-		transform.Rotate(glm::vec3(-rSpeed, 0.0f, 0.0f));
+		rotation.x -= rSpeed;
+		transform.Rotate(rotation);
 	}
 }
