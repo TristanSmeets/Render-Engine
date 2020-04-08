@@ -55,13 +55,13 @@ const glm::mat4 Transform::GetMatrix() const
 
 	glm::vec3 eulerAngles = GetRotation();
 
-	if (eulerAngles.x != 0.0f)
-	{
-		matrix = glm::rotate(matrix, glm::radians(eulerAngles.x), glm::vec3(1.0f, 0.0f, 0.0f));
-	}
 	if (eulerAngles.y != 0.0f)
 	{
 		matrix = glm::rotate(matrix, glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	if (eulerAngles.x != 0.0f)
+	{
+		matrix = glm::rotate(matrix, glm::radians(eulerAngles.x), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 	if (eulerAngles.z != 0.0f)
 	{

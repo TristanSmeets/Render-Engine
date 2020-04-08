@@ -66,13 +66,7 @@ void ForwardPBR::Render(Scene & scene)
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
 		pbr.Use();
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::vec3 position = actors[i].GetWorldPosition();
-		glm::vec3 scale = actors[i].GetTransform().GetScale();
-		model = glm::translate(model, position);
-		model = glm::scale(model, scale);
-	
-		pbr.SetMat4("model", model);
+		pbr.SetMat4("model", actors[i].GetWorldMatrix());
 		//TODO: Loop over all the lights and pass the light positions and colours to the shader
 		pbr.SetVec3("lightPosition", light.GetWorldPosition());
 		pbr.SetVec3("lightColour", light.GetColour());
@@ -97,12 +91,7 @@ void ForwardPBR::Render(Scene & scene)
 	//Render Lights
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::vec3 position = lights[i].GetWorldPosition();
-		glm::vec3 scale = lights[i].GetTransform().GetScale();
-		model = glm::translate(model, position);
-		model = glm::scale(model, scale);
-		lamp.SetMat4("model", model);
+		lamp.SetMat4("model", lights[i].GetWorldMatrix());
 		lamp.SetVec3("lightColour", lights[i].GetColour());
 		lights[i].GetRenderComponent().GetMesh().Draw();
 	}
