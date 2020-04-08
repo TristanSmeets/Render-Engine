@@ -22,7 +22,7 @@ Camera::Camera() :
 }
 
 Camera::Camera(GLFWwindow * window, const glm::vec3 & position, const glm::vec3 & rotationInEulerAngles, const Frustum & frustum) :
-	Actor("Camera", position, rotationInEulerAngles), frustum(frustum), window(window)
+	Actor("Camera", position, rotationInEulerAngles), frustum(frustum), window(window)//, position(position)
 {
 }
 
@@ -83,7 +83,7 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 {
 	float mSpeed = moveSpeed * deltaTime;
 	float rSpeed = rotationSpeed * deltaTime;
-	glm::vec3 rotation = transform.GetRotation();
+
 	//Translation
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
@@ -95,11 +95,11 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		transform.Translate(glm::normalize(glm::cross(GetCameraFront(), GetCameraUp())) * -mSpeed);
+		transform.Translate(-mSpeed * GetCameraSide());
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		transform.Translate(glm::normalize(glm::cross(GetCameraFront(), GetCameraUp())) * mSpeed);
+		transform.Translate(mSpeed * GetCameraSide());
 	}
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
 	{
@@ -112,22 +112,18 @@ void Camera::ProcessKeyBoardInput(float deltaTime)
 	//Rotation
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		rotation.y += rSpeed;
-		transform.Rotate(rotation);
+		transform.Rotate(glm::vec3(0.0f, -rSpeed, 0.0f));
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		rotation.y -= rSpeed;
-		transform.Rotate(rotation);
+		transform.Rotate(glm::vec3(0.0f, rSpeed, 0.0f));
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
-		rotation.x += rSpeed;
-		transform.Rotate(rotation);
+		transform.Rotate(glm::vec3(rSpeed, 0.0f, 0.0f));
 	}
 	if (glfwGetKey(window,GLFW_KEY_F) == GLFW_PRESS)
 	{
-		rotation.x -= rSpeed;
-		transform.Rotate(rotation);
+		transform.Rotate(glm::vec3(-rSpeed, 0.0f, 0.0f));
 	}
 }
