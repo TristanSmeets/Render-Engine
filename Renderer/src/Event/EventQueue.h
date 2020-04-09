@@ -6,17 +6,16 @@ template<class T>
 class EventQueue
 {
 public:
-	void AddListener(const std::function<void(const T&)>& function);
-	void QueueEvent(const T& TEvent);
-	void Dispatch();
+	static void AddListener(const std::function<void(const T&)>& function);
+	static void QueueEvent(const T& TEvent);
+	static void Dispatch();
 private:
-
 	static const int maxQueueSize = 20;
 	static const int maxListeners = 30;
-	std::function<void(const T&)> listeners[maxListeners];
-	T events[maxQueueSize];
-	int eventsQueued = 0;
-	int activeListeners = 0;
+	static inline std::function<void(const T&)> listeners[maxListeners];	
+	static inline T events[maxQueueSize];
+	static inline int eventsQueued = 0;
+	static inline int activeListeners = 0;
 
 };
 
