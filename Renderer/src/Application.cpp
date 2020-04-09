@@ -46,7 +46,8 @@ void Application::Run()
 		renderTechnique->Render(*scene);
 		postProcessing->Unbind();
 		postProcessing->Draw();
-
+		
+		DispatchEvents();
 		window.PollEvents();
 		window.SwapBuffers();
 	}
@@ -59,4 +60,9 @@ bool Application::InitializeGlad()
 		return false;
 	}
 	return true;
+}
+
+void Application::DispatchEvents()
+{
+	//TODO: Call dispatch on all eventqueues in here.
 }

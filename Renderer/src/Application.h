@@ -15,6 +15,7 @@ public:
 
 private:
 	bool InitializeGlad();
+	void DispatchEvents();
 	Scene* scene = nullptr;
 	RenderTechnique* renderTechnique = nullptr;
 	PostProcessing* postProcessing = nullptr;
