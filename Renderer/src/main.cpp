@@ -1,7 +1,5 @@
 #include "Rendererpch.h"
-
 #include "Application.h"
-
 
 int main()
 {
