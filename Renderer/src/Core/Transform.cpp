@@ -34,17 +34,17 @@ void Transform::Scale(const glm::vec3 & scale)
 	this->scale = scale;
 }
 
-const glm::vec3 Transform::GetPosition() const
+const glm::vec3& Transform::GetPosition() const
 {
 	return position;
 }
 
-const glm::vec3 Transform::GetRotation() const
+const glm::vec3& Transform::GetRotation() const
 {
 	return rotation;
 }
 
-const glm::vec3 Transform::GetScale() const
+const glm::vec3& Transform::GetScale() const
 {
 	return scale;
 }
@@ -72,4 +72,14 @@ const glm::mat4 Transform::GetMatrix() const
 	matrix = glm::scale(matrix, GetScale());
 
 	return matrix;
+}
+
+void Transform::SetPosition(const glm::vec3 & position)
+{
+	this->position = position;
+}
+
+void Transform::SetRotation(const glm::vec3 & rotation)
+{
+	this->rotation = rotation;
 }
