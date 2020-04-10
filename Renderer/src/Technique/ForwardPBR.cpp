@@ -4,7 +4,7 @@
 
 ForwardPBR::ForwardPBR(Window& window) : RenderTechnique(),
 pbr(Shader(Filepath::Shader + "PBR.vs", Filepath::Shader + "PBR.fs")),
-	window(window)
+window(window)
 {
 }
 
@@ -41,6 +41,9 @@ void ForwardPBR::Initialize(Scene & scene)
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	std::string test;
+	std::cout << test << std::endl;
+
 	printf("Initializion Complete\n\n");
 }
 
@@ -59,29 +62,30 @@ void ForwardPBR::Render(Scene & scene)
 	const std::vector<Actor>& actors = scene.GetActors();
 	const std::vector<Light>& lights = scene.GetLights();
 
-	const Light& light = lights[0];
 	const Skybox& skybox = scene.GetSkybox();
+	const Material& material = actors[0].GetRenderComponent().GetMaterial();
+	material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
+	material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
+	material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
+	material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
+	material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
+	glActiveTexture(GL_TEXTURE5);
+	skybox.GetIrradiance().Bind();
+	glActiveTexture(GL_TEXTURE6);
+	skybox.GetPrefilter().Bind();
+	skybox.GetLookup().Bind(pbr, (Texture::Type)7);
+	glActiveTexture(GL_TEXTURE0);
+
+	pbr.SetVec3("lightColours[0]", lights[0].GetColour());
+	pbr.SetVec3("lightColours[1]", lights[1].GetColour());
+	pbr.SetVec3("lightPositions[0]", lights[0].GetWorldPosition());
+	pbr.SetVec3("lightPositions[1]", lights[1].GetWorldPosition());
 
 	//Render actors
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
 		pbr.Use();
 		pbr.SetMat4("model", actors[i].GetWorldMatrix());
-		//TODO: Loop over all the lights and pass the light positions and colours to the shader
-		pbr.SetVec3("lightPosition", light.GetWorldPosition());
-		pbr.SetVec3("lightColour", light.GetColour());
-		const Material& material = actors[i].GetRenderComponent().GetMaterial();
-		material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
-		material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
-		material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
-		material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
-		material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
-		glActiveTexture(GL_TEXTURE5);
-		skybox.GetIrradiance().Bind();
-		glActiveTexture(GL_TEXTURE6);
-		skybox.GetPrefilter().Bind();
-		skybox.GetLookup().Bind(pbr,(Texture::Type)7);
-		glActiveTexture(GL_TEXTURE0);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 
@@ -89,10 +93,15 @@ void ForwardPBR::Render(Scene & scene)
 	lamp.SetMat4("view", view);
 
 	//Render Lights
+	//std::string lightColour = "lightColour[";
+	//std::string lightPosition = "lightPosition[";
+
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
 		lamp.SetMat4("model", lights[i].GetWorldMatrix());
 		lamp.SetVec3("lightColour", lights[i].GetColour());
+		//pbr.SetVec3(std::string("lightPositions[" + i) + "]", lights[i].GetWorldPosition());
+		//pbr.SetVec3(std::string("lightColours[" + i) + "]", lights[i].GetColour());
 		lights[i].GetRenderComponent().GetMesh().Draw();
 	}
 

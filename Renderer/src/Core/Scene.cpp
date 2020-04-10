@@ -111,13 +111,26 @@ void Scene::InitializeMaterials()
 void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
-	Light light = Light("Light", glm::vec3(7.4f, 6.0f, .6f), glm::vec3(81.0f, 57.0f, 11.0f));
-	light.GetRenderComponent().SetMesh(meshes[0]);
-	lights.push_back(light);
+	Light light1 = Light("Light", glm::vec3(7.4f, 6.0f, 5.0f), glm::vec3(81.0f, 57.0f, 11.0f));
+	light1.GetRenderComponent().SetMesh(meshes[0]);
+	lights.push_back(light1);
 
-	Actor sphere = Actor("Sphere");
-	sphere.GetRenderComponent().SetMesh(meshes[1]);
-	sphere.GetRenderComponent().SetMaterial(materials[0]);
-	actors.push_back(sphere);
+	Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(12.0f, 22.0f, 11.0f));
+	light2.GetRenderComponent().SetMesh(meshes[0]);
+	lights.push_back(light2);
+
+
+	for (int i = 0; i < 5; ++i)
+	{
+		for (int j = 0; j < 5; ++j)
+		{
+			Actor sphere = Actor("Sphere");
+			sphere.GetTransform().Translate(glm::vec3((i * 2) - 2.5f, j * 2 - 2.5f, 0));
+			sphere.GetRenderComponent().SetMesh(meshes[1]);
+			sphere.GetRenderComponent().SetMaterial(materials[0]);
+			actors.push_back(sphere);
+		}
+	}
+
 	printf("Created %d actors\n", (int)actors.size());
 }
