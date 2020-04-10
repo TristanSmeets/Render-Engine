@@ -25,6 +25,7 @@ void Application::Initialize()
 	renderTechnique->Initialize(*scene);
 	postProcessing = new PostProcessing();
 	postProcessing->Initialize(Window::Parameters());
+	guiHelper.Initialize(window);
 	printf("Application initialization complete\n");
 
 }
@@ -47,6 +48,8 @@ void Application::Run()
 		postProcessing->Unbind();
 		postProcessing->Draw();
 		
+		guiHelper.Render();
+
 		DispatchEvents();
 		window.PollEvents();
 		window.SwapBuffers();

@@ -22,7 +22,7 @@ public:
     void ProcessKeyInput();
     void PollEvents();
     void SwapBuffers();
-    GLFWwindow* GetGLFWwindow();
+    GLFWwindow* GetGLFWwindow() const;
 	const Parameters GetWindowParameters();
     const bool IsOpen() const;
 
