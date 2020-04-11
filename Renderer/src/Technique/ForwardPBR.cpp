@@ -24,9 +24,6 @@ void ForwardPBR::Initialize(Scene & scene)
 	pbr.SetInt("prefilterMap", 6);
 	pbr.SetInt("brdfLUT", 7);
 
-	lamp.Use();
-	lamp.SetMat4("projection", projection);
-
 	skyboxShader.Use();
 	skyboxShader.SetInt("environmentMap", 0);
 	skyboxShader.SetMat4("projection", projection);
@@ -41,9 +38,6 @@ void ForwardPBR::Initialize(Scene & scene)
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	std::string test;
-	std::cout << test << std::endl;
-
 	printf("Initializion Complete\n\n");
 }
 
@@ -52,11 +46,9 @@ void ForwardPBR::Render(Scene & scene)
 	glClearColor(2.0f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 view = scene.GetCamera().GetViewMatrix();
-
 	//Rendering the Actors
 	pbr.Use();
-	pbr.SetMat4("view", view);
+	pbr.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	pbr.SetVec3("cameraPos", scene.GetCamera().GetWorldPosition());
 
 	const std::vector<Actor>& actors = scene.GetActors();
@@ -75,40 +67,27 @@ void ForwardPBR::Render(Scene & scene)
 	skybox.GetPrefilter().Bind();
 	skybox.GetLookup().Bind(pbr, (Texture::Type)7);
 	glActiveTexture(GL_TEXTURE0);
-
-	pbr.SetVec3("lightColours[0]", lights[0].GetColour());
-	pbr.SetVec3("lightColours[1]", lights[1].GetColour());
-	pbr.SetVec3("lightPositions[0]", lights[0].GetWorldPosition());
-	pbr.SetVec3("lightPositions[1]", lights[1].GetWorldPosition());
+	
+	//Set Lights
+	for (unsigned int i = 0; i < lights.size(); ++i)
+	{
+		std::string lightPosition = std::string("lightPositions[") + std::to_string(i) + std::string("]");
+		std::string lightColour = std::string("lightColours[") + std::to_string(i) + std::string("]");
+		pbr.SetVec3(lightPosition, lights[i].GetWorldPosition());
+		pbr.SetVec3(lightColour, lights[i].GetColour());
+	}
 
 	//Render actors
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
-		pbr.Use();
 		pbr.SetMat4("model", actors[i].GetWorldMatrix());
 		actors[i].GetRenderComponent().GetMesh().Draw();
-	}
-
-	lamp.Use();
-	lamp.SetMat4("view", view);
-
-	//Render Lights
-	//std::string lightColour = "lightColour[";
-	//std::string lightPosition = "lightPosition[";
-
-	for (unsigned int i = 0; i < lights.size(); ++i)
-	{
-		lamp.SetMat4("model", lights[i].GetWorldMatrix());
-		lamp.SetVec3("lightColour", lights[i].GetColour());
-		//pbr.SetVec3(std::string("lightPositions[" + i) + "]", lights[i].GetWorldPosition());
-		//pbr.SetVec3(std::string("lightColours[" + i) + "]", lights[i].GetColour());
-		lights[i].GetRenderComponent().GetMesh().Draw();
 	}
 
 	//Render skybox
 	glDepthFunc(GL_LEQUAL);
 	skyboxShader.Use();
-	skyboxShader.SetMat4("view", view);
+	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	skybox.Draw();
 	glDepthFunc(GL_LESS);
 }
