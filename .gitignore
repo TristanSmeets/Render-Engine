@@ -39,3 +39,5 @@ Renderer/bin/
 Renderer/bin-obj/
 
 Renderer/texture/
+
+Renderer/imgui.ini
