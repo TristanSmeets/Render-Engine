@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "Utility/Filepath.h"
 
 GUIHelper::GUIHelper()
 {
@@ -82,7 +83,12 @@ void GUIHelper::RenderLayout()
 		RenderFrustum(frustum);
 		ImGui::TreePop();
 	}
-	
+	ImGui::NextColumn();
+	ImGui::Separator();
+	RenderText("Material", material.GetName());
+	ImGui::NextColumn();
+	RenderMaterial(material);
+
 }
 
 void GUIHelper::RenderFPS()
@@ -113,6 +119,25 @@ void GUIHelper::RenderFrustum(const Camera::Frustum & frustum)
 	RenderFloat("Field of View", fieldOfViewDegrees, 60.0f, 120.0f);
 }
 
+void GUIHelper::RenderTexture(const Texture & texture)
+{
+	RenderText("Name: %s", texture.GetName());
+	ImGui::Image((void*)(intptr_t)texture.GetID(), ImVec2(256, 256));
+}
+
+void GUIHelper::RenderMaterial(const Material & material)
+{
+	if (ImGui::TreeNode(material.GetName().c_str()))
+	{
+		for (int i = 0; i < Texture::Count; ++i)
+		{
+			RenderText(Texture::TypeToString((Texture::Type)i).c_str());
+			RenderTexture(material.GetTexture((Texture::Type)i));
+		}
+		ImGui::TreePop();
+	}
+}
+
 void GUIHelper::RenderColour(const glm::vec3& colour)
 {
 	ImGui::ColorEdit3("Colour", (float*)&colour, ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
@@ -120,7 +145,7 @@ void GUIHelper::RenderColour(const glm::vec3& colour)
 
 void GUIHelper::RenderVec3(const char * name, const glm::vec3 & vec3)
 {
-	ImGui::DragFloat3(name, (float*)&vec3, 0.1f,-1000.0f,1000.0f,"%.2f");
+	ImGui::DragFloat3(name, (float*)&vec3, 0.1f, -1000.0f, 1000.0f, "%.2f");
 }
 
 void GUIHelper::RenderInt(const char * name, int & value, int minimum, int maximum)

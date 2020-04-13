@@ -24,11 +24,11 @@ public:
 	Texture(const Texture& rhs);
 	~Texture();
 	static Texture CreateEmpty(const std::string& name, int width, int height, GLenum internalformat, GLenum format, GLenum type);
+	static const std::string TypeToString(Type type);
 	const GLuint& GetID() const;
 	const std::string& GetName() const;
 	void Bind(Shader& shader, Type type) const;
 	Texture& operator=(const Texture& rhs);
-
 private:
 	void GenerateTexture();
 	void Load(const std::string& filepath, bool usingLinearSpace);

@@ -11,6 +11,7 @@ public:
 	void AddTexture(Texture::Type type, const std::string& filepath, bool usingLinearSpace = false);
 	void AddTexture(Texture::Type type, const Texture& texture);
 	const Texture& GetTexture(Texture::Type type) const;
+	const std::string& GetName() const;
 
 private:
 	Texture textures[Texture::Type::Count];

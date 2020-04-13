@@ -4,6 +4,8 @@
 #include "Core/Window.h"
 #include "Core/Transform.h"
 #include "Core/Camera.h"
+#include "Rendering/Texture.h"
+#include "Rendering/Material.h"
 
 class GUIHelper
 {
@@ -23,10 +25,14 @@ private:
 	void RenderColour(const glm::vec3& colour);
 	void RenderTransform(const Transform& transform);
 	void RenderFrustum(const Camera::Frustum& frustum);
+	void RenderTexture(const Texture& texture);
+	void RenderMaterial(const Material& material);
 
+	//Texture texture;
+	Material material = Material("Test");
 	Transform testTransform;
 	Light light = Light();
 	Camera::Frustum frustum;
-	int aspectRatio = 0;
+	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;
 };
