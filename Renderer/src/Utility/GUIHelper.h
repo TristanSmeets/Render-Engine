@@ -6,6 +6,7 @@
 #include "Core/Camera.h"
 #include "Rendering/Texture.h"
 #include "Rendering/Material.h"
+#include "Rendering/RenderComponent.h"
 
 class GUIHelper
 {
@@ -27,8 +28,10 @@ private:
 	void RenderFrustum(const Camera::Frustum& frustum);
 	void RenderTexture(const Texture& texture);
 	void RenderMaterial(const Material& material);
-
-	//Texture texture;
+	void RenderRenderComponent(const RenderComponent& renderComponent);
+	
+	RenderComponent renderComponent;
+	Mesh sphereMesh;
 	Material material = Material("Test");
 	Transform testTransform;
 	Light light = Light();

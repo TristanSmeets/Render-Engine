@@ -4,6 +4,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "Utility/Filepath.h"
+#include "Utility/MeshLoader.h"
 
 GUIHelper::GUIHelper()
 {
@@ -30,6 +31,17 @@ void GUIHelper::Initialize(const Window& window)
 	//Setup platform/renderer bindings
 	ImGui_ImplGlfw_InitForOpenGL(window.GetGLFWwindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 460");
+
+	const std::vector<Mesh> sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "sphere.obj");
+	sphereMesh = sphereMeshes[0];
+	renderComponent.SetMesh(sphereMesh);
+
+	material.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
+	material.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
+	material.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/Metallic.png");
+	material.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
+	material.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
+	renderComponent.SetMaterial(material);
 }
 
 void GUIHelper::Render()
@@ -85,9 +97,9 @@ void GUIHelper::RenderLayout()
 	}
 	ImGui::NextColumn();
 	ImGui::Separator();
-	RenderText("Material", material.GetName());
+	RenderText("RenderComponent");
 	ImGui::NextColumn();
-	RenderMaterial(material);
+	RenderRenderComponent(renderComponent);
 
 }
 
@@ -136,6 +148,13 @@ void GUIHelper::RenderMaterial(const Material & material)
 		}
 		ImGui::TreePop();
 	}
+}
+
+void GUIHelper::RenderRenderComponent(const RenderComponent & renderComponent)
+{
+	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName());
+	RenderText("Material");
+	RenderMaterial(renderComponent.GetMaterial());
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)
