@@ -3,6 +3,7 @@
 #include "Core/Light.h"
 #include "Core/Window.h"
 #include "Core/Transform.h"
+#include "Core/Camera.h"
 
 class GUIHelper
 {
@@ -16,12 +17,16 @@ private:
 	void RenderLayout();
 	void RenderFPS();
 	void RenderText(const char* text, ...);
-	void RenderTransform(const Transform& transform);
-	void RenderColour(const glm::vec3& colour);
-	void RenderVec3(const char* name,const glm::vec3& vec3);
 	void RenderInt(const char* name, int& value, int minimum, int maximum);
+	void RenderFloat(const char* name, float& value, float minimum, float maximum);
+	void RenderVec3(const char* name,const glm::vec3& vec3);
+	void RenderColour(const glm::vec3& colour);
+	void RenderTransform(const Transform& transform);
+	void RenderFrustum(const Camera::Frustum& frustum);
 
 	Transform testTransform;
 	Light light = Light();
-	int test = 0;
+	Camera::Frustum frustum;
+	int aspectRatio = 0;
+	float fieldOfViewDegrees = 45.0f;
 };

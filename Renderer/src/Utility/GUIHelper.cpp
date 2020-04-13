@@ -3,7 +3,6 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "imgui_stdlib.h"
 
 GUIHelper::GUIHelper()
 {
@@ -64,7 +63,7 @@ void GUIHelper::RenderLayout()
 	ImGui::Separator();
 	RenderText("Transform");
 	ImGui::NextColumn();
-	if (ImGui::TreeNode(""))
+	if (ImGui::TreeNode("Transform"))
 	{
 		RenderTransform(testTransform);
 		ImGui::TreePop();
@@ -75,22 +74,27 @@ void GUIHelper::RenderLayout()
 	ImGui::NextColumn();
 	RenderColour(light.GetColour());
 	ImGui::NextColumn();
-	RenderText("Int: ");
+	ImGui::Separator();
+	RenderText("Frustum");
 	ImGui::NextColumn();
-	RenderInt("Width", test, 0, 1920);
+	if (ImGui::TreeNode("Frustum"))
+	{
+		RenderFrustum(frustum);
+		ImGui::TreePop();
+	}
 	
 }
 
 void GUIHelper::RenderFPS()
 {
-	RenderText("%.1f FPS (%.2f ms/frame) ", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
+	RenderText("%.1f FPS (%.2f ms/frame)", ImGui::GetIO().Framerate, (1000.0f / ImGui::GetIO().Framerate));
 }
 
 void GUIHelper::RenderText(const char* text, ...)
 {
 	va_list args;
 	va_start(args, text);
-	ImGui::Text(text, args);
+	ImGui::TextV(text, args);
 	va_end(args);
 }
 
@@ -99,6 +103,14 @@ void GUIHelper::RenderTransform(const Transform & transform)
 	RenderVec3("Position", transform.GetPosition());
 	RenderVec3("Rotation", transform.GetRotation());
 	RenderVec3("Scale", transform.GetScale());
+}
+
+void GUIHelper::RenderFrustum(const Camera::Frustum & frustum)
+{
+	RenderFloat("Near plane", (float&)frustum.NearPlaneCutoff, 0.0f, 5.0f);
+	RenderFloat("Far plane", (float&)frustum.FarPlaneCutoff, 5.0f, 1000000.0f);
+	ImGui::Combo("Aspect ratio", &aspectRatio, " 1:1\0 4:3\0 16:9\0");
+	RenderFloat("Field of View", fieldOfViewDegrees, 60.0f, 120.0f);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)
@@ -114,4 +126,9 @@ void GUIHelper::RenderVec3(const char * name, const glm::vec3 & vec3)
 void GUIHelper::RenderInt(const char * name, int & value, int minimum, int maximum)
 {
 	ImGui::DragInt(name, &value, 1.0f, minimum, maximum);
+}
+
+void GUIHelper::RenderFloat(const char * name, float & value, float minimum, float maximum)
+{
+	ImGui::DragFloat(name, &value, 0.1f, minimum, maximum, "%.2f");
 }
