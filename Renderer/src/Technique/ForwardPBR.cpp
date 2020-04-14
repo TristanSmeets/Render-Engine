@@ -34,8 +34,10 @@ void ForwardPBR::Initialize(Scene & scene)
 	shadowTexture = Texture::CreateEmpty("ShadowDepth", shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 	depthBuffer.Bind();
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTexture.GetID(), 0);
@@ -60,7 +62,7 @@ void ForwardPBR::Render(Scene & scene)
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glm::vec3 lightDirection = glm::vec3(-2.0f, 4.0f, -1.0f);
-	glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, scene.GetCamera().GetFrustum().NearPlaneCutoff, scene.GetCamera().GetFrustum().FarPlaneCutoff);
+	glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, scene.GetCamera().GetFrustum().NearPlaneCutoff, scene.GetCamera().GetFrustum().FarPlaneCutoff);
 	glm::mat4 lightview = glm::lookAt
 	(
 		lightDirection,
@@ -73,13 +75,13 @@ void ForwardPBR::Render(Scene & scene)
 	shadowDepth.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 	const std::vector<Actor>& actors = scene.GetActors();
-	
+	glCullFace(GL_FRONT);
 	for (int i = 0; i < actors.size(); ++i)
 	{
 		shadowDepth.SetMat4("model", actors[i].GetWorldMatrix());
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
-
+	glCullFace(GL_BACK);
 	depthBuffer.Unbind();
 
 	//Render the scene as normal with shadow mapping(using depth map)

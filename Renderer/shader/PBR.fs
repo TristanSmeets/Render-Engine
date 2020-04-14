@@ -124,8 +124,6 @@ void main()
     //float currentDepth = projectionCoordinates.z;
     //float shadow = currentDepth > closestDepth ? 1.0f : 0.0f;
     float shadow = ShadowCalculation(FragPosLightSpace, normal);
-
-    //vec3 color = (1.0f - shadow) * ambient + Lo;
     vec3 color = ambient + ((1.0f - shadow) * Lo);
     //vec3 color = ambient + Lo;
 
@@ -206,6 +204,22 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
     float currentDepth = projectionCoordinates.z;
 
     float bias = max(0.05f * (1.0f - dot(normal, lightDirection)), 0.005f);
-    float shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
+    
+    float shadow = 0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projectionCoordinates.xy + vec2(x,y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
+        }
+    }
+    shadow /= 9.0f;
+
+    if(projectionCoordinates.z > 1.0f)
+    {
+        shadow = 0.0f;
+    }
     return shadow;
 }
