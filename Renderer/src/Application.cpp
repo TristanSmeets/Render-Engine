@@ -43,10 +43,10 @@ void Application::Run()
 
 		window.ProcessKeyInput();
 
-		postProcessing->Bind();
+		//postProcessing->Bind();
 		renderTechnique->Render(*scene);
-		postProcessing->Unbind();
-		postProcessing->Draw();
+		//postProcessing->Unbind();
+		//postProcessing->Draw();
 		
 		guiHelper.Render(*scene);
 
