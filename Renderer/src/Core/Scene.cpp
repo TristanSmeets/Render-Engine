@@ -92,13 +92,21 @@ void Scene::InitializeMeshes()
 void Scene::InitializeMaterials()
 {
 	printf("Initializing Materials\n");
-	Material material = Material("Sphere");
-	material.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
-	material.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
-	material.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/Metallic.png");
-	material.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
-	material.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
-	materials.push_back(material);
+	Material aluminium = Material("Aluminium");
+	aluminium.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
+	aluminium.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
+	aluminium.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/Metallic.png");
+	aluminium.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
+	aluminium.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
+	materials.push_back(aluminium);
+
+	Material rustedIron = Material("Rusted_Iron");
+	rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
+	rustedIron.AddTexture(Texture::Normal, Filepath::Texture + "RustedIron/Normal.png");
+	rustedIron.AddTexture(Texture::Metallic, Filepath::Texture + "RustedIron/Metallic.png");
+	rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
+	rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
+	materials.push_back(rustedIron);
 
 	printf("Created %d materials\n", (int)materials.size());
 }
@@ -120,7 +128,7 @@ void Scene::InitializeActors()
 			Actor sphere = Actor(name);
 			sphere.GetTransform().Translate(glm::vec3((i * 2) - 2.5f, j * 2 - 2.5f, 0));
 			sphere.GetRenderComponent().SetMesh(meshes[0]);
-			sphere.GetRenderComponent().SetMaterial(materials[0]);
+			sphere.GetRenderComponent().SetMaterial(materials[(i + j) % 2]);
 			actors.push_back(sphere);
 		}
 	}

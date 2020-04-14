@@ -33,9 +33,8 @@ Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum for
 }
 
 Texture::Texture(const Texture & rhs) :
-	id(rhs.id), name("[COPY]" + rhs.name)
+	id(rhs.id), name(rhs.name)
 {
-	printf("Copying Texture: %s\n", rhs.name.c_str());
 }
 
 Texture::~Texture()

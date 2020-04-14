@@ -54,12 +54,7 @@ void ForwardPBR::Render(Scene & scene)
 	const std::vector<Actor>& actors = scene.GetActors();
 	const std::vector<Light>& lights = scene.GetLights();
 
-	const Material& material = actors[0].GetRenderComponent().GetMaterial();
-	material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
-	material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
-	material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
-	material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
-	material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
+	
 	const Skybox& skybox = scene.GetSkybox();
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetIrradiance().Bind();
@@ -81,6 +76,12 @@ void ForwardPBR::Render(Scene & scene)
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
 		pbr.SetMat4("model", actors[i].GetWorldMatrix());
+		const Material& material = actors[i].GetRenderComponent().GetMaterial();
+		material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
+		material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
+		material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
+		material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
+		material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 

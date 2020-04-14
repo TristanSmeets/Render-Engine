@@ -136,7 +136,7 @@ void GUIHelper::RenderFrustum(const Camera::Frustum & frustum)
 
 void GUIHelper::RenderTexture(const Texture & texture)
 {
-	RenderText("Name: %s", texture.GetName());
+	RenderText("Name: %s", texture.GetName().c_str());
 	ImGui::Image((void*)(intptr_t)texture.GetID(), ImVec2(256, 256));
 }
 
