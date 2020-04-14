@@ -208,7 +208,7 @@ void GUIHelper::RenderColour(const glm::vec3& colour)
 
 void GUIHelper::RenderVec3(const char * name, const glm::vec3 & vec3)
 {
-	ImGui::DragFloat3(name, (float*)&vec3, 0.1f, -1000.0f, 1000.0f, "%.2f");
+	ImGui::DragFloat3(name, (float*)&vec3, 0.01f, -1000.0f, 1000.0f, "%.2f");
 }
 
 void GUIHelper::RenderInt(const char * name, int & value, int minimum, int maximum)
