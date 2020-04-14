@@ -4,6 +4,7 @@
 
 ForwardPBR::ForwardPBR(Window& window) : RenderTechnique(),
 pbr(Shader(Filepath::Shader + "PBR.vs", Filepath::Shader + "PBR.fs")),
+shadowDepth(Shader(Filepath::Shader + "ShadowDepthMap.vs", Filepath::Shader + "ShadowDepthMap.fs")),
 window(window)
 {
 }
@@ -23,20 +24,28 @@ void ForwardPBR::Initialize(Scene & scene)
 	pbr.SetInt("irradianceMap", 5);
 	pbr.SetInt("prefilterMap", 6);
 	pbr.SetInt("brdfLUT", 7);
+	pbr.SetInt("shadowMap", 8);
 
 	skyboxShader.Use();
 	skyboxShader.SetInt("environmentMap", 0);
 	skyboxShader.SetMat4("projection", projection);
 
+	depthBuffer.Generate();
+	shadowTexture = Texture::CreateEmpty("ShadowDepth", shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	depthBuffer.Bind();
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTexture.GetID(), 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	depthBuffer.Unbind();
+
 	//Setup depth testing and culling
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-
-	//Configure viewport to original framebuffer
-	Window::Parameters windowParameters = window.GetWindowParameters();
-	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	printf("Initializion Complete\n\n");
 }
@@ -46,21 +55,55 @@ void ForwardPBR::Render(Scene & scene)
 	glClearColor(2.0f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glViewport(0, 0, shadowWidth, shadowHeight);
+	depthBuffer.Bind();
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glm::vec3 lightDirection = glm::vec3(-2.0f, 4.0f, -1.0f);
+	glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, scene.GetCamera().GetFrustum().NearPlaneCutoff, scene.GetCamera().GetFrustum().FarPlaneCutoff);
+	glm::mat4 lightview = glm::lookAt
+	(
+		lightDirection,
+		glm::vec3(0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f)
+	);
+
+	glm::mat4 lightSpaceMatrix = lightProjection * lightview;
+	shadowDepth.Use();
+	shadowDepth.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+	const std::vector<Actor>& actors = scene.GetActors();
+	
+	for (int i = 0; i < actors.size(); ++i)
+	{
+		shadowDepth.SetMat4("model", actors[i].GetWorldMatrix());
+		actors[i].GetRenderComponent().GetMesh().Draw();
+	}
+
+	depthBuffer.Unbind();
+
+	//Render the scene as normal with shadow mapping(using depth map)
+	Window::Parameters windowParameters = window.GetWindowParameters();
+	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	//Rendering the Actors
 	pbr.Use();
 	pbr.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	pbr.SetVec3("cameraPos", scene.GetCamera().GetWorldPosition());
-
-	const std::vector<Actor>& actors = scene.GetActors();
-	const std::vector<Light>& lights = scene.GetLights();
-
+	pbr.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+	pbr.SetVec3("lightDirection", lightDirection);
 	
+	const std::vector<Light>& lights = scene.GetLights();
 	const Skybox& skybox = scene.GetSkybox();
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetIrradiance().Bind();
 	glActiveTexture(GL_TEXTURE6);
 	skybox.GetPrefilter().Bind();
 	skybox.GetLookup().Bind(pbr, (Texture::Type)7);
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_2D, shadowTexture.GetID());
+
 	glActiveTexture(GL_TEXTURE0);
 	
 	//Set Lights
@@ -84,6 +127,8 @@ void ForwardPBR::Render(Scene & scene)
 		material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
+
+
 
 	//Render skybox
 	glDepthFunc(GL_LEQUAL);
