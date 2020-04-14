@@ -111,7 +111,6 @@ void main()
     
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
 
-    //vec3 ambient = vec3(0.03f) * albedo * ao;
     vec3 color = ambient + Lo;
 
     //Skipping tonemapping and gamma correction.
