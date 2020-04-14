@@ -34,14 +34,30 @@ void GUIHelper::Initialize(const Window& window)
 
 	const std::vector<Mesh> sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "sphere.obj");
 	sphereMesh = sphereMeshes[0];
-	renderComponent.SetMesh(sphereMesh);
+	//renderComponent.SetMesh(sphereMesh);
 
 	material.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
 	material.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
 	material.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/Metallic.png");
 	material.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
 	material.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
-	renderComponent.SetMaterial(material);
+	//renderComponent.SetMaterial(material);
+
+	actor.GetRenderComponent().SetMaterial(material);
+	actor.GetRenderComponent().SetMesh(sphereMesh);
+
+	for (int i = 0; i < 5; ++i)
+	{
+		actor.SetName(std::string("Actor#") + std::to_string(i));
+		actors.push_back(actor);
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		std::string name = std::string("Light#") + std::to_string(i);
+		light.SetName(name);
+		lights.push_back(light);
+	}
 }
 
 void GUIHelper::Render()
@@ -50,7 +66,7 @@ void GUIHelper::Render()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
 	ImGui::Begin("Scene");
 	RenderLayout();
@@ -63,44 +79,56 @@ void GUIHelper::Render()
 void GUIHelper::RenderLayout()
 {
 	ImGui::Columns(2);
-
 	RenderText("Framerate");
 	ImGui::NextColumn();
 	RenderFPS();
 	ImGui::NextColumn();
 	ImGui::Separator();
-	RenderText("Name");
-	ImGui::NextColumn();
-	RenderText("Tristan");
-	ImGui::NextColumn();
-	ImGui::Separator();
-	RenderText("Transform");
-	ImGui::NextColumn();
-	if (ImGui::TreeNode("Transform"))
+	if (ImGui::TreeNode("Camera"))
 	{
-		RenderTransform(testTransform);
+		ImGui::NextColumn();
+		RenderCamera(camera);
 		ImGui::TreePop();
+		ImGui::NextColumn();
 	}
-	ImGui::NextColumn();
 	ImGui::Separator();
-	RenderText("Colour");
-	ImGui::NextColumn();
-	RenderColour(light.GetColour());
-	ImGui::NextColumn();
-	ImGui::Separator();
-	RenderText("Frustum");
-	ImGui::NextColumn();
-	if (ImGui::TreeNode("Frustum"))
+	if (ImGui::TreeNode("Light"))
 	{
-		RenderFrustum(frustum);
+		static int selectedLight = -1;
+		for (int i = 0; i < lights.size(); ++i)
+		{
+			if (ImGui::Selectable(lights[i].GetName().c_str(), selectedLight == i))
+			{
+				selectedLight = i;
+			}
+		}
+		ImGui::NextColumn();
+		if (selectedLight != -1)
+		{
+			RenderLight(lights[selectedLight]);
+		}
 		ImGui::TreePop();
+		ImGui::NextColumn();
 	}
-	ImGui::NextColumn();
 	ImGui::Separator();
-	RenderText("RenderComponent");
-	ImGui::NextColumn();
-	RenderRenderComponent(renderComponent);
-
+	if (ImGui::TreeNode("Actors"))
+	{
+		static int selectedActor = -1;
+		for (int n = 0; n < actors.size(); n++)
+		{
+			if (ImGui::Selectable(actors[n].GetName().c_str(), selectedActor == n))
+			{
+				selectedActor = n;
+			}
+		}
+		ImGui::NextColumn();
+		if (selectedActor != -1)
+		{
+			RenderActor(actors[selectedActor]);
+		}
+		ImGui::TreePop();
+		ImGui::NextColumn();
+	}
 }
 
 void GUIHelper::RenderFPS()
@@ -155,6 +183,47 @@ void GUIHelper::RenderRenderComponent(const RenderComponent & renderComponent)
 	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName());
 	RenderText("Material");
 	RenderMaterial(renderComponent.GetMaterial());
+}
+
+void GUIHelper::RenderActor(const Actor & actor)
+{
+	//RenderText("Name: %s", actor.GetName());
+	if (ImGui::TreeNode("Transform"))
+	{
+		RenderTransform(actor.GetTransform());
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Render Component"))
+	{
+		RenderRenderComponent(actor.GetRenderComponent());
+		ImGui::TreePop();
+	}
+}
+
+void GUIHelper::RenderCamera(const Camera & camera)
+{
+	if (ImGui::TreeNode("Transform"))
+	{
+		RenderTransform(camera.GetTransform());
+		ImGui::TreePop();
+	}
+	RenderFloat("Movement Speed", (float&)camera.GetMoveSpeed(), 0.0f, 100.0f);
+	RenderFloat("Rotation Speed", (float&)camera.GetRotationSpeed(), 0.0f, 100.0f);
+	if (ImGui::TreeNode("Frustum"))
+	{
+		RenderFrustum(camera.GetFrustum());
+		ImGui::TreePop();
+	}
+}
+
+void GUIHelper::RenderLight(const Light & light)
+{
+	if (ImGui::TreeNode("Transform"))
+	{
+		RenderTransform(light.GetTransform());
+		ImGui::TreePop();
+	}
+	RenderColour(light.GetColour());
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

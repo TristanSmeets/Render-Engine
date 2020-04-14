@@ -7,6 +7,7 @@
 #include "Rendering/Texture.h"
 #include "Rendering/Material.h"
 #include "Rendering/RenderComponent.h"
+#include "Core/Actor.h"
 
 class GUIHelper
 {
@@ -29,13 +30,17 @@ private:
 	void RenderTexture(const Texture& texture);
 	void RenderMaterial(const Material& material);
 	void RenderRenderComponent(const RenderComponent& renderComponent);
+	void RenderActor(const Actor& actor);
+	void RenderCamera(const Camera& camera);
+	void RenderLight(const Light& light);
 	
-	RenderComponent renderComponent;
+	std::vector<Actor> actors;
+	std::vector<Light> lights;
+	Camera camera;
+	Actor actor;
+	Light light;
 	Mesh sphereMesh;
 	Material material = Material("Test");
-	Transform testTransform;
-	Light light = Light();
-	Camera::Frustum frustum;
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;
 };

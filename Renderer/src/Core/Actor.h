@@ -17,6 +17,7 @@ public:
     virtual void SetParent(Actor& actor);
     virtual const Actor& GetParent();
     virtual void RemoveParent();
+	virtual void SetName(const std::string& name);
     virtual const std::string& GetName() const;
     virtual const Transform& GetTransform() const;
     virtual Transform& GetTransform();

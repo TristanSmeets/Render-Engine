@@ -54,13 +54,13 @@ void ForwardPBR::Render(Scene & scene)
 	const std::vector<Actor>& actors = scene.GetActors();
 	const std::vector<Light>& lights = scene.GetLights();
 
-	const Skybox& skybox = scene.GetSkybox();
 	const Material& material = actors[0].GetRenderComponent().GetMaterial();
 	material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
 	material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
 	material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
 	material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
 	material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
+	const Skybox& skybox = scene.GetSkybox();
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetIrradiance().Bind();
 	glActiveTexture(GL_TEXTURE6);

@@ -62,6 +62,16 @@ const glm::vec3 Camera::GetCameraFront() const
 	return glm::normalize(direction);
 }
 
+const float & Camera::GetMoveSpeed() const
+{
+	return moveSpeed;
+}
+
+const float & Camera::GetRotationSpeed() const
+{
+	return rotationSpeed;
+}
+
 Camera & Camera::operator=(const Camera & rhs)
 {
 	window = rhs.window;
