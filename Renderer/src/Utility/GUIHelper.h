@@ -1,5 +1,7 @@
 #pragma once
 #include "imgui.h"
+#include "Core/Scene.h"
+#include "Core/Actor.h"
 #include "Core/Light.h"
 #include "Core/Window.h"
 #include "Core/Transform.h"
@@ -7,7 +9,6 @@
 #include "Rendering/Texture.h"
 #include "Rendering/Material.h"
 #include "Rendering/RenderComponent.h"
-#include "Core/Actor.h"
 
 class GUIHelper
 {
@@ -15,10 +16,10 @@ public:
 	GUIHelper();
 	virtual ~GUIHelper();
 	void Initialize(const Window& window);
-	void Render();
+	void Render(const Scene& scene);
 
 private:
-	void RenderLayout();
+	void RenderLayout(const Scene& scene);
 	void RenderFPS();
 	void RenderText(const char* text, ...);
 	void RenderInt(const char* name, int& value, int minimum, int maximum);
@@ -33,14 +34,6 @@ private:
 	void RenderActor(const Actor& actor);
 	void RenderCamera(const Camera& camera);
 	void RenderLight(const Light& light);
-	
-	std::vector<Actor> actors;
-	std::vector<Light> lights;
-	Camera camera;
-	Actor actor;
-	Light light;
-	Mesh sphereMesh;
-	Material material = Material("Test");
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;
 };

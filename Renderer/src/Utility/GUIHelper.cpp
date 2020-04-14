@@ -31,36 +31,9 @@ void GUIHelper::Initialize(const Window& window)
 	//Setup platform/renderer bindings
 	ImGui_ImplGlfw_InitForOpenGL(window.GetGLFWwindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 460");
-
-	const std::vector<Mesh> sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "sphere.obj");
-	sphereMesh = sphereMeshes[0];
-	//renderComponent.SetMesh(sphereMesh);
-
-	material.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
-	material.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
-	material.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/Metallic.png");
-	material.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
-	material.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
-	//renderComponent.SetMaterial(material);
-
-	actor.GetRenderComponent().SetMaterial(material);
-	actor.GetRenderComponent().SetMesh(sphereMesh);
-
-	for (int i = 0; i < 5; ++i)
-	{
-		actor.SetName(std::string("Actor#") + std::to_string(i));
-		actors.push_back(actor);
-	}
-
-	for (int i = 0; i < 3; ++i)
-	{
-		std::string name = std::string("Light#") + std::to_string(i);
-		light.SetName(name);
-		lights.push_back(light);
-	}
 }
 
-void GUIHelper::Render()
+void GUIHelper::Render(const Scene & scene)
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -69,14 +42,14 @@ void GUIHelper::Render()
 	//ImGui::ShowDemoWindow();
 
 	ImGui::Begin("Scene");
-	RenderLayout();
+	RenderLayout(scene);
 	ImGui::End();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void GUIHelper::RenderLayout()
+void GUIHelper::RenderLayout(const Scene & scene)
 {
 	ImGui::Columns(2);
 	RenderText("Framerate");
@@ -87,13 +60,14 @@ void GUIHelper::RenderLayout()
 	if (ImGui::TreeNode("Camera"))
 	{
 		ImGui::NextColumn();
-		RenderCamera(camera);
+		RenderCamera(scene.GetCamera());
 		ImGui::TreePop();
 		ImGui::NextColumn();
 	}
 	ImGui::Separator();
 	if (ImGui::TreeNode("Light"))
 	{
+		const std::vector<Light>& lights = scene.GetLights();
 		static int selectedLight = -1;
 		for (int i = 0; i < lights.size(); ++i)
 		{
@@ -113,12 +87,13 @@ void GUIHelper::RenderLayout()
 	ImGui::Separator();
 	if (ImGui::TreeNode("Actors"))
 	{
+		const std::vector<Actor>& actors = scene.GetActors();
 		static int selectedActor = -1;
-		for (int n = 0; n < actors.size(); n++)
+		for (int i = 0; i < actors.size(); i++)
 		{
-			if (ImGui::Selectable(actors[n].GetName().c_str(), selectedActor == n))
+			if (ImGui::Selectable(actors[i].GetName().c_str(), selectedActor == i))
 			{
-				selectedActor = n;
+				selectedActor = i;
 			}
 		}
 		ImGui::NextColumn();

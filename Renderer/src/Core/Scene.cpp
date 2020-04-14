@@ -116,7 +116,8 @@ void Scene::InitializeActors()
 	{
 		for (int j = 0; j < 5; ++j)
 		{
-			Actor sphere = Actor("Sphere");
+			std::string name = std::string("Sphere[") + std::to_string(i) + std::string("][") + std::to_string(j) + std::string("]");
+			Actor sphere = Actor(name);
 			sphere.GetTransform().Translate(glm::vec3((i * 2) - 2.5f, j * 2 - 2.5f, 0));
 			sphere.GetRenderComponent().SetMesh(meshes[0]);
 			sphere.GetRenderComponent().SetMaterial(materials[0]);

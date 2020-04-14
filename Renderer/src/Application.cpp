@@ -48,7 +48,7 @@ void Application::Run()
 		postProcessing->Unbind();
 		postProcessing->Draw();
 		
-		guiHelper.Render();
+		guiHelper.Render(*scene);
 
 		DispatchEvents();
 		window.PollEvents();
