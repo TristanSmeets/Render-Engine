@@ -23,8 +23,9 @@ uniform sampler2D brdfLUT;
 uniform Material material;
 
 //Lights
-uniform vec3 lightPosition;
-uniform vec3 lightColour;
+#define MaximumLights 4
+uniform vec3 lightPositions[MaximumLights];
+uniform vec3 lightColours[MaximumLights];
 
 //Camera position
 uniform vec3 cameraPos;
@@ -54,42 +55,48 @@ void main()
     vec3 F0 = vec3(0.04f);
     F0 = mix(F0, albedo, metallic);
 
-    //reflectance equation
-    vec3 lightDirection = normalize(lightPosition - WorldPos);
-    vec3 H = normalize(viewDirection + lightDirection);
-    float distance = length(lightPosition - WorldPos);
-    float attenuation = 1.0f / (distance * distance);
-    vec3 radiance = lightColour * attenuation;
+    vec3 Lo = vec3(0.04f);
 
-    //Cook-Torrance BRDF
-    float normalDistributionFunction = DistributionGGX(normal, H, roughness);
-    float geometry = GeometrySmith(normal, viewDirection, lightDirection, roughness);
-    vec3 fresnel = FresnelSchlick(max(dot(H, viewDirection), 0.0f), F0);
+    for(int i = 0; i < MaximumLights; ++i )
+    {
+        //reflectance equation
+        vec3 lightDirection = normalize(lightPositions[i] - WorldPos);
+        vec3 H = normalize(viewDirection + lightDirection);
+        float distance = length(lightPositions[i] - WorldPos);
+        float attenuation = 1.0f / (distance * distance);
+        vec3 radiance = lightColours[i] * attenuation;
 
-    vec3 nominator = normalDistributionFunction * geometry * fresnel;
-    float denominator = 4 * max(dot(normal, viewDirection), 0.0f) * max(dot(normal, lightDirection), 0.0f) + 0.001f;
-    vec3 specular = nominator / denominator;
+        //Cook-Torrance BRDF
+        float normalDistributionFunction = DistributionGGX(normal, H, roughness);
+        float geometry = GeometrySmith(normal, viewDirection, lightDirection, roughness);
+        vec3 fresnel = FresnelSchlick(max(dot(H, viewDirection), 0.0f), F0);
 
-    //kS = equal to Fresnel. (kS = Specular component)
-    vec3 kS = fresnel;
-    //For energy conservation, the diffuse and specular light can't
-    //be above 1.0f (unless the surface emits light); to preserve this
-    //relationship the diffuse component (kD) should equal 1.0 - kS.
-    vec3 kD = vec3(1.0f) - kS;
-    //Multiply kD by the inverse metalness such that only non-metals
-    //have diffuse lighting, or a linear bled if partly metal
-    //(pure metals have no diffuse light).
-    kD *= 1.0f - metallic;
+        vec3 nominator = normalDistributionFunction * geometry * fresnel;
+        float denominator = 4 * max(dot(normal, viewDirection), 0.0f) * max(dot(normal, lightDirection), 0.0f) + 0.001f;
+        vec3 specular = nominator / denominator;
+
+        //kS = equal to Fresnel. (kS = Specular component)
+        vec3 kS = fresnel;
+        //For energy conservation, the diffuse and specular light can't
+        //be above 1.0f (unless the surface emits light); to preserve this
+        //relationship the diffuse component (kD) should equal 1.0 - kS.
+        vec3 kD = vec3(1.0f) - kS;
+        //Multiply kD by the inverse metalness such that only non-metals
+        //have diffuse lighting, or a linear bled if partly metal
+        //(pure metals have no diffuse light).
+        kD *= 1.0f - metallic;
     
-    //Scale light by NdotL
-    float NdotL = max(dot(normal, lightDirection), 0.0f);
+        //Scale light by NdotL
+        float NdotL = max(dot(normal, lightDirection), 0.0f);
 
-    //add to outgoing radiance Lo.
-    //note that we already multiplied the BRDF by the Fresnel (kS)
-    //so we won't multiply by kS again
-    vec3 Lo = vec3(0.04f) + (kD * albedo / PI + specular) * radiance * NdotL; 
+        //add to outgoing radiance Lo.
+        //note that we already multiplied the BRDF by the Fresnel (kS)
+        //so we won't multiply by kS again
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
+    }
 
-    vec3 specularConstant = FresnelSchlickRoughness(max(dot(normal, viewDirection), 0.0f), F0, roughness);
+    vec3 Fresnel = FresnelSchlickRoughness(max(dot(normal, viewDirection), 0.0f), F0, roughness);
+    vec3 specularConstant = Fresnel;
     vec3 diffuseConstant = 1.0f - specularConstant;
     diffuseConstant *= 1.0f - metallic;
 
@@ -100,7 +107,7 @@ void main()
     const float MAX_REFLECTION_LOD = 4.0f;
     vec3 prefilteredColor = textureLod(prefilterMap, reflectionDirection, roughness * MAX_REFLECTION_LOD).rgb;
     vec2 brdf = texture(brdfLUT, vec2(max(dot(normal,viewDirection), 0.0f), roughness)).rg;
-    vec3 specular2 = prefilteredColor * (fresnel * brdf.x + brdf.y);
+    vec3 specular2 = prefilteredColor * (Fresnel * brdf.x + brdf.y);
     
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
 

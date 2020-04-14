@@ -36,3 +36,8 @@ const Texture & Material::GetTexture(Texture::Type type) const
 {
 	return textures[type];
 }
+
+const std::string & Material::GetName() const
+{
+	return name;
+}

@@ -12,5 +12,4 @@ public:
 
 protected:
 	Shader skyboxShader;
-	Shader lamp;
 };

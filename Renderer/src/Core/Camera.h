@@ -29,12 +29,14 @@ public:
 	const glm::vec3 GetCameraUp() const;
 	const glm::vec3 GetCameraSide() const;
 	const glm::vec3 GetCameraFront() const;
+	const float& GetMoveSpeed() const;
+	const float& GetRotationSpeed() const;
 	Camera& operator=(const Camera& rhs);
 
 private:
 	void ProcessKeyBoardInput(float deltaTime);
 	GLFWwindow* window;
 	Frustum frustum = Frustum();
-	const float moveSpeed = 2.5f;
-	const float rotationSpeed = 50.0f;
+	float moveSpeed = 2.5f;
+	float rotationSpeed = 50.0f;
 };

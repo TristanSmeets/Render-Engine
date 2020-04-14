@@ -4,6 +4,7 @@
 #include "Core/Scene.h"
 #include "Technique/RenderTechnique.h"
 #include "PostProcessing/PostProcessing.h"
+#include "Utility/GUIHelper.h"
 
 class Application
 {
@@ -20,6 +21,8 @@ private:
 	RenderTechnique* renderTechnique = nullptr;
 	PostProcessing* postProcessing = nullptr;
 	Window window = Window();
+	GUIHelper guiHelper = GUIHelper();
+
 	float deltaTime = 0.0f;
 	float timeLastFrame = 0.0f;
 };

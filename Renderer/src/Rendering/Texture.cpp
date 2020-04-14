@@ -82,6 +82,25 @@ Texture & Texture::operator=(const Texture & rhs)
 	return *this;
 }
 
+const std::string Texture::TypeToString(Type type)
+{
+	switch (type)
+	{
+	case Texture::Albedo:
+		return "Albedo";
+	case Texture::Normal:
+		return "Normal";
+	case Texture::Metallic:
+		return "Metallic";
+	case Texture::Roughness:
+		return "Roughness";
+	case Texture::AmbientOcclusion:
+		return "AO";
+	default:
+		return "Not a texture type";
+	}
+}
+
 void Texture::GenerateTexture()
 {
 	glGenTextures(1, &id);

@@ -72,6 +72,11 @@ void Actor::RemoveParent()
 	parent = nullptr;
 }
 
+void Actor::SetName(const std::string & name)
+{
+	this->name = name;
+}
+
 const std::string & Actor::GetName() const
 {
 	return name;

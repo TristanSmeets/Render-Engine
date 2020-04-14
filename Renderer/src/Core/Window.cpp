@@ -1,5 +1,4 @@
 #include "Rendererpch.h"
-
 #include "Window.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -20,6 +19,7 @@ void Window::Initialize(const Parameters& parameters)
 {
 	InitializeGLFW();
 	InitializeGLFWwindow(parameters);
+	//glfwSwapInterval(0);
 }
 
 void Window::ProcessKeyInput()
@@ -41,7 +41,7 @@ void Window::SwapBuffers()
 	glfwSwapBuffers(window);
 }
 
-GLFWwindow * Window::GetGLFWwindow()
+GLFWwindow * Window::GetGLFWwindow() const
 {
 	return window;
 }
