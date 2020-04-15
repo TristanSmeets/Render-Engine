@@ -64,8 +64,10 @@ void ForwardPBR::Render(Scene & scene)
 	depthBuffer.Bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glm::vec3 lightDirection = glm::vec3(-2.0f, 4.0f, -1.0f);
-	glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, scene.GetCamera().GetFrustum().NearPlaneCutoff, scene.GetCamera().GetFrustum().FarPlaneCutoff);
+	const std::vector<Light>& lights = scene.GetLights();
+
+	glm::vec3 lightDirection = lights[lights.size() - 1].GetTransform().GetRotation();
+	glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, scene.GetCamera().GetFrustum().NearPlaneCutoff, scene.GetCamera().GetFrustum().FarPlaneCutoff);
 	glm::mat4 lightview = glm::lookAt
 	(
 		lightDirection,
@@ -85,9 +87,9 @@ void ForwardPBR::Render(Scene & scene)
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 	glCullFace(GL_BACK);
+	actors[actors.size() - 1].GetRenderComponent().GetMesh().Draw();
 	depthBuffer.Unbind();
 	postProcessing.Bind();
-
 	//Render the scene as normal with shadow mapping(using depth map)
 	Window::Parameters windowParameters = window.GetWindowParameters();
 	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
@@ -97,10 +99,10 @@ void ForwardPBR::Render(Scene & scene)
 	pbr.Use();
 	pbr.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	pbr.SetVec3("cameraPos", scene.GetCamera().GetWorldPosition());
+	//pbr.SetVec3("cameraPos", lightDirection);
 	pbr.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 	pbr.SetVec3("lightDirection", lightDirection);
 	
-	const std::vector<Light>& lights = scene.GetLights();
 	const Skybox& skybox = scene.GetSkybox();
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetIrradiance().Bind();
@@ -113,7 +115,7 @@ void ForwardPBR::Render(Scene & scene)
 	glActiveTexture(GL_TEXTURE0);
 	
 	//Set Lights
-	for (unsigned int i = 0; i < lights.size(); ++i)
+	for (unsigned int i = 0; i < lights.size()- 1; ++i)
 	{
 		std::string lightPosition = std::string("lightPositions[") + std::to_string(i) + std::string("]");
 		std::string lightColour = std::string("lightColours[") + std::to_string(i) + std::string("]");
@@ -121,7 +123,6 @@ void ForwardPBR::Render(Scene & scene)
 		pbr.SetVec3(lightColour, lights[i].GetColour());
 	}
 
-	
 	//Render actors
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
@@ -142,5 +143,9 @@ void ForwardPBR::Render(Scene & scene)
 	skybox.Draw();
 	glDepthFunc(GL_LESS);
 	postProcessing.Unbind();
+	Shader& shader = postProcessing.GetShader();
+	shader.Use();
+	shader.SetInt("shadowTexture", 1);
+	shadowTexture.Bind(shader, Texture::Normal);
 	postProcessing.Draw();
 }

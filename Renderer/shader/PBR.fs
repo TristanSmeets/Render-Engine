@@ -119,8 +119,8 @@ void main()
 
     //Calculate shadow
     float shadow = ShadowCalculation(FragPosLightSpace, normal);
-    vec3 color = ( 0.4f * ambient) + ((1.0f - shadow) * Lo);
-    //vec3 color = (1.0f - shadow) * ambient + Lo;
+    //vec3 color = ambient + ((1.0f - shadow) * Lo);
+    vec3 color = (1.0f - shadow) * ambient + Lo;
     //vec3 color = (1.0f - shadow) * (ambient + Lo);
     //vec3 color = ambient + Lo;
 

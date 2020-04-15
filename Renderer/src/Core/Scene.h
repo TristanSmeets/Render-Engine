@@ -21,6 +21,7 @@ public:
 	const Camera& GetCamera() const;
 	Camera& GetCamera();
 	const Skybox& GetSkybox() const;
+	const Light& GetDirectionalLight() const;
 	void Initialize();
 	Scene& operator=(const Scene& rhs);
 
@@ -33,6 +34,7 @@ private:
 	std::vector<Light> lights;
 	std::vector<Material> materials;
 	std::vector<Mesh> meshes;
+	Light directional;
 	Camera camera;
 	Skybox skybox;
 };

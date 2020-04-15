@@ -57,3 +57,8 @@ void PostProcessing::Draw()
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
 }
+
+Shader & PostProcessing::GetShader()
+{
+	return shader;
+}

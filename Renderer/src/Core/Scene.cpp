@@ -54,10 +54,10 @@ const Skybox & Scene::GetSkybox() const
 	return skybox;
 }
 
-//const Actor & Scene::GetTerrain() const
-//{
-//	return terrain;
-//}
+const Light & Scene::GetDirectionalLight() const
+{
+	return directional;
+}
 
 void Scene::Initialize()
 {
@@ -108,7 +108,6 @@ void Scene::InitializeMaterials()
 	aluminium.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/Metallic.png");
 	aluminium.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
 	aluminium.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
-	materials.push_back(aluminium);
 
 	Material rustedIron = Material("Rusted_Iron");
 	rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
@@ -116,7 +115,6 @@ void Scene::InitializeMaterials()
 	rustedIron.AddTexture(Texture::Metallic, Filepath::Texture + "RustedIron/Metallic.png");
 	rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
 	rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
-	materials.push_back(rustedIron);
 
 	Material sand = Material("Sand");
 	sand.AddTexture(Texture::Albedo,			Filepath::Texture + "cobblestone/Albedo.png", true);
@@ -124,6 +122,8 @@ void Scene::InitializeMaterials()
 	sand.AddTexture(Texture::Metallic,			Filepath::Texture + "cobblestone/Metallic.png");
 	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
 	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
+	materials.push_back(aluminium);
+	materials.push_back(rustedIron);
 	materials.push_back(sand);
 
 	printf("Created %d materials\n", (int)materials.size());
@@ -137,6 +137,10 @@ void Scene::InitializeActors()
 
 	Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(12.0f, 22.0f, 11.0f));
 	lights.push_back(light2);
+
+	directional = Light("Directional");
+	directional.GetTransform().Rotate(glm::vec3(-2.0f, 4.0f, -1.0f));
+	lights.push_back(directional);
 
 	for (int i = 0; i < 5; ++i)
 	{
@@ -152,7 +156,7 @@ void Scene::InitializeActors()
 	}
 
 	Actor terrain = Actor("Terrain");
-	terrain.GetTransform().Translate(glm::vec3(0.0f, -3.0f, 0.0f));
+	terrain.GetTransform().Translate(glm::vec3(0.0f, -5.0f, 0.0f));
 	terrain.GetRenderComponent().SetMesh(meshes[1]);
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);
