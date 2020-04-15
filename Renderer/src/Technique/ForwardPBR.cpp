@@ -16,6 +16,8 @@ ForwardPBR::~ForwardPBR()
 void ForwardPBR::Initialize(Scene & scene)
 {
 	printf("Initializing ForwardPBR\n");
+
+
 	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
 	const Skybox& skybox = scene.GetSkybox();
 
@@ -49,6 +51,7 @@ void ForwardPBR::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
+	postProcessing.Initialize(window.GetWindowParameters());
 	printf("Initializion Complete\n\n");
 }
 
@@ -83,6 +86,7 @@ void ForwardPBR::Render(Scene & scene)
 	}
 	glCullFace(GL_BACK);
 	depthBuffer.Unbind();
+	postProcessing.Bind();
 
 	//Render the scene as normal with shadow mapping(using depth map)
 	Window::Parameters windowParameters = window.GetWindowParameters();
@@ -117,6 +121,7 @@ void ForwardPBR::Render(Scene & scene)
 		pbr.SetVec3(lightColour, lights[i].GetColour());
 	}
 
+	
 	//Render actors
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
@@ -130,12 +135,12 @@ void ForwardPBR::Render(Scene & scene)
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 
-
-
 	//Render skybox
 	glDepthFunc(GL_LEQUAL);
 	skyboxShader.Use();
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	skybox.Draw();
 	glDepthFunc(GL_LESS);
+	postProcessing.Unbind();
+	postProcessing.Draw();
 }

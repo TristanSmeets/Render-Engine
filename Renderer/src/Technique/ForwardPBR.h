@@ -2,6 +2,7 @@
 #include "Technique/RenderTechnique.h"
 #include "Core/Window.h"
 #include "Utility/Framebuffer.h"
+#include "PostProcessing/PostProcessing.h"
 
 class ForwardPBR : public RenderTechnique
 {
@@ -14,6 +15,7 @@ public:
 
 private:
 	Window& window;
+	PostProcessing postProcessing;
 	Shader pbr;
 	Shader shadowDepth;
 	Framebuffer depthBuffer;

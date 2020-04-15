@@ -19,7 +19,6 @@ private:
 	void DispatchEvents();
 	Scene* scene = nullptr;
 	RenderTechnique* renderTechnique = nullptr;
-	PostProcessing* postProcessing = nullptr;
 	Window window = Window();
 	GUIHelper guiHelper = GUIHelper();
 

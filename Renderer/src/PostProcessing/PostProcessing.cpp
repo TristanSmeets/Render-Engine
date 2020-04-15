@@ -38,13 +38,11 @@ void PostProcessing::Initialize(const Window::Parameters & parameters)
 void PostProcessing::Bind()
 {
 	framebuffer.Bind();
-	glEnable(GL_DEPTH_TEST);
 }
 
 void PostProcessing::Unbind()
 {
 	framebuffer.Unbind();
-	glDisable(GL_DEPTH_TEST);
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -55,5 +53,7 @@ void PostProcessing::Draw()
 	shader.SetFloat("gammaCorrection", 2.2f);
 	shader.SetFloat("exposure", 1.0f);
 	empty.Bind(shader, Texture::Albedo);
+	glDisable(GL_DEPTH_TEST);
 	quad.Render();
+	glEnable(GL_DEPTH_TEST);
 }
