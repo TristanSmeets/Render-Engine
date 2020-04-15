@@ -52,6 +52,7 @@ const glm::vec3& Transform::GetScale() const
 const glm::mat4 Transform::GetMatrix() const
 {
 	glm::mat4 matrix = glm::mat4(1.0f);
+	matrix = glm::translate(matrix, GetPosition());
 
 	glm::vec3 eulerAngles = GetRotation();
 
@@ -68,7 +69,6 @@ const glm::mat4 Transform::GetMatrix() const
 		matrix = glm::rotate(matrix, glm::radians(eulerAngles.z), glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 
-	matrix = glm::translate(matrix, GetPosition());
 	matrix = glm::scale(matrix, GetScale());
 
 	return matrix;

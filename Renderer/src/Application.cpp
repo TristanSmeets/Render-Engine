@@ -11,7 +11,6 @@ Application::~Application()
 	printf("Destroying application\n");
 	delete scene;
 	delete renderTechnique;
-	delete postProcessing;
 }
 
 void Application::Initialize()
@@ -22,9 +21,7 @@ void Application::Initialize()
 	scene = new Scene(window);
 	scene->Initialize();
 	renderTechnique = new ForwardPBR(window);
-	renderTechnique->Initialize(*scene);
-	postProcessing = new PostProcessing();
-	postProcessing->Initialize(Window::Parameters());
+	renderTechnique->Initialize(*scene);	
 	guiHelper.Initialize(window);
 	printf("Application initialization complete\n");
 
@@ -43,11 +40,8 @@ void Application::Run()
 
 		window.ProcessKeyInput();
 
-		postProcessing->Bind();
 		renderTechnique->Render(*scene);
-		postProcessing->Unbind();
-		postProcessing->Draw();
-		
+
 		guiHelper.Render(*scene);
 
 		DispatchEvents();

@@ -54,6 +54,11 @@ const Skybox & Scene::GetSkybox() const
 	return skybox;
 }
 
+//const Actor & Scene::GetTerrain() const
+//{
+//	return terrain;
+//}
+
 void Scene::Initialize()
 {
 	printf("\nInitializing Scene\n");
@@ -86,6 +91,11 @@ void Scene::InitializeMeshes()
 		meshes.push_back(sphereMeshes[i]);
 	}
 
+	const std::vector<Mesh>& planeMesh = MeshLoader::LoadModel(Filepath::Mesh + "plane100x100.obj");
+	for (unsigned int i = 0; i < planeMesh.size(); ++i)
+	{
+		meshes.push_back(planeMesh[i]);
+	}
 	printf("Created %d meshes\n", (int)meshes.size());
 }
 
@@ -108,6 +118,14 @@ void Scene::InitializeMaterials()
 	rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
 	materials.push_back(rustedIron);
 
+	Material sand = Material("Sand");
+	sand.AddTexture(Texture::Albedo,			Filepath::Texture + "cobblestone/Albedo.png", true);
+	sand.AddTexture(Texture::Normal,			Filepath::Texture + "cobblestone/Normal.png");
+	sand.AddTexture(Texture::Metallic,			Filepath::Texture + "cobblestone/Metallic.png");
+	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
+	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
+	materials.push_back(sand);
+
 	printf("Created %d materials\n", (int)materials.size());
 }
 
@@ -126,12 +144,19 @@ void Scene::InitializeActors()
 		{
 			std::string name = std::string("Sphere[") + std::to_string(i) + std::string("][") + std::to_string(j) + std::string("]");
 			Actor sphere = Actor(name);
-			sphere.GetTransform().Translate(glm::vec3((i * 2) - 2.5f, j * 2 - 2.5f, 0));
+			sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0, (j * 3.0f) - 2.5f));
 			sphere.GetRenderComponent().SetMesh(meshes[0]);
 			sphere.GetRenderComponent().SetMaterial(materials[(i + j) % 2]);
 			actors.push_back(sphere);
 		}
 	}
+
+	Actor terrain = Actor("Terrain");
+	terrain.GetTransform().Translate(glm::vec3(0.0f, -3.0f, 0.0f));
+	terrain.GetRenderComponent().SetMesh(meshes[1]);
+	terrain.GetRenderComponent().SetMaterial(materials[2]);
+	actors.push_back(terrain);
+
 
 	printf("Created %d actors\n", (int)actors.size());
 }

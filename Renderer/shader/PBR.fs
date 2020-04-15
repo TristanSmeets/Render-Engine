@@ -4,6 +4,7 @@ out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
+in vec4 FragPosLightSpace;
 
 struct Material
 {
@@ -18,6 +19,10 @@ struct Material
 uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
+
+//Shadow map
+uniform sampler2D shadowMap;
+uniform vec3 lightDirection;
 
 //Material parameters
 uniform Material material;
@@ -38,6 +43,7 @@ float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 FresnelSchlick(float cosTheta, vec3 F0);
 vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal);
 
 void main()
 {
@@ -55,7 +61,7 @@ void main()
     vec3 F0 = vec3(0.04f);
     F0 = mix(F0, albedo, metallic);
 
-    vec3 Lo = vec3(0.04f);
+    vec3 Lo = vec3(0.0f);
 
     for(int i = 0; i < MaximumLights; ++i )
     {
@@ -111,8 +117,12 @@ void main()
     
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
 
-    //vec3 ambient = vec3(0.03f) * albedo * ao;
-    vec3 color = ambient + Lo;
+    //Calculate shadow
+    float shadow = ShadowCalculation(FragPosLightSpace, normal);
+    vec3 color = ( 0.4f * ambient) + ((1.0f - shadow) * Lo);
+    //vec3 color = (1.0f - shadow) * ambient + Lo;
+    //vec3 color = (1.0f - shadow) * (ambient + Lo);
+    //vec3 color = ambient + Lo;
 
     //Skipping tonemapping and gamma correction.
     //Those should be done in screen shader.
@@ -180,4 +190,33 @@ vec3 FresnelSchlick(float cosTheta, vec3 F0)
 vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 {
     return F0 + (max(vec3(1.0f - roughness), F0) - F0) * pow(1.0f - cosTheta, 5.0f);
+}
+
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
+{
+    //Perform perspective divide
+    vec3 projectionCoordinates = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projectionCoordinates = projectionCoordinates * 0.5f + 0.5f;
+    float closestDepth = texture(shadowMap, projectionCoordinates.xy).r;
+    float currentDepth = projectionCoordinates.z;
+
+    float bias = max(0.05f * (1.0f - dot(normal, lightDirection)), 0.005f);
+    
+    float shadow = 0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projectionCoordinates.xy + vec2(x,y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
+        }
+    }
+    shadow /= 9.0f;
+
+    if(projectionCoordinates.z > 1.0f)
+    {
+        shadow = 0.0f;
+    }
+    return shadow;
 }

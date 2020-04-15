@@ -37,6 +37,6 @@ private:
 	void ProcessKeyBoardInput(float deltaTime);
 	GLFWwindow* window;
 	Frustum frustum = Frustum();
-	float moveSpeed = 2.5f;
+	float moveSpeed = 25.0f;
 	float rotationSpeed = 50.0f;
 };
