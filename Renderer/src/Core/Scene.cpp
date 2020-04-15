@@ -91,7 +91,7 @@ void Scene::InitializeMeshes()
 		meshes.push_back(sphereMeshes[i]);
 	}
 
-	const std::vector<Mesh>& planeMesh = MeshLoader::LoadModel(Filepath::Mesh + "plane.obj");
+	const std::vector<Mesh>& planeMesh = MeshLoader::LoadModel(Filepath::Mesh + "plane100x100.obj");
 	for (unsigned int i = 0; i < planeMesh.size(); ++i)
 	{
 		meshes.push_back(planeMesh[i]);
@@ -119,11 +119,11 @@ void Scene::InitializeMaterials()
 	materials.push_back(rustedIron);
 
 	Material sand = Material("Sand");
-	sand.AddTexture(Texture::Albedo,			Filepath::Texture + "Sand/Albedo.png", true);
-	sand.AddTexture(Texture::Normal,			Filepath::Texture + "Sand/Normal.png");
-	sand.AddTexture(Texture::Metallic,			Filepath::Texture + "Sand/Metallic.png");
-	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "Sand/Roughness.png");
-	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "Sand/AmbientOcclusion.png");
+	sand.AddTexture(Texture::Albedo,			Filepath::Texture + "cobblestone/Albedo.png", true);
+	sand.AddTexture(Texture::Normal,			Filepath::Texture + "cobblestone/Normal.png");
+	sand.AddTexture(Texture::Metallic,			Filepath::Texture + "cobblestone/Metallic.png");
+	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
+	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
 	materials.push_back(sand);
 
 	printf("Created %d materials\n", (int)materials.size());

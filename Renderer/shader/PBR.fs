@@ -61,7 +61,7 @@ void main()
     vec3 F0 = vec3(0.04f);
     F0 = mix(F0, albedo, metallic);
 
-    vec3 Lo = vec3(0.04f);
+    vec3 Lo = vec3(0.0f);
 
     for(int i = 0; i < MaximumLights; ++i )
     {
@@ -118,13 +118,10 @@ void main()
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
 
     //Calculate shadow
-    //vec3 projectionCoordinates = FragPosLightSpace.xyz / FragPosLightSpace.w;
-    //projectionCoordinates = projectionCoordinates * 0.5f + 0.5f;
-    //float closestDepth = texture(shadowMap, projectionCoordinates.xy).r;
-    //float currentDepth = projectionCoordinates.z;
-    //float shadow = currentDepth > closestDepth ? 1.0f : 0.0f;
     float shadow = ShadowCalculation(FragPosLightSpace, normal);
-    vec3 color = ambient + ((1.0f - shadow) * Lo);
+    vec3 color = ( 0.4f * ambient) + ((1.0f - shadow) * Lo);
+    //vec3 color = (1.0f - shadow) * ambient + Lo;
+    //vec3 color = (1.0f - shadow) * (ambient + Lo);
     //vec3 color = ambient + Lo;
 
     //Skipping tonemapping and gamma correction.
