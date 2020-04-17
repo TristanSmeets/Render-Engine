@@ -86,14 +86,9 @@ void ForwardPBR::Render(Scene & scene)
 
 	const std::vector<Light>& lights = scene.GetLights();
 
-	glm::vec3 lightDirection = scene.GetDirectionalLight().GetDirection();
+	glm::vec3 lightDirection = scene.GetDirectionalLight().GetFront();
 	glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 1.0f, 20.0f);
-	glm::mat4 lightview = glm::lookAt
-	(
-		lightDirection,
-		glm::vec3(0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f)
-	);
+	glm::mat4 lightview = scene.GetDirectionalLight().GetView();
 
 	glm::mat4 lightSpaceMatrix = lightProjection * lightview;
 	directionalShadowDepth.Use();
