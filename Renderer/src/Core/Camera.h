@@ -20,7 +20,7 @@ public:
 
 public:
 	Camera();
-	Camera(GLFWwindow* window, const glm::vec3& position = glm::vec3(0.0f, 0.0f, 10.0f), const glm::vec3& rotationInEulerAngles = glm::vec3(0.0f, -90.0f, 0.0f), const Frustum& frustum = Frustum());
+	Camera(GLFWwindow* window, const glm::vec3& position = glm::vec3(27.67f, 18.76f, 27.58f), const glm::vec3& rotationInEulerAngles = glm::vec3(-39.1f, -137.67f, 0.0f), const Frustum& frustum = Frustum());
 	virtual ~Camera();
 	const glm::mat4 GetViewMatrix() const;
 	const glm::mat4 GetProjectionMatrix() const;

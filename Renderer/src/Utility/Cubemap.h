@@ -7,7 +7,8 @@ class Cubemap
 public:
 	Cubemap();
 	~Cubemap();
-	
+	Cubemap(const Cubemap& rhs);
+
 	void CreateTexture(GLsizei width, GLsizei height, GLuint internalFormat, GLenum format, GLenum type);
 	void SetTextureParameter(GLenum name, GLint value);
 	GLuint GetID() const;

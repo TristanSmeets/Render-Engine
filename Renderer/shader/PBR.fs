@@ -20,15 +20,19 @@ uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
 
+#define MaximumLights 4
 //Shadow map
 uniform sampler2D shadowMap;
-uniform vec3 lightDirection;
+//uniform vec3 lightDirection;
+uniform samplerCube shadowCubeMaps[MaximumLights];
+uniform vec3 directionalLightPosition;
+uniform vec3 viewpos;
+uniform float farPlane;
 
 //Material parameters
 uniform Material material;
 
 //Lights
-#define MaximumLights 4
 uniform vec3 lightPositions[MaximumLights];
 uniform vec3 lightColours[MaximumLights];
 
@@ -37,13 +41,22 @@ uniform vec3 cameraPos;
 
 const float PI = 3.14159265359;
 
+vec3 gridSamplingDisk[20] = vec3[](
+    vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+    vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+    vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
 vec3 GetNormalFromMap();
 float DistributionGGX(vec3 N, vec3 H, float roughness);
 float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 FresnelSchlick(float cosTheta, vec3 F0);
 vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
-float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal);
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap);
+float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition);
 
 void main()
 {
@@ -95,10 +108,12 @@ void main()
         //Scale light by NdotL
         float NdotL = max(dot(normal, lightDirection), 0.0f);
 
+        float pointShadow = ShadowCalculation(WorldPos, shadowCubeMaps[i], lightPositions[i]);
         //add to outgoing radiance Lo.
         //note that we already multiplied the BRDF by the Fresnel (kS)
         //so we won't multiply by kS again
-        Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
+        vec3 outgoingRadiance = (kD * albedo / PI + specular) * radiance * NdotL;
+        Lo += (1.0f - pointShadow) * outgoingRadiance; 
     }
 
     vec3 Fresnel = FresnelSchlickRoughness(max(dot(normal, viewDirection), 0.0f), F0, roughness);
@@ -117,13 +132,7 @@ void main()
     
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
 
-    //Calculate shadow
-    float shadow = ShadowCalculation(FragPosLightSpace, normal);
-    vec3 color = ( 0.4f * ambient) + ((1.0f - shadow) * Lo);
-    //vec3 color = (1.0f - shadow) * ambient + Lo;
-    //vec3 color = (1.0f - shadow) * (ambient + Lo);
-    //vec3 color = ambient + Lo;
-
+    vec3 color = ambient + Lo;
     //Skipping tonemapping and gamma correction.
     //Those should be done in screen shader.
 
@@ -192,14 +201,14 @@ vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0f - roughness), F0) - F0) * pow(1.0f - cosTheta, 5.0f);
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap)
 {
     //Perform perspective divide
     vec3 projectionCoordinates = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projectionCoordinates = projectionCoordinates * 0.5f + 0.5f;
     float closestDepth = texture(shadowMap, projectionCoordinates.xy).r;
     float currentDepth = projectionCoordinates.z;
-
+    vec3 lightDirection = normalize(directionalLightPosition - WorldPos);
     float bias = max(0.05f * (1.0f - dot(normal, lightDirection)), 0.005f);
     
     float shadow = 0;
@@ -213,10 +222,35 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
         }
     }
     shadow /= 9.0f;
-
     if(projectionCoordinates.z > 1.0f)
     {
         shadow = 0.0f;
     }
+    return shadow;
+}
+
+float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition)
+{
+    vec3 fragmentToLight = fragPos - lightPosition;
+
+    float currentDepth = length(fragmentToLight);
+
+    float shadow = 0.0f;
+    float bias = 0.1f;
+    int samples = 20;
+    float viewDistance = length(viewpos - fragPos);
+    float diskRadius = (1.0f + (viewDistance / farPlane)) / 25.0f;
+    for (int i = 0; i < samples; ++i)
+    {
+        float closestDepth = texture(shadowCubeMap, fragmentToLight + gridSamplingDisk[i] * diskRadius).r;
+
+        closestDepth *= farPlane;
+        if(currentDepth - bias > closestDepth)
+        {
+            shadow += 1.0f;
+        }
+    }
+    shadow /= float(samples);
+
     return shadow;
 }

@@ -34,6 +34,7 @@ private:
 	void RenderActor(const Actor& actor);
 	void RenderCamera(const Camera& camera);
 	void RenderLight(const Light& light);
+	void RenderDirectionalLight(const DirectionalLight& light);
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;
 };

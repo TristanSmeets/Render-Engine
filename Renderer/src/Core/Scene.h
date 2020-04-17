@@ -8,6 +8,7 @@
 #include "Core/Light.h"
 #include "Core/Camera.h"
 #include "Core/Window.h"
+#include "Core/DirectionalLight.h"
 
 class Scene
 {
@@ -21,6 +22,7 @@ public:
 	const Camera& GetCamera() const;
 	Camera& GetCamera();
 	const Skybox& GetSkybox() const;
+	const DirectionalLight& GetDirectionalLight() const;
 	void Initialize();
 	Scene& operator=(const Scene& rhs);
 
@@ -33,6 +35,7 @@ private:
 	std::vector<Light> lights;
 	std::vector<Material> materials;
 	std::vector<Mesh> meshes;
+	DirectionalLight directional;
 	Camera camera;
 	Skybox skybox;
 };

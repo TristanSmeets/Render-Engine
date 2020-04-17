@@ -54,10 +54,10 @@ const Skybox & Scene::GetSkybox() const
 	return skybox;
 }
 
-//const Actor & Scene::GetTerrain() const
-//{
-//	return terrain;
-//}
+const DirectionalLight& Scene::GetDirectionalLight() const
+{
+	return directional;
+}
 
 void Scene::Initialize()
 {
@@ -85,6 +85,12 @@ void Scene::InitializeMeshes()
 {
 	printf("Initializing Meshes\n");
 
+	const std::vector<Mesh>& cubeMeshes = MeshLoader::LoadModel(Filepath::Mesh + "cube.obj");
+	for (unsigned int i = 0; i < cubeMeshes.size(); ++i)
+	{
+		meshes.push_back(cubeMeshes[i]);
+	}
+
 	const std::vector<Mesh>& sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "sphere.obj");
 	for (unsigned int i = 0; i < sphereMeshes.size(); ++i)
 	{
@@ -108,7 +114,6 @@ void Scene::InitializeMaterials()
 	aluminium.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/Metallic.png");
 	aluminium.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
 	aluminium.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
-	materials.push_back(aluminium);
 
 	Material rustedIron = Material("Rusted_Iron");
 	rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
@@ -116,7 +121,6 @@ void Scene::InitializeMaterials()
 	rustedIron.AddTexture(Texture::Metallic, Filepath::Texture + "RustedIron/Metallic.png");
 	rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
 	rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
-	materials.push_back(rustedIron);
 
 	Material sand = Material("Sand");
 	sand.AddTexture(Texture::Albedo,			Filepath::Texture + "cobblestone/Albedo.png", true);
@@ -124,6 +128,8 @@ void Scene::InitializeMaterials()
 	sand.AddTexture(Texture::Metallic,			Filepath::Texture + "cobblestone/Metallic.png");
 	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
 	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
+	materials.push_back(aluminium);
+	materials.push_back(rustedIron);
 	materials.push_back(sand);
 
 	printf("Created %d materials\n", (int)materials.size());
@@ -132,11 +138,17 @@ void Scene::InitializeMaterials()
 void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
-	Light light1 = Light("Light", glm::vec3(7.4f, 6.0f, 5.0f), glm::vec3(81.0f, 57.0f, 11.0f));
-	lights.push_back(light1);
+	//Light light1 = Light("Light", glm::vec3(7.4f, 6.0f, 5.0f), glm::vec3(81.0f, 57.0f, 11.0f));
+	Light light1 = Light("Light", glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(81.0f, 57.0f, 11.0f));
+	light1.GetRenderComponent().SetMesh(meshes[0]);
 
 	Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(12.0f, 22.0f, 11.0f));
+	light2.GetRenderComponent().SetMesh(meshes[0]);
+	lights.push_back(light1);
 	lights.push_back(light2);
+	
+	directional.GetTransform().Translate(glm::vec3(-3.5f, 5.0f, -3.5f));
+	directional.GetRenderComponent().SetMesh(meshes[0]);
 
 	for (int i = 0; i < 5; ++i)
 	{
@@ -144,17 +156,17 @@ void Scene::InitializeActors()
 		{
 			std::string name = std::string("Sphere[") + std::to_string(i) + std::string("][") + std::to_string(j) + std::string("]");
 			Actor sphere = Actor(name);
-			sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0, (j * 3.0f) - 2.5f));
-			sphere.GetRenderComponent().SetMesh(meshes[0]);
+			sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0,(j * 3.0f) - 2.5f));
+			sphere.GetRenderComponent().SetMesh(meshes[1]);
 			sphere.GetRenderComponent().SetMaterial(materials[(i + j) % 2]);
 			actors.push_back(sphere);
 		}
 	}
 
 	Actor terrain = Actor("Terrain");
-	terrain.GetTransform().Translate(glm::vec3(0.0f, -3.0f, 0.0f));
-	terrain.GetRenderComponent().SetMesh(meshes[1]);
-	terrain.GetRenderComponent().SetMaterial(materials[2]);
+	terrain.GetTransform().Translate(glm::vec3(0.0f, -5.0f, 0.0f));
+	terrain.GetRenderComponent().SetMesh(meshes[2]);
+	terrain.GetRenderComponent().SetMaterial(materials[0]);
 	actors.push_back(terrain);
 
 

@@ -15,6 +15,7 @@ public:
 	virtual void Bind();
 	virtual void Unbind();
 	virtual void Draw();
+	Shader& GetShader();
 
 private:
 	Framebuffer framebuffer;
