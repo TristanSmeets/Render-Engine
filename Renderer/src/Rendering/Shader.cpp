@@ -25,6 +25,30 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 	linkShaders(vertexShader, fragmentShader);
 }
 
+Shader::Shader(const std::string & vertexPath, const std::string & fragmentPath, const std::string & geometryPath)
+{
+	std::string vertexCode = getShaderCode(vertexPath.c_str());
+	const char* vertexShaderCode = vertexCode.c_str();
+
+	std::string fragmentCode = getShaderCode(fragmentPath.c_str());
+	const char* fragmentShaderCode = fragmentCode.c_str();
+
+	std::string geometryCode = getShaderCode(geometryPath.c_str());
+	const char* geometryShaderCode = geometryCode.c_str();
+
+	printf("Compiling %s\n", vertexPath.c_str());
+	GLuint vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
+
+	printf("Compiling %s\n", fragmentPath.c_str());
+	GLuint fragmentShader = compileShader(fragmentShaderCode, GL_FRAGMENT_SHADER);
+
+	printf("Compiling %s\n", geometryPath.c_str());
+	GLuint geometryShader = compileShader(geometryShaderCode, GL_GEOMETRY_SHADER);
+
+	linkShaders(vertexShader, fragmentShader, geometryShader);
+
+}
+
 Shader::~Shader()
 {
 	glDeleteProgram(id);
@@ -87,6 +111,7 @@ std::string Shader::getShaderCode(const char * filePath)
 	}
 	catch (std::ifstream::failure e)
 	{
+		printf("Error: %s not succesfully read\n", filePath);
 	}
 
 	return shaderCode;
@@ -136,6 +161,38 @@ void Shader::linkShaders(GLuint vertexShader, GLuint fragmentShader)
 		glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
 		std::cout << "Error: " << infoLog << std::endl;
 	}
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+void Shader::linkShaders(GLuint vertexShader, GLuint fragmentShader, GLuint geometryShader)
+{
+	id = glCreateProgram();
+	glAttachShader(id, vertexShader);
+	glAttachShader(id, fragmentShader);
+	glAttachShader(id, geometryShader);
+
+	glLinkProgram(id);
+
+	//print linking errors if any
+	int success;
+	char infoLog[512];
+
+	glGetProgramiv(id, GL_LINK_STATUS, &success);
+	if (success)
+	{
+		printf("SUCCESS: Linked shaders\n");
+	}
+	else
+	{
+		glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
+		std::cout << "Error: " << infoLog << std::endl;
+	}
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+	glDeleteShader(geometryShader);
 }
 
 const GLint & Shader::GetUniformFromCache(const std::string & name)

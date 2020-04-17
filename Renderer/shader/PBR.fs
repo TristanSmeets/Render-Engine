@@ -23,6 +23,9 @@ uniform sampler2D brdfLUT;
 //Shadow map
 uniform sampler2D shadowMap;
 uniform vec3 lightDirection;
+uniform samplerCube shadowCubeMap;
+uniform vec3 lightPosition;
+uniform float farPlane;
 
 //Material parameters
 uniform Material material;
@@ -43,7 +46,8 @@ float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 FresnelSchlick(float cosTheta, vec3 F0);
 vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
-float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal);
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap);
+float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap);
 
 void main()
 {
@@ -118,14 +122,21 @@ void main()
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
 
     //Calculate shadow
-    float shadow = ShadowCalculation(FragPosLightSpace, normal);
+    float ambientShadow = ShadowCalculation(FragPosLightSpace, Normal, shadowMap);
+    float diffuseShadow = ShadowCalculation(WorldPos, shadowCubeMap);
     //vec3 color = ambient + ((1.0f - shadow) * Lo);
-    vec3 color = (1.0f - shadow) * ambient + Lo;
+    vec3 color = (1.0f - ambientShadow) * ambient + Lo;
+    //vec3 color = (1.0f - ambientShadow) * ambient + (1.0f - diffuseShadow) * Lo;
     //vec3 color = (1.0f - shadow) * (ambient + Lo);
     //vec3 color = ambient + Lo;
-
+    //vec3 color = (1.0f - ambientShadow) * albedo;
+    //vec3 color = vec3(1.0f - ambientShadow);
+    //vec3 color = normal;
     //Skipping tonemapping and gamma correction.
     //Those should be done in screen shader.
+
+    //FragColor = vec4(WorldPos - lightPosition, 1.0f);
+    //FragColor = vec4(vec3(diffuseShadow), 1.0f);
 
     FragColor = vec4(color, 1.0f);
 }
@@ -192,31 +203,47 @@ vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0f - roughness), F0) - F0) * pow(1.0f - cosTheta, 5.0f);
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap)
 {
     //Perform perspective divide
     vec3 projectionCoordinates = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projectionCoordinates = projectionCoordinates * 0.5f + 0.5f;
     float closestDepth = texture(shadowMap, projectionCoordinates.xy).r;
     float currentDepth = projectionCoordinates.z;
+    float bias = 0.00f;
+    float shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
 
-    float bias = max(0.05f * (1.0f - dot(normal, lightDirection)), 0.005f);
+    //vec3 lightDir = normalize(lightDirection);
+    //float bias = max(0.05f * (1.0f - dot(normal, lightDir)), 0.005f);
     
-    float shadow = 0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -1; x <= 1; ++x)
-    {
-        for(int y = -1; y <= 1; ++y)
-        {
-            float pcfDepth = texture(shadowMap, projectionCoordinates.xy + vec2(x,y) * texelSize).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-        }
-    }
-    shadow /= 9.0f;
+    //float shadow = 0;
+    //vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    //for(int x = -1; x <= 1; ++x)
+    //{
+    //    for(int y = -1; y <= 1; ++y)
+    //    {
+    //        float pcfDepth = texture(shadowMap, projectionCoordinates.xy + vec2(x,y) * texelSize).r;
+    //        shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
+    //    }
+    //}
+    //shadow /= 9.0f;
+    //if(projectionCoordinates.z > 1.0f)
+    //{
+    //    shadow = 0.0f;
+    //}
+    return shadow;
+}
 
-    if(projectionCoordinates.z > 1.0f)
-    {
-        shadow = 0.0f;
-    }
+float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap)
+{
+    vec3 fragmentToLight = fragPos - lightPosition;
+    float closestDepth = texture(shadowCubeMap, fragmentToLight).r;
+    closestDepth *= farPlane;
+    
+    float currentDepth = length(fragmentToLight);
+    float bias = 0.05f;
+    float shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
+
+    //FragColor = vec4(vec3(texture(shadowCubeMap, fragmentToLight).r), 1.0f);
     return shadow;
 }

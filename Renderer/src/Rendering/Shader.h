@@ -16,6 +16,7 @@ public:
 
 public:
 	Shader(const std::string& vertexPath, const std::string& fragmentPath);
+	Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
 	~Shader();
 	void Use();
 	void SetBool(const std::string& name, bool value);
@@ -30,6 +31,7 @@ private:
 	std::string getShaderCode(const char* filePath);
 	GLuint compileShader(const char* shaderCode, GLuint shaderType);
 	void linkShaders(GLuint vertexShader, GLuint fragmentShader);
+	void linkShaders(GLuint vertexShader, GLuint fragmentShader, GLuint geometryShader);
 	const GLint& GetUniformFromCache(const std::string& name);
 	const GLuint& GetSubroutineIndexFromCache(const SubroutineParameters& parameters);
 
