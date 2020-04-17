@@ -40,28 +40,28 @@ void ForwardPBR::Initialize(Scene & scene)
 	lamp.SetMat4("projection", projection);
 
 	//Texture depth map.
-	directionalDepthBuffer.Generate();
-	shadow = Texture::CreateEmpty("ShadowDepth", shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-	directionalDepthBuffer.Bind();
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadow.GetID(), 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	directionalDepthBuffer.Unbind();
+	//directionalDepthBuffer.Generate();
+	//shadow = Texture::CreateEmpty("ShadowDepth", shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	//float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	//
+	//directionalDepthBuffer.Bind();
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadow.GetID(), 0);
+	//glDrawBuffer(GL_NONE);
+	//glReadBuffer(GL_NONE);
+	//directionalDepthBuffer.Unbind();
 
 	//Cubemap depth map
 	pointDepthBuffer.Generate();
-	pointShadowsDepthMap.CreateTexture(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
-	pointShadowsDepthMap.SetTextureParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	pointShadowsDepthMap.SetTextureParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	ShadowCubeMap.CreateTexture(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	ShadowCubeMap.SetTextureParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	ShadowCubeMap.SetTextureParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	pointDepthBuffer.Bind();
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, pointShadowsDepthMap.GetID(), 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, ShadowCubeMap.GetID(), 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	pointDepthBuffer.Unbind();
@@ -79,6 +79,7 @@ void ForwardPBR::Render(Scene & scene)
 	glClearColor(2.0f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	/*
 	//Directional light shadow
 	glViewport(0, 0, shadowWidth, shadowHeight);
 	directionalDepthBuffer.Bind();
@@ -86,41 +87,44 @@ void ForwardPBR::Render(Scene & scene)
 
 	const std::vector<Light>& lights = scene.GetLights();
 
-	glm::vec3 lightDirection = scene.GetDirectionalLight().GetFront();
-	glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 1.0f, 20.0f);
-	glm::mat4 lightview = scene.GetDirectionalLight().GetView();
+	glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 1.0f, 100.0f);
+	glm::mat4 lightview = glm::lookAt(scene.GetDirectionalLight().GetWorldPosition(), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	//glm::mat4 lightview = scene.GetDirectionalLight().GetView();
 
 	glm::mat4 lightSpaceMatrix = lightProjection * lightview;
 	directionalShadowDepth.Use();
 	directionalShadowDepth.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 	const std::vector<Actor>& actors = scene.GetActors();
-	//glCullFace(GL_FRONT);
+	glCullFace(GL_FRONT);
 	for (int i = 0; i < actors.size(); ++i)
 	{
 		directionalShadowDepth.SetMat4("model", actors[i].GetWorldMatrix());
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
-	//glCullFace(GL_BACK);
+	glCullFace(GL_BACK);
 	directionalShadowDepth.SetMat4("model", actors[actors.size() - 1].GetWorldMatrix());
 	actors[actors.size() - 1].GetRenderComponent().GetMesh().Draw();
 	directionalDepthBuffer.Unbind();
-
+	*/
 	//Point light shadow
 	float aspect = (float)shadowHeight / (float)shadowHeight;
 	float nearPlane = 1.0f;
 	float farPlane = 25.0f;
 	glm::mat4 shadowProjection = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
 
+	const std::vector<Light>& lights = scene.GetLights();
+	const std::vector<Actor>& actors = scene.GetActors();
+
 	glm::vec3 lightPosition = lights[0].GetWorldPosition();
 	glm::mat4 shadowTransforms[6] =
 	{
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+		shadowProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		shadowProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		shadowProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+		shadowProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+		shadowProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		shadowProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 	};
 
 	glViewport(0, 0, shadowWidth, shadowHeight);
@@ -156,8 +160,8 @@ void ForwardPBR::Render(Scene & scene)
 	pbr.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	pbr.SetVec3("cameraPos", scene.GetCamera().GetWorldPosition());
 	//pbr.SetVec3("cameraPos", lightDirection);
-	pbr.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
-	pbr.SetVec3("lightDirection", lightDirection);
+//	pbr.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+	//pbr.SetVec3("lightDirection", lightDirection);
 	pbr.SetVec3("lightPosition", lightPosition);
 	pbr.SetFloat("farPlane", farPlane);
 
@@ -170,7 +174,7 @@ void ForwardPBR::Render(Scene & scene)
 	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE_2D, shadow.GetID());
 	glActiveTexture(GL_TEXTURE9);
-	pointShadowsDepthMap.Bind();
+	ShadowCubeMap.Bind();
 	glActiveTexture(GL_TEXTURE0);
 
 	//Set Lights

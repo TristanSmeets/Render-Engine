@@ -25,7 +25,7 @@ private:
 	Framebuffer directionalDepthBuffer;
 	Texture shadow;
 	GLuint shadowTexture;
-	Cubemap pointShadowsDepthMap;
+	Cubemap ShadowCubeMap;
 	Framebuffer pointDepthBuffer;
 
 	const int shadowWidth = 1024;

@@ -85,7 +85,13 @@ void Scene::InitializeMeshes()
 {
 	printf("Initializing Meshes\n");
 
-	const std::vector<Mesh>& sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "cube.obj");
+	const std::vector<Mesh>& cubeMeshes = MeshLoader::LoadModel(Filepath::Mesh + "cube.obj");
+	for (unsigned int i = 0; i < cubeMeshes.size(); ++i)
+	{
+		meshes.push_back(cubeMeshes[i]);
+	}
+
+	const std::vector<Mesh>& sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "sphere.obj");
 	for (unsigned int i = 0; i < sphereMeshes.size(); ++i)
 	{
 		meshes.push_back(sphereMeshes[i]);
@@ -139,8 +145,8 @@ void Scene::InitializeActors()
 
 	//Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(12.0f, 22.0f, 11.0f));
 	//lights.push_back(light2);
-
-	directional.GetTransform().Rotate(glm::vec3(-2.0f, 4.0f, -1.0f));
+	
+	directional.GetTransform().Translate(glm::vec3(-3.5f, 5.0f, -3.5f));
 	directional.GetRenderComponent().SetMesh(meshes[0]);
 
 	for (int i = 0; i < 5; ++i)
@@ -149,8 +155,8 @@ void Scene::InitializeActors()
 		{
 			std::string name = std::string("Sphere[") + std::to_string(i) + std::string("][") + std::to_string(j) + std::string("]");
 			Actor sphere = Actor(name);
-			sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0, (j * 3.0f) - 2.5f));
-			sphere.GetRenderComponent().SetMesh(meshes[0]);
+			sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0,(j * 3.0f) - 2.5f));
+			sphere.GetRenderComponent().SetMesh(meshes[1]);
 			sphere.GetRenderComponent().SetMaterial(materials[(i + j) % 2]);
 			actors.push_back(sphere);
 		}
@@ -158,7 +164,7 @@ void Scene::InitializeActors()
 
 	Actor terrain = Actor("Terrain");
 	terrain.GetTransform().Translate(glm::vec3(0.0f, -5.0f, 0.0f));
-	terrain.GetRenderComponent().SetMesh(meshes[1]);
+	terrain.GetRenderComponent().SetMesh(meshes[2]);
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);
 

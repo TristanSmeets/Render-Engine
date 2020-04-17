@@ -67,11 +67,11 @@ void GUIHelper::RenderLayout(const Scene & scene)
 	ImGui::Separator();
 	if (ImGui::TreeNode("Light"))
 	{
-		RenderText(scene.GetDirectionalLight().GetName().c_str());
-		ImGui::NextColumn();
-		RenderDirectionalLight(scene.GetDirectionalLight());
-		ImGui::NextColumn();
-		ImGui::Separator();
+		//RenderText(scene.GetDirectionalLight().GetName().c_str());
+		//ImGui::NextColumn();
+		//RenderDirectionalLight(scene.GetDirectionalLight());
+		//ImGui::NextColumn();
+		//ImGui::Separator();
 
 		const std::vector<Light>& lights = scene.GetLights();
 		static int selectedLight = -1;
@@ -210,7 +210,7 @@ void GUIHelper::RenderLight(const Light & light)
 void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
 {
 	RenderLight(light);
-	RenderVec3("Direction",light.GetDirection());
+	RenderVec3("Direction",light.GetFront());
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)
