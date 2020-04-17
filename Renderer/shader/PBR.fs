@@ -20,11 +20,12 @@ uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
 
+#define MaximumLights 4
 //Shadow map
 uniform sampler2D shadowMap;
 //uniform vec3 lightDirection;
-uniform samplerCube shadowCubeMap;
-uniform vec3 lightPosition;
+uniform samplerCube shadowCubeMaps[MaximumLights];
+uniform vec3 directionalLightPosition;
 uniform vec3 viewpos;
 uniform float farPlane;
 
@@ -32,7 +33,6 @@ uniform float farPlane;
 uniform Material material;
 
 //Lights
-#define MaximumLights 4
 uniform vec3 lightPositions[MaximumLights];
 uniform vec3 lightColours[MaximumLights];
 
@@ -47,7 +47,7 @@ vec3 gridSamplingDisk[20] = vec3[](
     vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
     vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
     vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-    );
+);
 
 vec3 GetNormalFromMap();
 float DistributionGGX(vec3 N, vec3 H, float roughness);
@@ -56,7 +56,7 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 FresnelSchlick(float cosTheta, vec3 F0);
 vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap);
-float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap);
+float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition);
 
 void main()
 {
@@ -108,10 +108,12 @@ void main()
         //Scale light by NdotL
         float NdotL = max(dot(normal, lightDirection), 0.0f);
 
+        float pointShadow = ShadowCalculation(WorldPos, shadowCubeMaps[i], lightPositions[i]);
         //add to outgoing radiance Lo.
         //note that we already multiplied the BRDF by the Fresnel (kS)
         //so we won't multiply by kS again
-        Lo += (kD * albedo / PI + specular) * radiance * NdotL; 
+        vec3 outgoingRadiance = (kD * albedo / PI + specular) * radiance * NdotL;
+        Lo += (1.0f - pointShadow) * outgoingRadiance; 
     }
 
     vec3 Fresnel = FresnelSchlickRoughness(max(dot(normal, viewDirection), 0.0f), F0, roughness);
@@ -130,26 +132,9 @@ void main()
     
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
 
-    //Calculate shadow
-    float ambientShadow = ShadowCalculation(FragPosLightSpace, Normal, shadowMap);
-    float diffuseShadow = ShadowCalculation(WorldPos, shadowCubeMap);
-
-    float shadow = 1.0f - (ambientShadow + diffuseShadow);
-    //float totalShadow = (1.0f - ambientShadow) + (1.0f - diffuseShadow);
-    //vec3 color = ambient + ((1.0f - diffuseShadow) * Lo);
-    //vec3 color = (1.0f - ambientShadow) * ambient + Lo;
-    //vec3 color = (1.0f - ambientShadow) * ambient + (1.0f - diffuseShadow) * Lo;
-    vec3 color = ambient + shadow * Lo;
-    //vec3 color = (1.0f - shadow) * (ambient + Lo);
-    //vec3 color = ambient + Lo;
-    //vec3 color = (1.0f - ambientShadow) * albedo;
-    //vec3 color = vec3(1.0f - ambientShadow);
-    //vec3 color = normal;
+    vec3 color = ambient + Lo;
     //Skipping tonemapping and gamma correction.
     //Those should be done in screen shader.
-
-    //FragColor = vec4(WorldPos - lightPosition, 1.0f);
-    //FragColor = vec4(vec3(diffuseShadow), 1.0f);
 
     FragColor = vec4(color, 1.0f);
 }
@@ -223,7 +208,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap
     projectionCoordinates = projectionCoordinates * 0.5f + 0.5f;
     float closestDepth = texture(shadowMap, projectionCoordinates.xy).r;
     float currentDepth = projectionCoordinates.z;
-    vec3 lightDirection = normalize(lightPosition - WorldPos);
+    vec3 lightDirection = normalize(directionalLightPosition - WorldPos);
     float bias = max(0.05f * (1.0f - dot(normal, lightDirection)), 0.005f);
     
     float shadow = 0;
@@ -244,10 +229,8 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap
     return shadow;
 }
 
-float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap)
+float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition)
 {
-
-
     vec3 fragmentToLight = fragPos - lightPosition;
 
     float currentDepth = length(fragmentToLight);

@@ -141,10 +141,11 @@ void Scene::InitializeActors()
 	//Light light1 = Light("Light", glm::vec3(7.4f, 6.0f, 5.0f), glm::vec3(81.0f, 57.0f, 11.0f));
 	Light light1 = Light("Light", glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(81.0f, 57.0f, 11.0f));
 	light1.GetRenderComponent().SetMesh(meshes[0]);
-	lights.push_back(light1);
 
-	//Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(12.0f, 22.0f, 11.0f));
-	//lights.push_back(light2);
+	Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(12.0f, 22.0f, 11.0f));
+	light2.GetRenderComponent().SetMesh(meshes[0]);
+	lights.push_back(light1);
+	lights.push_back(light2);
 	
 	directional.GetTransform().Translate(glm::vec3(-3.5f, 5.0f, -3.5f));
 	directional.GetRenderComponent().SetMesh(meshes[0]);
@@ -165,7 +166,7 @@ void Scene::InitializeActors()
 	Actor terrain = Actor("Terrain");
 	terrain.GetTransform().Translate(glm::vec3(0.0f, -5.0f, 0.0f));
 	terrain.GetRenderComponent().SetMesh(meshes[2]);
-	terrain.GetRenderComponent().SetMaterial(materials[2]);
+	terrain.GetRenderComponent().SetMaterial(materials[0]);
 	actors.push_back(terrain);
 
 

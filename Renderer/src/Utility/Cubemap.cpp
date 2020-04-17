@@ -9,6 +9,11 @@ Cubemap::~Cubemap()
 {
 }
 
+Cubemap::Cubemap(const Cubemap & rhs) :
+	id(rhs.id), width(rhs.width), height(rhs.height)
+{
+}
+
 void Cubemap::CreateTexture(GLsizei width, GLsizei height, GLuint internalFormat, GLenum format, GLenum type)
 {
 	this->width = width;

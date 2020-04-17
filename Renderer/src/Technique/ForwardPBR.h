@@ -16,6 +16,9 @@ public:
 	void Render(Scene& scene);
 
 private:
+	const static int maximumLights = 4;
+	const int shadowWidth = 1024;
+	const int shadowHeight = 1024;
 	Window& window;
 	PostProcessing postProcessing;
 	Shader lamp;
@@ -25,9 +28,11 @@ private:
 	Framebuffer directionalDepthBuffer;
 	Texture shadow;
 	GLuint shadowTexture;
-	Cubemap ShadowCubeMap;
+	Cubemap shadowCubeMaps[maximumLights];
 	Framebuffer pointDepthBuffer;
 
-	const int shadowWidth = 1024;
-	const int shadowHeight = 1024;
+	float aspect = (float)shadowHeight / (float)shadowHeight;
+	float nearPlane = 1.0f;
+	float farPlane = 25.0f;
+	glm::mat4 shadowProjection = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
 };
