@@ -25,6 +25,7 @@ uniform sampler2D shadowMap;
 //uniform vec3 lightDirection;
 uniform samplerCube shadowCubeMap;
 uniform vec3 lightPosition;
+uniform vec3 viewpos;
 uniform float farPlane;
 
 //Material parameters
@@ -39,6 +40,14 @@ uniform vec3 lightColours[MaximumLights];
 uniform vec3 cameraPos;
 
 const float PI = 3.14159265359;
+
+vec3 gridSamplingDisk[20] = vec3[](
+    vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+    vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+    vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+    );
 
 vec3 GetNormalFromMap();
 float DistributionGGX(vec3 N, vec3 H, float roughness);
@@ -124,9 +133,13 @@ void main()
     //Calculate shadow
     float ambientShadow = ShadowCalculation(FragPosLightSpace, Normal, shadowMap);
     float diffuseShadow = ShadowCalculation(WorldPos, shadowCubeMap);
-    vec3 color = ambient + ((1.0f - diffuseShadow) * Lo);
+
+    float shadow = 1.0f - (ambientShadow + diffuseShadow);
+    //float totalShadow = (1.0f - ambientShadow) + (1.0f - diffuseShadow);
+    //vec3 color = ambient + ((1.0f - diffuseShadow) * Lo);
     //vec3 color = (1.0f - ambientShadow) * ambient + Lo;
     //vec3 color = (1.0f - ambientShadow) * ambient + (1.0f - diffuseShadow) * Lo;
+    vec3 color = ambient + shadow * Lo;
     //vec3 color = (1.0f - shadow) * (ambient + Lo);
     //vec3 color = ambient + Lo;
     //vec3 color = (1.0f - ambientShadow) * albedo;
@@ -233,14 +246,28 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap
 
 float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap)
 {
-    vec3 fragmentToLight = fragPos - lightPosition;
-    float closestDepth = texture(shadowCubeMap, fragmentToLight).r;
-    closestDepth *= farPlane;
-    
-    float currentDepth = length(fragmentToLight);
-    float bias = 0.05f;
-    float shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;
 
-    //FragColor = vec4(vec3(texture(shadowCubeMap, fragmentToLight).r), 1.0f);
+
+    vec3 fragmentToLight = fragPos - lightPosition;
+
+    float currentDepth = length(fragmentToLight);
+
+    float shadow = 0.0f;
+    float bias = 0.1f;
+    int samples = 20;
+    float viewDistance = length(viewpos - fragPos);
+    float diskRadius = (1.0f + (viewDistance / farPlane)) / 25.0f;
+    for (int i = 0; i < samples; ++i)
+    {
+        float closestDepth = texture(shadowCubeMap, fragmentToLight + gridSamplingDisk[i] * diskRadius).r;
+
+        closestDepth *= farPlane;
+        if(currentDepth - bias > closestDepth)
+        {
+            shadow += 1.0f;
+        }
+    }
+    shadow /= float(samples);
+
     return shadow;
 }
