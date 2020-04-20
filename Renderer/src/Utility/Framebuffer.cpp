@@ -30,6 +30,11 @@ void Framebuffer::AttachTexture(const Texture & texture)
 	AttachTexture(GL_TEXTURE_2D, texture.GetID());
 }
 
+void Framebuffer::AttachTexture(GLenum attachement, GLenum texTarget, GLuint texture)
+{
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, texTarget, texture, 0);
+}
+
 void Framebuffer::AttachRenderbuffer(GLenum attachment, const Renderbuffer & buffer)
 {
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, buffer.GetID());
