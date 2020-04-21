@@ -74,7 +74,8 @@ void ForwardPBR::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	postProcessing.Initialize(window.GetWindowParameters());
+	//postProcessing.Initialize(window.GetWindowParameters());
+	bloom.Initialize(window.GetWindowParameters());
 	printf("Initializion Complete\n\n");
 }
 
@@ -161,10 +162,12 @@ void ForwardPBR::Render(Scene & scene)
 
 	//Render the scene as normal with shadow mapping(using depth map)
 
-	postProcessing.Bind();
+	//postProcessing.Bind();
+	bloom.BindHDR();
 	Window::Parameters windowParameters = window.GetWindowParameters();
 	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	//Rendering the Actors
 	pbr.Use();
@@ -191,13 +194,14 @@ void ForwardPBR::Render(Scene & scene)
 	//Set Lights
 	lamp.Use();
 	lamp.SetMat4("view", scene.GetCamera().GetViewMatrix());
-	lamp.SetMat4("model", scene.GetDirectionalLight().GetWorldMatrix());
-	scene.GetDirectionalLight().GetRenderComponent().GetMesh().Draw();
+	//lamp.SetMat4("model", scene.GetDirectionalLight().GetWorldMatrix());
+	//scene.GetDirectionalLight().GetRenderComponent().GetMesh().Draw();
 
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
 		lamp.Use();
 		lamp.SetMat4("model", lights[i].GetWorldMatrix());
+		lamp.SetVec3("lightColour", lights[i].GetColour());
 		lights[i].GetRenderComponent().GetMesh().Draw();
 		std::string lightPosition = std::string("lightPositions[") + std::to_string(i) + std::string("]");
 		std::string lightColour = std::string("lightColours[") + std::to_string(i) + std::string("]");
@@ -227,10 +231,12 @@ void ForwardPBR::Render(Scene & scene)
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	skybox.Draw();
 	glDepthFunc(GL_LESS);
-	postProcessing.Unbind();
-	Shader& shader = postProcessing.GetShader();
-	shader.Use();
-	shader.SetInt("shadowTexture", 1);
-	shadow.Bind(shader, Texture::Normal);
-	postProcessing.Draw();
+	//postProcessing.Unbind();
+	//Shader& shader = postProcessing.GetShader();
+	//shader.Use();
+	//shader.SetInt("shadowTexture", 1);
+	//shadow.Bind(shader, Texture::Normal);
+	//postProcessing.Draw();
+	bloom.Unbind();
+	bloom.Draw();
 }
