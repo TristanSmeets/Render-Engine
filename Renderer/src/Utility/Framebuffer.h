@@ -14,6 +14,7 @@ public:
 	void Bind();
 	void Unbind();
 	void AttachTexture(const Texture& texture);
+	void AttachTexture(GLenum attachement, GLenum texTarget, GLuint texture);
 	void AttachRenderbuffer(GLenum attachment, const Renderbuffer& buffer);
 	void AttachCubemap(const Cubemap& cubemap);
 	bool IsCompleted();

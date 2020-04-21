@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 in vec2 TexCoords;
 in vec3 WorldPos;
@@ -136,6 +137,17 @@ void main()
     //Skipping tonemapping and gamma correction.
     //Those should be done in screen shader.
 
+    float brightness = dot(color, vec3( 0.2126f, 0.7152f, 0.0722f));
+    if(brightness > 1.0f)
+    {
+        BrightColor = vec4(color, 1.0f);
+        //FragColor = vec4(brightness, 0.0f, 0.0f, 1.0f);
+    }
+    else
+    {
+        BrightColor = vec4(vec3(0.0f), 1.0f);
+        //FragColor = vec4(0.0f,brightness, 0.0f, 1.0f);
+    }
     FragColor = vec4(color, 1.0f);
 }
 
