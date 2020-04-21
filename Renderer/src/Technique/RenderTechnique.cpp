@@ -3,7 +3,7 @@
 #include "Utility/Filepath.h"
 
 RenderTechnique::RenderTechnique() :
-	skyboxShader(Shader(Filepath::Shader + "Background.vs", Filepath::Shader + "Background.fs"))
+	skyboxShader(Shader(Filepath::ForwardShader + "Background.vs", Filepath::ForwardShader + "Background.fs"))
 {
 }
 

@@ -79,8 +79,8 @@ void Skybox::Draw() const
 
 void Skybox::ConvertHDRTextureToCubemap(Texture && texture)
 {
-	Shader equirectangularToCubemap(Filepath::Shader + "Cubemap.vs",
-		Filepath::Shader + "EquirectangularToCubeMap.fs");
+	Shader equirectangularToCubemap(Filepath::ForwardShader + "Cubemap.vs",
+		Filepath::ForwardShader + "EquirectangularToCubeMap.fs");
 
 	equirectangularToCubemap.Use();
 	equirectangularToCubemap.SetInt("equirectangularMap", 0);
@@ -110,7 +110,7 @@ void Skybox::CreateIrradianceMap()
 	renderbuffer.Bind();
 	renderbuffer.SetStorage(GL_DEPTH_COMPONENT24, irradiance.GetWidth(), irradiance.GetHeight());
 
-	Shader irradianceShader(Filepath::Shader + "Cubemap.vs", Filepath::Shader + "IrradianceConvolution.fs");
+	Shader irradianceShader(Filepath::ForwardShader + "Cubemap.vs", Filepath::ForwardShader + "IrradianceConvolution.fs");
 	irradianceShader.Use();
 	irradianceShader.SetInt("environmentMap", 0);
 	irradianceShader.SetMat4("projection", captureProjection);
@@ -136,7 +136,7 @@ void Skybox::CreatePrefilterMap()
 	prefilter.SetTextureParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-	Shader prefilterShader(Filepath::Shader + "Cubemap.vs", Filepath::Shader + "Prefilter.fs");
+	Shader prefilterShader(Filepath::ForwardShader + "Cubemap.vs", Filepath::ForwardShader + "Prefilter.fs");
 	prefilterShader.Use();
 	prefilterShader.SetInt("environmentMap", 0);
 	prefilterShader.SetMat4("projection", captureProjection);

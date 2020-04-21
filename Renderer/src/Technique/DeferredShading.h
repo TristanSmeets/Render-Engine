@@ -17,4 +17,8 @@ private:
 	Framebuffer gBuffer;
 	Texture gBufferTextures[3];
 	Renderbuffer renderbuffer;
+	Shader lamp;
+	Shader geometryShader;
+	Shader lightingShader;
+	NDCQuad quad;
 };

@@ -1,6 +1,7 @@
 #include "Rendererpch.h"
 #include "Application.h"
 #include "Technique/ForwardPBR.h"
+#include "Technique/DeferredShading.h"
 
 Application::Application()
 {
@@ -20,7 +21,8 @@ void Application::Initialize()
 	InitializeGlad();
 	scene = new Scene(window);
 	scene->Initialize();
-	renderTechnique = new ForwardPBR(window);
+	//renderTechnique = new ForwardPBR(window);
+	renderTechnique = new DeferredShading(window);
 	renderTechnique->Initialize(*scene);	
 	guiHelper.Initialize(window);
 	printf("Application initialization complete\n");

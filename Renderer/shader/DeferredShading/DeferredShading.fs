@@ -26,7 +26,7 @@ void main()
     vec3 DiffuseTextureColour = texture(gAlbedoSpecular, UV).rgb;
     float SpecularTextureColour = texture(gAlbedoSpecular, UV).a;
 
-    vec3 lighting = Diffuse * 0.1f; //Hard-coded ambient component;
+    vec3 lighting = DiffuseTextureColour * 0.1f; //Hard-coded ambient component;
     vec3 viewDirection = normalize(viewPosition - FragmentPosition);
 
     for(int i = 0; i < NumberOfLights; ++i)
@@ -35,9 +35,9 @@ void main()
         vec3 lightDirection = normalize(lights[i].Position - FragmentPosition);
         vec3 diffuse = max(dot(Normal, lightDirection), 0.0f) * DiffuseTextureColour * lights[i].Color;
         //Specular Colour
-        vec3 halfwayDirection = normalize(lightDirection, viewDirection);
-        float specular = pow(max(dot(Normal, halfwayDirection), 0.0f), 16.0f);
-        vec3 specular = lights[i].Color * specular * SpecularTextureColour;
+        vec3 halfwayDirection = normalize(lightDirection + viewDirection);
+        float specularPower = pow(max(dot(Normal, halfwayDirection), 0.0f), 16.0f);
+        vec3 specular = lights[i].Color * specularPower * SpecularTextureColour;
         //Attenuation
         float distance = length(lights[i].Position - FragmentPosition);
         float attenuation = 1.0f / (1.0f + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
@@ -45,5 +45,11 @@ void main()
         specular *= attenuation;
         lighting += diffuse + specular;
     }
-    FragmentColour = vec4(lighting, 1.0f);
+
+    vec3 result = vec3(1.0f) - exp(-lighting * 1.0f);
+    result = pow(result, vec3(1.0f/ 2.2f));
+
+    FragmentColour = vec4(result, 1.0f);
+    //FragmentColour = texture(gPosition, UV);
+    
 }

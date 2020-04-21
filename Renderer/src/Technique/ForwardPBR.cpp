@@ -3,10 +3,10 @@
 #include "Utility/Filepath.h"
 
 ForwardPBR::ForwardPBR(Window& window) : RenderTechnique(),
-pbr(Shader(Filepath::Shader + "PBR.vs", Filepath::Shader + "PBR.fs")),
-directionalShadowDepth(Shader(Filepath::Shader + "ShadowDepthMap.vs", Filepath::Shader + "ShadowDepthMap.fs")),
-pointShadowDepth(Shader(Filepath::Shader + "PointLightDepthMap.vs", Filepath::Shader + "PointLightDepthMap.fs", Filepath::Shader + "PointLightDepthMap.gs")),
-lamp(Shader(Filepath::Shader + "Lamp.vs", Filepath::Shader + "Lamp.fs")),
+pbr(Shader(Filepath::ForwardShader + "PBR.vs", Filepath::ForwardShader + "PBR.fs")),
+directionalShadowDepth(Shader(Filepath::ForwardShader + "ShadowDepthMap.vs", Filepath::ForwardShader + "ShadowDepthMap.fs")),
+pointShadowDepth(Shader(Filepath::ForwardShader + "PointLightDepthMap.vs", Filepath::ForwardShader + "PointLightDepthMap.fs", Filepath::ForwardShader + "PointLightDepthMap.gs")),
+lamp(Shader(Filepath::ForwardShader + "Lamp.vs", Filepath::ForwardShader + "Lamp.fs")),
 window(window)
 {
 }

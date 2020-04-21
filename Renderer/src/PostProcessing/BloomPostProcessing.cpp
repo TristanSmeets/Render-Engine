@@ -3,8 +3,8 @@
 #include "Utility/Filepath.h"
 
 BloomPostProcessing::BloomPostProcessing() :
-	blur(Shader(Filepath::Shader + "BasicPostProcessing.vs", Filepath::Shader + "Blur.fs")),
-	bloom(Shader(Filepath::Shader + "BasicPostProcessing.vs", Filepath::Shader + "Bloom.fs"))
+	blur(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs")),
+	bloom(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Bloom.fs"))
 {
 }
 
