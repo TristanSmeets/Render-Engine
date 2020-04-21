@@ -23,7 +23,7 @@ public:
     void PollEvents();
     void SwapBuffers();
     GLFWwindow* GetGLFWwindow() const;
-	const Parameters GetWindowParameters();
+	const Parameters GetWindowParameters() const;
     const bool IsOpen() const;
 
 private:

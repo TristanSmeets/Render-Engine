@@ -46,7 +46,7 @@ GLFWwindow * Window::GetGLFWwindow() const
 	return window;
 }
 
-const Window::Parameters Window::GetWindowParameters()
+const Window::Parameters Window::GetWindowParameters() const
 {
 	Window::Parameters parameters;
 	parameters.Title = title;
