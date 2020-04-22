@@ -49,6 +49,8 @@ void DeferredShading::Initialize(Scene & scene)
 	}
 	gBuffer.Unbind();
 
+	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
+
 	lightingShader.Use();
 	lightingShader.SetInt("gPosition", 0);
 	lightingShader.SetInt("gNormal", 1);
@@ -57,6 +59,14 @@ void DeferredShading::Initialize(Scene & scene)
 	geometryShader.Use();
 	geometryShader.SetInt("diffuse", 0);
 	geometryShader.SetInt("specular", 1);
+	geometryShader.SetMat4("projection", projection);
+
+	skyboxShader.Use();
+	skyboxShader.SetInt("environmentMap", 0);
+	skyboxShader.SetMat4("projection", projection);
+
+	lamp.Use();
+	lamp.SetMat4("projection", projection);
 
 	glViewport(0, 0, parameters.Width, parameters.Height);
 
@@ -73,11 +83,9 @@ void DeferredShading::Render(Scene & scene)
 	gBuffer.Bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
 
 	geometryShader.Use();
-	geometryShader.SetMat4("projection", projection);
 	geometryShader.SetMat4("view", view);
 
 	const std::vector<Actor>& actors = scene.GetActors();
@@ -110,12 +118,21 @@ void DeferredShading::Render(Scene & scene)
 		lightingShader.SetVec3("lights[" + std::to_string(i) + "].Position", lights[i].GetWorldPosition());
 		lightingShader.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 		//Update attenuation parameters and calculate radius
+		const float constant = 1.0f;
 		const float linear = 0.35f;
 		const float quadratic = 0.44f;
+
+		glm::vec3 colour = lights[i].GetColour();
+
+		const float maxBrightness = std::fmaxf(std::fmaxf(colour.r, colour.g), colour.b);
+		float radius = (-linear + std::sqrtf(linear * linear - 4 * quadratic * (constant - (256.0f / 10.0f) * maxBrightness))) / (2.0f * quadratic);
 		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Linear", linear);
 		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Radius", radius);
+
 	}
 	lightingShader.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
+
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
@@ -133,7 +150,6 @@ void DeferredShading::Render(Scene & scene)
 
 	//Render lights on top of scene
 	lamp.Use();
-	lamp.SetMat4("projection", projection);
 	lamp.SetMat4("view", view);
 
 	for (unsigned int i = 0; i < lights.size(); ++i)
@@ -142,4 +158,10 @@ void DeferredShading::Render(Scene & scene)
 		lamp.SetVec3("lightColour", lights[i].GetColour());
 		lights[i].GetRenderComponent().GetMesh().Draw();
 	}
+
+	glDepthFunc(GL_LEQUAL);
+	skyboxShader.Use();
+	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
+	scene.GetSkybox().Draw();
+	glDepthFunc(GL_LESS);
 }

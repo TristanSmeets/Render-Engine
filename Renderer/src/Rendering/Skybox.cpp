@@ -170,8 +170,8 @@ void Skybox::CreatePrefilterMap()
 
 void Skybox::CreateLookupTexture()
 {
-	Shader brdfShader("shader/brdf.vs",
-		"shader/brdf.fs");
+	Shader brdfShader(Filepath::ForwardShader + "brdf.vs",
+		Filepath::ForwardShader + "brdf.fs");
 
 	lookup = Texture::CreateEmpty("Lookup", 512, 512, GL_RG16F, GL_RG, GL_FLOAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

@@ -13,6 +13,7 @@ struct Light{
 
     float Linear;
     float Quadratic;
+    float Radius;
 };
 
 const int NumberOfLights = 32;
@@ -31,19 +32,22 @@ void main()
 
     for(int i = 0; i < NumberOfLights; ++i)
     {
-        //Diffuse colour
-        vec3 lightDirection = normalize(lights[i].Position - FragmentPosition);
-        vec3 diffuse = max(dot(Normal, lightDirection), 0.0f) * DiffuseTextureColour * lights[i].Color;
-        //Specular Colour
-        vec3 halfwayDirection = normalize(lightDirection + viewDirection);
-        float specularPower = pow(max(dot(Normal, halfwayDirection), 0.0f), 16.0f);
-        vec3 specular = lights[i].Color * specularPower * SpecularTextureColour;
-        //Attenuation
         float distance = length(lights[i].Position - FragmentPosition);
-        float attenuation = 1.0f / (1.0f + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
-        diffuse *= attenuation;
-        specular *= attenuation;
-        lighting += diffuse + specular;
+        if(distance < lights[i].Radius)
+        {
+            //Diffuse colour
+            vec3 lightDirection = normalize(lights[i].Position - FragmentPosition);
+            vec3 diffuse = max(dot(Normal, lightDirection), 0.0f) * DiffuseTextureColour * lights[i].Color;
+            //Specular Colour
+            vec3 halfwayDirection = normalize(lightDirection + viewDirection);
+            float specularPower = pow(max(dot(Normal, halfwayDirection), 0.0f), 16.0f);
+            vec3 specular = lights[i].Color * specularPower * SpecularTextureColour;
+            //Attenuation
+            float attenuation = 1.0f / (1.0f + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
+            diffuse *= attenuation;
+            specular *= attenuation;
+            lighting += diffuse + specular;
+        }
     }
 
     vec3 result = vec3(1.0f) - exp(-lighting * 1.0f);
