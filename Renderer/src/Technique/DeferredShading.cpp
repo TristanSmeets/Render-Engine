@@ -1,6 +1,7 @@
 #include "Rendererpch.h"
 #include "DeferredShading.h"
 #include "Utility/Filepath.h"
+#include <random>
 
 DeferredShading::DeferredShading(const Window& window) :
 	window(window),
@@ -16,6 +17,7 @@ DeferredShading::~DeferredShading()
 
 void DeferredShading::Initialize(Scene & scene)
 {
+	//GBuffer setup
 	gBuffer.Generate();
 	gBuffer.Bind();
 	
@@ -49,6 +51,65 @@ void DeferredShading::Initialize(Scene & scene)
 	}
 	gBuffer.Unbind();
 
+	//SSAO buffer setup
+	aoColourBuffer.Generate();
+	aoBlurBuffer.Generate();
+	//Colour buffer
+	aoColourBuffer.Bind();
+	aoColour = Texture::CreateEmpty("aoColour", parameters.Width, parameters.Width, GL_RED, GL_RGB, GL_FLOAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	aoColourBuffer.AttachTexture(aoColour);
+	if (!aoBlurBuffer.IsCompleted())
+	{
+		printf("SSAO Framebuffer not complete\n");
+	}
+	//Blur buffer
+	aoBlurBuffer.Bind();
+	aoBlur = Texture::CreateEmpty("aoBlur", parameters.Width, parameters.Height, GL_RED, GL_RGB, GL_FLOAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	aoBlurBuffer.AttachTexture(aoBlur);
+	if (!aoBlurBuffer.IsCompleted())
+	{
+		printf("SSAO Blur Framebuffer not complete\n");
+	}
+	aoBlurBuffer.Unbind();
+
+	//Generate sample kernel
+	std::uniform_real_distribution<GLfloat> randomFloats(0.0f, 1.0f);
+	std::default_random_engine generator;
+	for (unsigned int i = 0; i < 64; ++i)
+	{
+		glm::vec3 sample(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator));
+		sample = glm::normalize(sample);
+		sample *= randomFloats(generator);
+		float scale = float(i) / 64.0f;
+
+		//Scale samples so there more alligned to the center of the kernel
+		scale = 0.1f + (scale * scale) * (1.0f - 0.1f);
+		sample *= scale;
+		ssaoKernel[i] = sample;
+	}
+
+	//Generate noise Texture
+	glm::vec3 ssaoNoise[16];
+	for (unsigned int i = 0; i < 16; ++i)
+	{
+		glm::vec3 noise(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, 0.0f);
+		ssaoNoise[i] = noise;
+	}
+	GLuint noiseTexture;
+	glGenTextures(1, &noiseTexture);
+	glBindTexture(GL_TEXTURE_2D, noiseTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	aoNoise = Texture("aoNoise", noiseTexture);
+
+	//Shader setup
 	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
 
 	lightingShader.Use();
