@@ -3,7 +3,7 @@
 #include "Utility/Filepath.h"
 
 PostProcessing::PostProcessing() : 
-	shader(Shader(Filepath::Shader + "BasicPostProcessing.vs", Filepath::Shader + "BasicPostProcessing.fs"))
+	shader(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "BasicPostProcessing.fs"))
 {
 }
 

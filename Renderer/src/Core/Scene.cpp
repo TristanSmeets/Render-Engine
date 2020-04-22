@@ -138,14 +138,34 @@ void Scene::InitializeMaterials()
 void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
-	Light light1 = Light("Light", glm::vec3(7.4f, 6.0f, 5.0f), glm::vec3(8.1f, 5.7f, 1.1f));
-	//Light light1 = Light("Light", glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(81.0f, 57.0f, 11.0f));
-	light1.GetRenderComponent().SetMesh(meshes[0]);
 
-	Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(12.0f, 22.0f, 11.0f));
-	light2.GetRenderComponent().SetMesh(meshes[0]);
-	lights.push_back(light1);
-	lights.push_back(light2);
+	const unsigned int NumberOfLights = 32;
+
+	srand(NumberOfLights);
+
+	for (unsigned int i = 0; i < NumberOfLights; ++i)
+	{
+		float x = ((rand() % 100) / 100.0f) * 30.0f - 15.0f;
+		float y = ((rand() % 100) / 100.0f) * 5.0f + 1.0f;
+		float z = ((rand() % 100) / 100.0f) * 30.0f - 12.0f;
+
+		float r = ((rand() % 100) / 200.0f) + 0.5f;
+		float g = ((rand() % 100) / 200.0f) + 0.5f;
+		float b = ((rand() % 100) / 200.0f) + 0.5f;
+
+		Light light = Light("Light#" + std::to_string(i), glm::vec3(x, y, z), glm::vec3(r, g, b));
+		light.GetRenderComponent().SetMesh(meshes[0]);
+		lights.push_back(light);
+	}
+
+	//Light light1 = Light("Light", glm::vec3(7.4f, 6.0f, 5.0f), glm::vec3(0.81f, 0.57f, 0.11f));
+	////Light light1 = Light("Light", glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(81.0f, 57.0f, 11.0f));
+	//light1.GetRenderComponent().SetMesh(meshes[0]);
+	//
+	//Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(0.72f, 0.92f, 0.5f));
+	//light2.GetRenderComponent().SetMesh(meshes[0]);
+	//lights.push_back(light1);
+	//lights.push_back(light2);
 	
 	directional.GetTransform().Translate(glm::vec3(-3.5f, 5.0f, -3.5f));
 	directional.GetRenderComponent().SetMesh(meshes[0]);
