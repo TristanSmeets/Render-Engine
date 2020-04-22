@@ -66,7 +66,7 @@ void DeferredShading::Initialize(Scene & scene)
 
 void DeferredShading::Render(Scene & scene)
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Geometry pass
@@ -110,8 +110,8 @@ void DeferredShading::Render(Scene & scene)
 		lightingShader.SetVec3("lights[" + std::to_string(i) + "].Position", lights[i].GetWorldPosition());
 		lightingShader.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 		//Update attenuation parameters and calculate radius
-		const float linear = 0.7f;
-		const float quadratic = 1.8f;
+		const float linear = 0.35f;
+		const float quadratic = 0.44f;
 		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Linear", linear);
 		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
 	}
