@@ -118,16 +118,11 @@ void DeferredShading::Render(Scene & scene)
 		lightingShader.SetVec3("lights[" + std::to_string(i) + "].Position", lights[i].GetWorldPosition());
 		lightingShader.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 		//Update attenuation parameters and calculate radius
-		const float constant = 1.0f;
-		const float linear = 0.35f;
-		const float quadratic = 0.44f;
-
 		glm::vec3 colour = lights[i].GetColour();
-
 		const float maxBrightness = std::fmaxf(std::fmaxf(colour.r, colour.g), colour.b);
-		float radius = (-linear + std::sqrtf(linear * linear - 4 * quadratic * (constant - (256.0f / 10.0f) * maxBrightness))) / (2.0f * quadratic);
-		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Linear", linear);
-		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+		float radius = (-attenuationLinear + std::sqrtf(attenuationLinear * attenuationLinear - 4 * attenuationQuadratic * (attenuationConstant - (256.0f / 10.0f) * maxBrightness))) / (2.0f * attenuationQuadratic);
+		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Linear", attenuationLinear);
+		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Quadratic", attenuationQuadratic);
 		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Radius", radius);
 
 	}
