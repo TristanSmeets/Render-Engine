@@ -184,7 +184,7 @@ void Scene::InitializeActors()
 	}
 
 	Actor terrain = Actor("Terrain");
-	terrain.GetTransform().Translate(glm::vec3(0.0f, -5.0f, 0.0f));
+	terrain.GetTransform().Translate(glm::vec3(0.0f, -1.0f, 0.0f));
 	terrain.GetRenderComponent().SetMesh(meshes[2]);
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);

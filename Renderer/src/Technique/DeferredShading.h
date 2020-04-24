@@ -13,9 +13,9 @@ public:
 	void Render(Scene& scene);
 
 private:
-	const float attenuationConstant = 0.09f;
-	const float attenuationLinear = 0.032f;
-	const float attenuationQuadratic = 0.44f;
+	const float attenuationConstant = 1.0f;
+	const float attenuationLinear = 0.22f;
+	const float attenuationQuadratic = 0.2f;
 	const Window& window;
 
 	Framebuffer gBuffer;
