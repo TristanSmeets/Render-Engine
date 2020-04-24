@@ -18,6 +18,13 @@ public:
 	void Render(Scene& scene);
 
 private:
+	void SetupShaders(Scene & scene);
+	void SetupDirectionalShadowBuffer();
+	void SetupPointLightBuffer();
+	void CreatePointLightShadows(const std::vector<Light> & lights, const std::vector<Actor> & actors);
+	void CreateDirectionalLightShadow(Scene & scene, const std::vector<Actor> & actors);
+	void SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, const std::vector<Light> & lights);
+
 	const static int maximumLights = 4;
 	const int shadowWidth = 1024;
 	const int shadowHeight = 1024;
@@ -25,13 +32,12 @@ private:
 	PostProcessing* postProcessing;
 	Shader lamp;
 	Shader pbr;
-	Shader directionalShadowDepth;
 	Shader pointShadowDepth;
-	Framebuffer directionalDepthBuffer;
-	Texture shadow;
-	GLuint shadowTexture;
 	Cubemap shadowCubeMaps[maximumLights];
 	Framebuffer pointDepthBuffer;
+	//Shader directionalShadowDepth;
+	//Framebuffer directionalDepthBuffer;
+	//Texture shadow;
 
 	Bloom bloom;
 	Basic basic;
