@@ -4,6 +4,7 @@
 #include "Utility/Renderbuffer.h"
 #include "Rendering/Texture.h"
 
+
 class DeferredShading : public RenderTechnique
 {
 public:
@@ -13,28 +14,35 @@ public:
 	void Render(Scene& scene);
 
 private:
+	void SetupGBuffer(const Window::Parameters &parameters);
+	void SetupSSAOBuffers(const Window::Parameters &parameters);
+	void CreateSSAOKernel(std::uniform_real_distribution<GLfloat> &randomFloats, std::default_random_engine &generator);
+	void CreateNoiseTexture(std::uniform_real_distribution<GLfloat> &randomFloats, std::default_random_engine &generator);
+	void SetupShaders(Scene & scene);
+	void GeometryPass(const glm::mat4 &view, Scene & scene);
+	void SSAOTexturePass();
+	void BlurPass();
+	void LightingPass(const std::vector<Light> & lights, Scene & scene);
+	void GBufferToDefaultFramebuffer();
+	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
+	
 	const float attenuationConstant = 1.0f;
 	const float attenuationLinear = 0.22f;
 	const float attenuationQuadratic = 0.2f;
 	const Window& window;
 
+	Framebuffer aoBuffers[2];
 	Framebuffer gBuffer;
-	Texture gBufferTextures[3];
 	Renderbuffer renderbuffer;
+	Texture gBufferTextures[3];
+	Texture aoTextures[2];
+	Texture noise;
 	Shader lamp;
 	Shader geometryShader;
-	Shader lightingShader;
-	NDCQuad quad;
-
-	//SSAO
-	Framebuffer aoColourBuffer;
-	Framebuffer aoBlurBuffer;
-	Texture aoColour;
-	Texture aoBlur;
-	Texture aoNoise;
-	Shader ssaoGeometry;
-	Shader ssaoLighting;
 	Shader ssao;
 	Shader ssaoBlur;
+	Shader ssaoLighting;
+	NDCQuad quad;
+
 	glm::vec3 ssaoKernel[64];
 };
