@@ -5,7 +5,8 @@
 #include "Utility/Cubemap.h"
 #include "Utility/Framebuffer.h"
 #include "PostProcessing/PostProcessing.h"
-#include "PostProcessing/BloomPostProcessing.h"
+#include "PostProcessing/Forward/Bloom.h"
+#include "PostProcessing/Forward/Basic.h"
 
 class ForwardPBR : public RenderTechnique
 {
@@ -21,7 +22,7 @@ private:
 	const int shadowWidth = 1024;
 	const int shadowHeight = 1024;
 	Window& window;
-	//PostProcessing postProcessing;
+	PostProcessing* postProcessing;
 	Shader lamp;
 	Shader pbr;
 	Shader directionalShadowDepth;
@@ -32,7 +33,8 @@ private:
 	Cubemap shadowCubeMaps[maximumLights];
 	Framebuffer pointDepthBuffer;
 
-	BloomPostProcessing bloom;
+	Bloom bloom;
+	Basic basic;
 
 	float aspect = (float)shadowHeight / (float)shadowHeight;
 	float nearPlane = 1.0f;

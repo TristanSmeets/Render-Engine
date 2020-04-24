@@ -74,8 +74,9 @@ void ForwardPBR::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	//postProcessing.Initialize(window.GetWindowParameters());
-	bloom.Initialize(window.GetWindowParameters());
+	postProcessing = &basic;
+
+	postProcessing->Initialize(window.GetWindowParameters());
 	printf("Initializion Complete\n\n");
 }
 
@@ -161,9 +162,7 @@ void ForwardPBR::Render(Scene & scene)
 	pointDepthBuffer.Unbind();
 
 	//Render the scene as normal with shadow mapping(using depth map)
-
-	//postProcessing.Bind();
-	bloom.BindHDR();
+	postProcessing->Bind();
 	Window::Parameters windowParameters = window.GetWindowParameters();
 	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -231,12 +230,7 @@ void ForwardPBR::Render(Scene & scene)
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	skybox.Draw();
 	glDepthFunc(GL_LESS);
-	//postProcessing.Unbind();
-	//Shader& shader = postProcessing.GetShader();
-	//shader.Use();
-	//shader.SetInt("shadowTexture", 1);
-	//shadow.Bind(shader, Texture::Normal);
-	//postProcessing.Draw();
-	bloom.Unbind();
-	bloom.Draw();
+
+	postProcessing->Unbind();
+	postProcessing->Draw();
 }

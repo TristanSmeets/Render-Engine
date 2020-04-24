@@ -1,18 +1,52 @@
 #include "Rendererpch.h"
-#include "BloomPostProcessing.h"
-#include "Utility/Filepath.h"
+#include "Bloom.h"
 
-BloomPostProcessing::BloomPostProcessing() :
+Bloom::Bloom() :
 	blur(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs")),
 	bloom(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Bloom.fs"))
 {
 }
 
-BloomPostProcessing::~BloomPostProcessing()
+Bloom::~Bloom()
 {
 }
 
-void BloomPostProcessing::Initialize(const Window::Parameters & parameters)
+void Bloom::Initialize(const Window::Parameters & parameters)
+{
+	SetupHDRFramebuffer(parameters);
+	SetupBlurFramebuffer(parameters);
+	SetupShaders();
+}
+
+void Bloom::SetupShaders()
+{
+	blur.Use();
+	blur.SetInt("image", 0);
+	bloom.Use();
+	bloom.SetInt("scene", 0);
+	bloom.SetInt("bloomBlur", 1);
+}
+
+void Bloom::SetupBlurFramebuffer(const Window::Parameters & parameters)
+{
+
+	for (unsigned int i = 0; i < 2; ++i)
+	{
+		blurFramebuffers[i].Generate();
+		blurFramebuffers[i].Bind();
+		blurTextures[i] = Texture::CreateEmpty("BlurBuffer#" + std::to_string(i), parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		blurFramebuffers[i].AttachTexture(blurTextures[i]);
+		if (!blurFramebuffers[i].IsCompleted())
+		{
+			printf("Error: blur framebuffer#%d not complete", i);
+		}
+	}
+}
+
+void Bloom::SetupHDRFramebuffer(const Window::Parameters & parameters)
 {
 	hdrFBO.Generate();
 	hdrFBO.Bind();
@@ -40,39 +74,19 @@ void BloomPostProcessing::Initialize(const Window::Parameters & parameters)
 	}
 
 	hdrFBO.Unbind();
-
-	for (unsigned int i = 0; i < 2; ++i)
-	{
-		pingpongFramebuffers[i].Generate();
-		pingpongFramebuffers[i].Bind();
-		pingpongTextures[i] = Texture::CreateEmpty("PingpongBuffer#" + std::to_string(i), parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		pingpongFramebuffers[i].AttachTexture(pingpongTextures[i]);
-		if (!pingpongFramebuffers[i].IsCompleted())
-		{
-			printf("Error: Pingpong framebuffer#%d not complete", i);
-		}
-	}
-	blur.Use();
-	blur.SetInt("image", 0);
-	bloom.Use();
-	bloom.SetInt("scene", 0);
-	bloom.SetInt("bloomBlur", 1);
 }
 
-void BloomPostProcessing::BindHDR()
+void Bloom::Bind()
 {
 	hdrFBO.Bind();
 }
 
-void BloomPostProcessing::Unbind()
+void Bloom::Unbind()
 {
 	hdrFBO.Unbind();
 }
 
-void BloomPostProcessing::BlurTextureBuffers()
+void Bloom::BlurTextureBuffers()
 {
 	bool horizontal = true;
 	bool firstIteration = true;
@@ -80,7 +94,7 @@ void BloomPostProcessing::BlurTextureBuffers()
 	blur.Use();
 	for (unsigned int i = 0; i < amount; ++i)
 	{
-		pingpongFramebuffers[horizontal].Bind();
+		blurFramebuffers[horizontal].Bind();
 		if (horizontal)
 		{
 			blur.SetSubroutine(Shader::SubroutineParameters("Horizontal", GL_FRAGMENT_SHADER));
@@ -96,28 +110,23 @@ void BloomPostProcessing::BlurTextureBuffers()
 		}
 		else
 		{
-			pingpongTextures[!horizontal].Bind(blur, Texture::Albedo);
+			blurTextures[!horizontal].Bind(blur, Texture::Albedo);
 		}
-		//glBindTexture(GL_TEXTURE_2D, firstIteration ? colourBuffers[1].GetID() : pingpongTextures[!horizontal].GetID());
 
 		quad.Render();
 		horizontal = !horizontal;
 	}
-	pingpongFramebuffers[0].Unbind();
+	blurFramebuffers[0].Unbind();
 }
 
-void BloomPostProcessing::Draw()
+void Bloom::Draw()
 {
 	BlurTextureBuffers();
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	bloom.Use();
-	//blur.Use();
-	//blur.SetSubroutine(Shader::SubroutineParameters("Vertical", GL_FRAGMENT_SHADER));
 	colourBuffers[0].Bind(bloom, Texture::Albedo);
-	//colourBuffers[1].Bind(bloom, Texture::Normal);
-	//pingpongTextures[0].Bind(bloom, Texture::Albedo);
-	pingpongTextures[0].Bind(bloom, Texture::Normal);
+	blurTextures[1].Bind(bloom, Texture::Normal);
 	bloom.SetFloat("exposure", 1.0f);
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
