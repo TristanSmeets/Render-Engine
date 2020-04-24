@@ -28,7 +28,6 @@ void main()
     float SpecularTextureColour = texture(gAlbedoSpecular, UV).a;
     float AmbientOcclusion = texture(ssao, UV).r;
 
-
     vec3 ambient = vec3(0.3f * DiffuseTextureColour * AmbientOcclusion);
     vec3 lighting = ambient;
     vec3 viewDirection = normalize(-FragmentPosition);
@@ -50,9 +49,8 @@ void main()
         lighting += diffuse + specular;
     }
 
-    //vec3 result = vec3(1.0f) - exp(-lighting * 1.0f);
-    //result = pow(result, vec3(1.0f/ 2.2f));
+    vec3 result = vec3(1.0f) - exp(-lighting * 1.0f);
+    result = pow(result, vec3(1.0f/ 2.2f));
 
-    FragmentColour = vec4(lighting, 1.0f);
-    //FragmentColour = texture(ssao, UV);
+    FragmentColour = vec4(result, 1.0f);
 }

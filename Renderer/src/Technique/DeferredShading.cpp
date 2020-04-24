@@ -116,10 +116,10 @@ void DeferredShading::Initialize(Scene & scene)
 	//Shader setup
 	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
 
-	//lightingShader.Use();
-	//lightingShader.SetInt("gPosition", 0);
-	//lightingShader.SetInt("gNormal", 1);
-	//lightingShader.SetInt("gAlbedoSpecular", 2);
+	lightingShader.Use();
+	lightingShader.SetInt("gPosition", 0);
+	lightingShader.SetInt("gNormal", 1);
+	lightingShader.SetInt("gAlbedoSpecular", 2);
 
 	geometryShader.Use();
 	geometryShader.SetInt("diffuse", 0);
@@ -170,23 +170,23 @@ void DeferredShading::Render(Scene & scene)
 
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
 
-	//geometryShader.Use();
-	//geometryShader.SetMat4("view", view);
+	geometryShader.Use();
+	geometryShader.SetMat4("view", view);
 
-	ssaoGeometry.Use();
-	ssaoGeometry.SetMat4("view", view);
+	//ssaoGeometry.Use();
+	//ssaoGeometry.SetMat4("view", view);
 
 	const std::vector<Actor>& actors = scene.GetActors();
 	
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
-		//geometryShader.SetMat4("model", actors[i].GetWorldMatrix());
-		ssaoGeometry.SetMat4("model", actors[i].GetWorldMatrix());
-		//const Material& material = actors[i].GetRenderComponent().GetMaterial();
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
+		geometryShader.SetMat4("model", actors[i].GetWorldMatrix());
+		//ssaoGeometry.SetMat4("model", actors[i].GetWorldMatrix());
+		const Material& material = actors[i].GetRenderComponent().GetMaterial();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 	gBuffer.Unbind();
@@ -270,30 +270,30 @@ void DeferredShading::Render(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 
 	//Copy content of geometry shader to default framebuffer's depth buffer
-	//glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.GetBuffer());
-	//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-	//	// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
-	//	// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
-	//	// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format)
-	//Window::Parameters parameter = window.GetWindowParameters();
-	//
-	//glBlitFramebuffer(0, 0, parameter.Width, parameter.Height, 0, 0, parameter.Width, parameter.Height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-	//gBuffer.Unbind();
-	//
-	////Render lights on top of scene
-	//lamp.Use();
-	//lamp.SetMat4("view", view);
-	//
-	//for (unsigned int i = 0; i < lights.size(); ++i)
-	//{
-	//	lamp.SetMat4("model", lights[i].GetWorldMatrix());
-	//	lamp.SetVec3("lightColour", lights[i].GetColour());
-	//	lights[i].GetRenderComponent().GetMesh().Draw();
-	//}
-	//
-	//glDepthFunc(GL_LEQUAL);
-	//skyboxShader.Use();
-	//skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
-	//scene.GetSkybox().Draw();
-	//glDepthFunc(GL_LESS);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.GetBuffer());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+		// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
+		// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
+		// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format)
+	Window::Parameters parameter = window.GetWindowParameters();
+	
+	glBlitFramebuffer(0, 0, parameter.Width, parameter.Height, 0, 0, parameter.Width, parameter.Height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	gBuffer.Unbind();
+	
+	//Render lights on top of scene
+	lamp.Use();
+	lamp.SetMat4("view", view);
+	
+	for (unsigned int i = 0; i < lights.size(); ++i)
+	{
+		lamp.SetMat4("model", lights[i].GetWorldMatrix());
+		lamp.SetVec3("lightColour", lights[i].GetColour());
+		lights[i].GetRenderComponent().GetMesh().Draw();
+	}
+	
+	glDepthFunc(GL_LEQUAL);
+	skyboxShader.Use();
+	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
+	scene.GetSkybox().Draw();
+	glDepthFunc(GL_LESS);
 }
