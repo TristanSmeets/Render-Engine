@@ -158,15 +158,6 @@ void Scene::InitializeActors()
 		lights.push_back(light);
 	}
 
-	//Light light1 = Light("Light", glm::vec3(7.4f, 6.0f, 5.0f), glm::vec3(0.81f, 0.57f, 0.11f));
-	////Light light1 = Light("Light", glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(81.0f, 57.0f, 11.0f));
-	//light1.GetRenderComponent().SetMesh(meshes[0]);
-	//
-	//Light light2 = Light("Light2", glm::vec3(-7.4f, 6.0f, 5.0f), glm::vec3(0.72f, 0.92f, 0.5f));
-	//light2.GetRenderComponent().SetMesh(meshes[0]);
-	//lights.push_back(light1);
-	//lights.push_back(light2);
-	
 	directional.GetTransform().Translate(glm::vec3(-3.5f, 5.0f, -3.5f));
 	directional.GetRenderComponent().SetMesh(meshes[0]);
 
@@ -177,7 +168,7 @@ void Scene::InitializeActors()
 			std::string name = std::string("Sphere[") + std::to_string(i) + std::string("][") + std::to_string(j) + std::string("]");
 			Actor sphere = Actor(name);
 			sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0,(j * 3.0f) - 2.5f));
-			sphere.GetRenderComponent().SetMesh(meshes[0]);
+			sphere.GetRenderComponent().SetMesh(meshes[1]);
 			sphere.GetRenderComponent().SetMaterial(materials[(i + j) % 2]);
 			actors.push_back(sphere);
 		}
