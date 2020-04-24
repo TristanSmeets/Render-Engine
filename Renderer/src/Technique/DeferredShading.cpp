@@ -7,7 +7,11 @@ DeferredShading::DeferredShading(const Window& window) :
 	window(window),
 	lamp(Filepath::DeferredShader + "DeferredLamp.vs", Filepath::DeferredShader + "DeferredLamp.fs"),
 	lightingShader(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "DeferredShading.fs"),
-	geometryShader(Filepath::DeferredShader + "GBuffer.vs", Filepath::DeferredShader + "GBuffer.fs")
+	geometryShader(Filepath::DeferredShader + "GBuffer.vs", Filepath::DeferredShader + "GBuffer.fs"),
+	ssaoGeometry(Filepath::DeferredShader + "SSAOGeometry.vs", Filepath::DeferredShader + "SSAOGeometry.fs"),
+	ssaoLighting(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAOLighting.fs"),
+	ssao(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAO.fs"),
+	ssaoBlur(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAOBlur.fs")
 {
 }
 
@@ -56,7 +60,7 @@ void DeferredShading::Initialize(Scene & scene)
 	aoBlurBuffer.Generate();
 	//Colour buffer
 	aoColourBuffer.Bind();
-	aoColour = Texture::CreateEmpty("aoColour", parameters.Width, parameters.Width, GL_RED, GL_RGB, GL_FLOAT);
+	aoColour = Texture::CreateEmpty("aoColour", parameters.Width, parameters.Height, GL_RED, GL_RGB, GL_FLOAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	aoColourBuffer.AttachTexture(aoColour);
@@ -112,10 +116,10 @@ void DeferredShading::Initialize(Scene & scene)
 	//Shader setup
 	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
 
-	lightingShader.Use();
-	lightingShader.SetInt("gPosition", 0);
-	lightingShader.SetInt("gNormal", 1);
-	lightingShader.SetInt("gAlbedoSpecular", 2);
+	//lightingShader.Use();
+	//lightingShader.SetInt("gPosition", 0);
+	//lightingShader.SetInt("gNormal", 1);
+	//lightingShader.SetInt("gAlbedoSpecular", 2);
 
 	geometryShader.Use();
 	geometryShader.SetInt("diffuse", 0);
@@ -129,6 +133,26 @@ void DeferredShading::Initialize(Scene & scene)
 	lamp.Use();
 	lamp.SetMat4("projection", projection);
 
+	ssaoGeometry.Use();
+	ssaoGeometry.SetMat4("projection", projection);
+	ssaoGeometry.SetInt("diffuse", 0);
+	ssaoGeometry.SetInt("specular", 1);
+
+	ssaoLighting.Use();
+	ssaoLighting.SetInt("gPosition", 0);
+	ssaoLighting.SetInt("gNormal", 1);
+	ssaoLighting.SetInt("gAlbedoSpecular", 2);
+	ssaoLighting.SetInt("ssao", 3);
+	
+	ssao.Use();
+	ssao.SetInt("gPosition", 0);
+	ssao.SetInt("gNormal", 1);
+	ssao.SetInt("noise", 2);
+	ssao.SetMat4("projection", projection);
+	
+	ssaoBlur.Use();
+	ssaoBlur.SetInt("ssaoInput", 0);
+
 	glViewport(0, 0, parameters.Width, parameters.Height);
 
 	glEnable(GL_DEPTH_TEST);
@@ -137,7 +161,7 @@ void DeferredShading::Initialize(Scene & scene)
 
 void DeferredShading::Render(Scene & scene)
 {
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Geometry pass
@@ -146,78 +170,130 @@ void DeferredShading::Render(Scene & scene)
 
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
 
-	geometryShader.Use();
-	geometryShader.SetMat4("view", view);
+	//geometryShader.Use();
+	//geometryShader.SetMat4("view", view);
+
+	ssaoGeometry.Use();
+	ssaoGeometry.SetMat4("view", view);
 
 	const std::vector<Actor>& actors = scene.GetActors();
 	
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
-		geometryShader.SetMat4("model", actors[i].GetWorldMatrix());
-		const Material& material = actors[i].GetRenderComponent().GetMaterial();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
-
+		//geometryShader.SetMat4("model", actors[i].GetWorldMatrix());
+		ssaoGeometry.SetMat4("model", actors[i].GetWorldMatrix());
+		//const Material& material = actors[i].GetRenderComponent().GetMaterial();
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 	gBuffer.Unbind();
 
-	//Lighting pass
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	lightingShader.Use();
-	for (unsigned int i = 0; i < 3; ++i)
+	//Generate SSSAO textures
+	aoColourBuffer.Bind();
+	glClear(GL_COLOR_BUFFER_BIT);
+	ssao.Use();
+
+	for (unsigned int i = 0; i < 64; ++i)
+	{
+		ssao.SetVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
+	}
+	for (unsigned int i = 0; i < 2; ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, gBufferTextures[i].GetID());
 	}
-	//Send light relevant uniforms
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, aoNoise.GetID());
+	quad.Render();
+	aoColourBuffer.Unbind();
+
+	//Blur ssao texture to remove noise
+	aoBlurBuffer.Bind();
+	glClear(GL_COLOR_BUFFER_BIT);
+	ssaoBlur.Use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, aoColour.GetID());
+	quad.Render();
+	aoBlurBuffer.Unbind();
+
+	//Lighting pass
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 	const std::vector<Light>& lights = scene.GetLights();
+
+	ssaoLighting.Use();
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
-		lightingShader.SetVec3("lights[" + std::to_string(i) + "].Position", lights[i].GetWorldPosition());
-		lightingShader.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
-		//Update attenuation parameters and calculate radius
-		glm::vec3 colour = lights[i].GetColour();
-		const float maxBrightness = std::fmaxf(std::fmaxf(colour.r, colour.g), colour.b);
-		float radius = (-attenuationLinear + std::sqrtf(attenuationLinear * attenuationLinear - 4 * attenuationQuadratic * (attenuationConstant - (256.0f / 10.0f) * maxBrightness))) / (2.0f * attenuationQuadratic);
-		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Linear", attenuationLinear);
-		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Quadratic", attenuationQuadratic);
-		lightingShader.SetFloat("lights[" + std::to_string(i) + "].Radius", radius);
+		glm::vec3 lightPositionView = glm::vec3(scene.GetCamera().GetViewMatrix() * glm::vec4(lights[i].GetWorldPosition(), 1.0f));
+		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Position", lightPositionView);
+		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 
+		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Linear", attenuationLinear);
+		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Quadratic", attenuationQuadratic);
+		for (unsigned int i = 0; i < 3; ++i)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+			glBindTexture(GL_TEXTURE_2D, gBufferTextures[i].GetID());
+		}
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, aoBlur.GetID());
 	}
-	lightingShader.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
+
+	//lightingShader.Use();
+	//for (unsigned int i = 0; i < 3; ++i)
+	//{
+	//	glActiveTexture(GL_TEXTURE0 + i);
+	//	glBindTexture(GL_TEXTURE_2D, gBufferTextures[i].GetID());
+	//}
+	////Send light relevant uniforms
+	//const std::vector<Light>& lights = scene.GetLights();
+	//for (unsigned int i = 0; i < lights.size(); ++i)
+	//{
+	//	lightingShader.SetVec3("lights[" + std::to_string(i) + "].Position", lights[i].GetWorldPosition());
+	//	lightingShader.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
+	//	//Update attenuation parameters and calculate radius
+	//	glm::vec3 colour = lights[i].GetColour();
+	//	const float maxBrightness = std::fmaxf(std::fmaxf(colour.r, colour.g), colour.b);
+	//	float radius = (-attenuationLinear + std::sqrtf(attenuationLinear * attenuationLinear - 4 * attenuationQuadratic * (attenuationConstant - (256.0f / 10.0f) * maxBrightness))) / (2.0f * attenuationQuadratic);
+	//	lightingShader.SetFloat("lights[" + std::to_string(i) + "].Linear", attenuationLinear);
+	//	lightingShader.SetFloat("lights[" + std::to_string(i) + "].Quadratic", attenuationQuadratic);
+	//	lightingShader.SetFloat("lights[" + std::to_string(i) + "].Radius", radius);
+	//
+	//}
+	//lightingShader.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
 
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
 
 	//Copy content of geometry shader to default framebuffer's depth buffer
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.GetBuffer());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-		// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
-		// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
-		// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format)
-	Window::Parameters parameter = window.GetWindowParameters();
-
-	glBlitFramebuffer(0, 0, parameter.Width, parameter.Height, 0, 0, parameter.Width, parameter.Height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-	gBuffer.Unbind();
-
-	//Render lights on top of scene
-	lamp.Use();
-	lamp.SetMat4("view", view);
-
-	for (unsigned int i = 0; i < lights.size(); ++i)
-	{
-		lamp.SetMat4("model", lights[i].GetWorldMatrix());
-		lamp.SetVec3("lightColour", lights[i].GetColour());
-		lights[i].GetRenderComponent().GetMesh().Draw();
-	}
-
-	glDepthFunc(GL_LEQUAL);
-	skyboxShader.Use();
-	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
-	scene.GetSkybox().Draw();
-	glDepthFunc(GL_LESS);
+	//glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.GetBuffer());
+	//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+	//	// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
+	//	// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
+	//	// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format)
+	//Window::Parameters parameter = window.GetWindowParameters();
+	//
+	//glBlitFramebuffer(0, 0, parameter.Width, parameter.Height, 0, 0, parameter.Width, parameter.Height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	//gBuffer.Unbind();
+	//
+	////Render lights on top of scene
+	//lamp.Use();
+	//lamp.SetMat4("view", view);
+	//
+	//for (unsigned int i = 0; i < lights.size(); ++i)
+	//{
+	//	lamp.SetMat4("model", lights[i].GetWorldMatrix());
+	//	lamp.SetVec3("lightColour", lights[i].GetColour());
+	//	lights[i].GetRenderComponent().GetMesh().Draw();
+	//}
+	//
+	//glDepthFunc(GL_LEQUAL);
+	//skyboxShader.Use();
+	//skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
+	//scene.GetSkybox().Draw();
+	//glDepthFunc(GL_LESS);
 }

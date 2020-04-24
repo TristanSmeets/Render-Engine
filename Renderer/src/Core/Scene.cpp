@@ -139,7 +139,7 @@ void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
 
-	const unsigned int NumberOfLights = 32;
+	const unsigned int NumberOfLights = 1;
 
 	srand(NumberOfLights);
 
@@ -177,7 +177,7 @@ void Scene::InitializeActors()
 			std::string name = std::string("Sphere[") + std::to_string(i) + std::string("][") + std::to_string(j) + std::string("]");
 			Actor sphere = Actor(name);
 			sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0,(j * 3.0f) - 2.5f));
-			sphere.GetRenderComponent().SetMesh(meshes[1]);
+			sphere.GetRenderComponent().SetMesh(meshes[0]);
 			sphere.GetRenderComponent().SetMaterial(materials[(i + j) % 2]);
 			actors.push_back(sphere);
 		}

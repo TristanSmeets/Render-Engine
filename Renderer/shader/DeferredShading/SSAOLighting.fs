@@ -1,3 +1,4 @@
+#version 460 core
 out vec4 FragmentColour;
 
 in vec2 UV;
@@ -49,8 +50,9 @@ void main()
         lighting += diffuse + specular;
     }
 
-    vec3 result = vec3(1.0f) - exp(-lighting * 1.0f);
-    result = pow(result, vec3(1.0f/ 2.2f));
+    //vec3 result = vec3(1.0f) - exp(-lighting * 1.0f);
+    //result = pow(result, vec3(1.0f/ 2.2f));
 
-    FragmentColour = vec4(result, 1.0f);
+    FragmentColour = vec4(lighting, 1.0f);
+    //FragmentColour = texture(ssao, UV);
 }

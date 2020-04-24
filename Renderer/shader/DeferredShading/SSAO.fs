@@ -1,4 +1,4 @@
-#version 460 core
+#version 330 core
 out float FragColour;
 
 in vec2 UV;
@@ -18,7 +18,7 @@ const vec2 noiseScale = vec2(1280.0f/4.0f, 720.0f/4.0f);
 uniform mat4 projection;
 
 void main()
-[
+{
     //Get input for SSAO algorithm
     vec3 fragmentPosition = texture(gPosition, UV).xyz;
     vec3 normal = normalize(texture(gNormal, UV).rgb);
@@ -34,7 +34,7 @@ void main()
     {
         //Get sample position
         vec3 sample = TBN * samples[i];
-        sample = fragmentPosition * sample * radius;
+        sample = fragmentPosition + sample * radius;
 
         //Project sample position (to sample texture) (to get position on screen/texture)
         vec4 offset = vec4(sample, 1.0f);
@@ -49,6 +49,5 @@ void main()
         occlusion += (sampleDepth >= sample.z + bias ? 1.0f : 0.0) * rangeCheck;
     }
     occlusion = 1.0f - (occlusion / kernelSize);
-
     FragColour = occlusion;
-]
+}
