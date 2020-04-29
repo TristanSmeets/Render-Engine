@@ -27,7 +27,7 @@ uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
 
-#define MaximumLights 4
+#define MaximumLights 10
 //Shadow map
 //uniform sampler2D shadowMap;
 //uniform vec3 lightDirection;
@@ -42,8 +42,6 @@ uniform vec3 NonMetallicReflectionColour;
 
 //Lights
 uniform Light lights[MaximumLights];
-//uniform vec3 lightPositions[MaximumLights];
-//uniform vec3 lightColours[MaximumLights];
 
 //Camera position
 uniform vec3 cameraPos;
@@ -85,17 +83,14 @@ void main()
 
     vec3 Lo = vec3(0.0f);
 
-    for(int i = 0; i < MaximumLights; ++i )
+    for(int i = 0; i < MaximumLights; ++i)
     {
         //reflectance equation
         vec3 lightDirection = normalize(lights[i].Position - WorldPos);
-        //vec3 lightDirection = normalize(lightPositions[i] - WorldPos);
         vec3 H = normalize(viewDirection + lightDirection);
         float distance = length(lights[i].Position - WorldPos);
-        //float distance = length(lightPositions[i] - WorldPos);
         float attenuation = 1.0f / (distance * distance);
         vec3 radiance = lights[i].Colour;// * attenuation;
-        //vec3 radiance = lightColours[i] * attenuation;
 
         //Cook-Torrance BRDF
         float normalDistributionFunction = DistributionGGX(normal, H, roughness);
@@ -121,12 +116,11 @@ void main()
         float NdotL = max(dot(normal, lightDirection), 0.0f);
 
         float pointShadow = ShadowCalculation(WorldPos, shadowCubeMaps[i], lights[i].Position);
-        //float pointShadow = ShadowCalculation(WorldPos, shadowCubeMaps[i], lightPositions[i]);
         //add to outgoing radiance Lo.
         //note that we already multiplied the BRDF by the Fresnel (kS)
         //so we won't multiply by kS again
-        vec3 outgoingRadiance = (kD * albedo / PI + specular) * radiance * NdotL;
-        Lo += (1.0f - pointShadow) * outgoingRadiance; 
+        vec3 outgoingRadiance = (1.0f - pointShadow) * (kD * albedo / PI + specular) * radiance * NdotL;
+        Lo += outgoingRadiance; 
     }
 
     vec3 Fresnel = FresnelSchlickRoughness(max(dot(normal, viewDirection), 0.0f), F0, roughness);

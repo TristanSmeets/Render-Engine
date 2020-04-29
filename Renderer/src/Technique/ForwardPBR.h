@@ -25,7 +25,7 @@ private:
 	void CreateDirectionalLightShadow(Scene & scene, const std::vector<Actor> & actors);
 	void SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, const std::vector<Light> & lights);
 
-	const static int maximumLights = 4;
+	const static int maximumLights = 10;
 	const int shadowWidth = 1024;
 	const int shadowHeight = 1024;
 	Window& window;
