@@ -20,6 +20,10 @@ struct Light
 {
     vec3 Position;
     vec3 Colour;
+
+    float Constant;
+    float Linear;
+    float Quadratic;
 };
 
 //IBL
@@ -89,8 +93,8 @@ void main()
         vec3 lightDirection = normalize(lights[i].Position - WorldPos);
         vec3 H = normalize(viewDirection + lightDirection);
         float distance = length(lights[i].Position - WorldPos);
-        float attenuation = 1.0f / (distance * distance);
-        vec3 radiance = lights[i].Colour;// * attenuation;
+        float attenuation = 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
+        vec3 radiance = lights[i].Colour * attenuation;
 
         //Cook-Torrance BRDF
         float normalDistributionFunction = DistributionGGX(normal, H, roughness);
