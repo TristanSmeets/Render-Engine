@@ -16,6 +16,12 @@ struct Material
     sampler2D AO;
 };
 
+struct Light
+{
+    vec3 Position;
+    vec3 Colour;
+};
+
 //IBL
 uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
@@ -23,19 +29,21 @@ uniform sampler2D brdfLUT;
 
 #define MaximumLights 4
 //Shadow map
-uniform sampler2D shadowMap;
+//uniform sampler2D shadowMap;
 //uniform vec3 lightDirection;
 uniform samplerCube shadowCubeMaps[MaximumLights];
-uniform vec3 directionalLightPosition;
+//uniform vec3 directionalLightPosition;
 uniform vec3 viewpos;
 uniform float farPlane;
 
 //Material parameters
 uniform Material material;
+uniform vec3 NonMetallicReflectionColour;
 
 //Lights
-uniform vec3 lightPositions[MaximumLights];
-uniform vec3 lightColours[MaximumLights];
+uniform Light lights[MaximumLights];
+//uniform vec3 lightPositions[MaximumLights];
+//uniform vec3 lightColours[MaximumLights];
 
 //Camera position
 uniform vec3 cameraPos;
@@ -56,7 +64,7 @@ float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 FresnelSchlick(float cosTheta, vec3 F0);
 vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
-float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap);
+//float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap);
 float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition);
 
 void main()
@@ -72,7 +80,7 @@ void main()
 
     //Calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
     //If it's a metal use the albedo color as F0 (metallic workflow) 
-    vec3 F0 = vec3(0.04f);
+    vec3 F0 = NonMetallicReflectionColour;
     F0 = mix(F0, albedo, metallic);
 
     vec3 Lo = vec3(0.0f);
@@ -80,11 +88,14 @@ void main()
     for(int i = 0; i < MaximumLights; ++i )
     {
         //reflectance equation
-        vec3 lightDirection = normalize(lightPositions[i] - WorldPos);
+        vec3 lightDirection = normalize(lights[i].Position - WorldPos);
+        //vec3 lightDirection = normalize(lightPositions[i] - WorldPos);
         vec3 H = normalize(viewDirection + lightDirection);
-        float distance = length(lightPositions[i] - WorldPos);
+        float distance = length(lights[i].Position - WorldPos);
+        //float distance = length(lightPositions[i] - WorldPos);
         float attenuation = 1.0f / (distance * distance);
-        vec3 radiance = lightColours[i] * attenuation;
+        vec3 radiance = lights[i].Colour;// * attenuation;
+        //vec3 radiance = lightColours[i] * attenuation;
 
         //Cook-Torrance BRDF
         float normalDistributionFunction = DistributionGGX(normal, H, roughness);
@@ -109,7 +120,8 @@ void main()
         //Scale light by NdotL
         float NdotL = max(dot(normal, lightDirection), 0.0f);
 
-        float pointShadow = ShadowCalculation(WorldPos, shadowCubeMaps[i], lightPositions[i]);
+        float pointShadow = ShadowCalculation(WorldPos, shadowCubeMaps[i], lights[i].Position);
+        //float pointShadow = ShadowCalculation(WorldPos, shadowCubeMaps[i], lightPositions[i]);
         //add to outgoing radiance Lo.
         //note that we already multiplied the BRDF by the Fresnel (kS)
         //so we won't multiply by kS again
@@ -141,12 +153,10 @@ void main()
     if(brightness > 1.0f)
     {
         BrightColor = vec4(color, 1.0f);
-        //FragColor = vec4(brightness, 0.0f, 0.0f, 1.0f);
     }
     else
     {
         BrightColor = vec4(vec3(0.0f), 1.0f);
-        //FragColor = vec4(0.0f,brightness, 0.0f, 1.0f);
     }
     FragColor = vec4(color, 1.0f);
 }
@@ -212,7 +222,7 @@ vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 {
     return F0 + (max(vec3(1.0f - roughness), F0) - F0) * pow(1.0f - cosTheta, 5.0f);
 }
-
+/*
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap)
 {
     //Perform perspective divide
@@ -240,7 +250,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap
     }
     return shadow;
 }
-
+*/
 float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition)
 {
     vec3 fragmentToLight = fragPos - lightPosition;
