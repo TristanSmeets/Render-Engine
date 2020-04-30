@@ -179,9 +179,10 @@ void ForwardPBR::SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, cons
 		pbr.Use();
 		pbr.SetVec3(lightPosition, lights[i].GetWorldPosition());
 		pbr.SetVec3(lightColour, lights[i].GetColour());
-		pbr.SetFloat(lightConstant, 1.0f);
-		pbr.SetFloat(lightLinear, 0.14f);
-		pbr.SetFloat(lightQuadratic, .07f);
+		const Light::Parameters& parameters = lights[i].GetParameters();
+		pbr.SetFloat(lightConstant, parameters.Constant);
+		pbr.SetFloat(lightLinear, parameters.Linear);
+		pbr.SetFloat(lightQuadratic, parameters.Quadratic);
 	}
 }
 
