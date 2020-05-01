@@ -13,7 +13,7 @@ uniform mat4 model;
 
 void main()
 {
-    FragmentPosition = vec3(model) * vec4(positions, 1.0f);
+    FragmentPosition = vec3(model * vec4(positions, 1.0f));
     UV = uvs;
     mat3 normalMatrix = transpose(inverse(mat3(model)));
     Normal = normalize(normalMatrix * normals);

@@ -20,7 +20,7 @@ void ForwardPBR::Initialize(Scene & scene)
 	printf("Initializing ForwardPBR\n");
 
 	SetupShaders(scene);	
-	SetupDirectionalShadowBuffer();
+	//SetupDirectionalShadowBuffer();
 	SetupPointLightBuffer();
 
 	//Setup depth testing and culling
@@ -29,7 +29,7 @@ void ForwardPBR::Initialize(Scene & scene)
 
 	postProcessing = &basic;
 	postProcessing->Initialize(window.GetWindowParameters());
-	printf("Initializion Complete\n\n");
+	printf("Initializion Complete\n");
 }
 
 void ForwardPBR::SetupShaders(Scene & scene)
