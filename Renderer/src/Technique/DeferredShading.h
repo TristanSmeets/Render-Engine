@@ -4,7 +4,6 @@
 #include "Utility/Renderbuffer.h"
 #include "Rendering/Texture.h"
 
-
 class DeferredShading : public RenderTechnique
 {
 public:
