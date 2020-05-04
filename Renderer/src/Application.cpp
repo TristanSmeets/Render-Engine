@@ -23,8 +23,8 @@ void Application::Initialize()
 	scene = new Scene(window);
 	scene->Initialize();
 	//renderTechnique = new ForwardPBR(window);
-	renderTechnique = new ForwardADS(window);
-	//renderTechnique = new DeferredShading(window);
+	//renderTechnique = new ForwardADS(window);
+	renderTechnique = new DeferredShading(window);
 	renderTechnique->Initialize(*scene);
 	guiHelper.Initialize(window);
 	printf("Application initialization complete\n");

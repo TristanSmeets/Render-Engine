@@ -235,8 +235,10 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Position", lightPositionView);
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 
-		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Linear", attenuationLinear);
-		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Quadratic", attenuationQuadratic);
+		const Light::Parameters& parameters = lights[i].GetParameters();
+		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Constant", parameters.Constant);
+		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Linear", parameters.Linear);
+		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Quadratic", parameters.Quadratic);
 		for (unsigned int i = 0; i < 3; ++i)
 		{
 			glActiveTexture(GL_TEXTURE0 + i);

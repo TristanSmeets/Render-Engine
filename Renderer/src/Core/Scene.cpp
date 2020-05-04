@@ -139,7 +139,7 @@ void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
 
-	const unsigned int NumberOfLights = 10;
+	const unsigned int NumberOfLights = 32;
 
 	srand(NumberOfLights);
 

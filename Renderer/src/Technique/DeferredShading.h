@@ -26,9 +26,6 @@ private:
 	void GBufferToDefaultFramebuffer();
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
 	
-	const float attenuationConstant = 1.0f;
-	const float attenuationLinear = 0.22f;
-	const float attenuationQuadratic = 0.2f;
 	const Window& window;
 
 	Framebuffer aoBuffers[2];
