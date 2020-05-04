@@ -20,7 +20,7 @@ void ForwardPBR::Initialize(Scene & scene)
 	printf("Initializing ForwardPBR\n");
 
 	SetupShaders(scene);	
-	SetupDirectionalShadowBuffer();
+	//SetupDirectionalShadowBuffer();
 	SetupPointLightBuffer();
 
 	//Setup depth testing and culling
@@ -29,7 +29,7 @@ void ForwardPBR::Initialize(Scene & scene)
 
 	postProcessing = &basic;
 	postProcessing->Initialize(window.GetWindowParameters());
-	printf("Initializion Complete\n\n");
+	printf("Initializion Complete\n");
 }
 
 void ForwardPBR::SetupShaders(Scene & scene)
@@ -117,6 +117,7 @@ void ForwardPBR::Render(Scene & scene)
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
 		pbr.SetMat4("model", actors[i].GetWorldMatrix());
+		pbr.SetVec3("NonMetallicReflectionColour", glm::vec3(0.04f));
 		const Material& material = actors[i].GetRenderComponent().GetMaterial();
 		material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
 		material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
@@ -170,11 +171,18 @@ void ForwardPBR::SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, cons
 		lamp.SetMat4("model", lights[i].GetWorldMatrix());
 		lamp.SetVec3("lightColour", lights[i].GetColour());
 		lights[i].GetRenderComponent().GetMesh().Draw();
-		std::string lightPosition = std::string("lightPositions[") + std::to_string(i) + std::string("]");
-		std::string lightColour = std::string("lightColours[") + std::to_string(i) + std::string("]");
+		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
+		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
+		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
+		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
+		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
 		pbr.Use();
 		pbr.SetVec3(lightPosition, lights[i].GetWorldPosition());
 		pbr.SetVec3(lightColour, lights[i].GetColour());
+		const Light::Parameters& parameters = lights[i].GetParameters();
+		pbr.SetFloat(lightConstant, parameters.Constant);
+		pbr.SetFloat(lightLinear, parameters.Linear);
+		pbr.SetFloat(lightQuadratic, parameters.Quadratic);
 	}
 }
 

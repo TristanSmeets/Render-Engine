@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Technique/ForwardPBR.h"
 #include "Technique/DeferredShading.h"
+#include "Technique/ForwardADS.h"
 
 Application::Application()
 {
@@ -21,12 +22,12 @@ void Application::Initialize()
 	InitializeGlad();
 	scene = new Scene(window);
 	scene->Initialize();
-	renderTechnique = new ForwardPBR(window);
+	//renderTechnique = new ForwardPBR(window);
+	renderTechnique = new ForwardADS(window);
 	//renderTechnique = new DeferredShading(window);
-	renderTechnique->Initialize(*scene);	
+	renderTechnique->Initialize(*scene);
 	guiHelper.Initialize(window);
 	printf("Application initialization complete\n");
-
 }
 
 void Application::Run()
