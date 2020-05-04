@@ -85,7 +85,6 @@ void main()
         vec3 result = lights[i].Colour * diffuseImpact * diffuseColour;
         //Attenuation
         float distance = length(FragmentPosition - lights[i].Position);
-        // result *= 1.0f / (distance * distance);
         result *= 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
         //Shadow
         float shadow = ShadowCalculation(FragmentPosition, shadowCubeMaps[i], lights[i].Position);
@@ -94,9 +93,7 @@ void main()
     }
 
     vec3 result = ambient + lighting;
-    
     FragmentColour = vec4(result, 1.0f);
-    //FragmentColour = vec4(lighting, 1.0f);
 
     float brightness = dot(result, vec3(0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)

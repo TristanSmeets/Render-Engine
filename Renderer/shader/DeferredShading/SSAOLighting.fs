@@ -19,6 +19,7 @@ struct Light{
 const int NumberOfLights = 32;
 uniform Light lights[NumberOfLights];
 uniform vec3 viewPosition;
+uniform float ambientStrength;
 
 void main()
 {
@@ -28,7 +29,7 @@ void main()
     float SpecularTextureColour = texture(gAlbedoSpecular, UV).a;
     float AmbientOcclusion = texture(ssao, UV).r;
 
-    vec3 ambient = vec3(0.3f * DiffuseTextureColour * AmbientOcclusion);
+    vec3 ambient = vec3(ambientStrength * DiffuseTextureColour * AmbientOcclusion);
     vec3 lighting = ambient;
     vec3 viewDirection = normalize(-FragmentPosition);
 
