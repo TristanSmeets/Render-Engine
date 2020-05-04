@@ -5,11 +5,11 @@
 
 DeferredShading::DeferredShading(const Window& window) :
 	window(window),
-	lamp(Filepath::DeferredShader + "DeferredLamp.vs", Filepath::DeferredShader + "DeferredLamp.fs"),
-	geometryShader(Filepath::DeferredShader + "GBuffer.vs", Filepath::DeferredShader + "GBuffer.fs"),
-	ssaoLighting(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAOLighting.fs"),
-	ssao(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAO.fs"),
-	ssaoBlur(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAOBlur.fs")
+	lamp(Filepath::DeferredShader + "ADS/DeferredLamp.vs", Filepath::DeferredShader + "ADS/DeferredLamp.fs"),
+	geometryShader(Filepath::DeferredShader + "ADS/GBuffer.vs", Filepath::DeferredShader + "ADS/GBuffer.fs"),
+	ssaoLighting(Filepath::DeferredShader + "ADS/DeferredShading.vs", Filepath::DeferredShader + "ADS/SSAOLighting.fs"),
+	ssao(Filepath::DeferredShader + "ADS/DeferredShading.vs", Filepath::DeferredShader + "ADS/SSAO.fs"),
+	ssaoBlur(Filepath::DeferredShader + "ADS/DeferredShading.vs", Filepath::DeferredShader + "ADS/SSAOBlur.fs")
 {
 }
 
