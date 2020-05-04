@@ -47,6 +47,7 @@ void ForwardADS::Render(Scene & scene)
 
 	//Render actors
 	adsLighting.Use();
+	adsLighting.SetFloat("material.AmbientStrength", adsParameters.AmbientStrength);
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
 		adsLighting.SetMat4("model", actors[i].GetWorldMatrix());
@@ -55,7 +56,6 @@ void ForwardADS::Render(Scene & scene)
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Roughness).GetID());
-		adsLighting.SetFloat("material.AmbientStrength", 0.01f);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 

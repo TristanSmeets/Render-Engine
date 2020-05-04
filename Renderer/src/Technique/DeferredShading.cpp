@@ -228,6 +228,7 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ssaoLighting.Use();
+	ssaoLighting.SetFloat("ambientStrength", adsParameters.AmbientStrength);
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
 		glm::vec3 lightPositionView = glm::vec3(scene.GetCamera().GetViewMatrix() * glm::vec4(lights[i].GetWorldPosition(), 1.0f));
