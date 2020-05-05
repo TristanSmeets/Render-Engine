@@ -135,6 +135,5 @@ void main()
 
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
     vec3 colour = ambient + Lo;
-    // FragmentColour = vec4(colour, 1.0f);
-    FragmentColour = vec4(Normal, 1.0f);
+    FragmentColour = vec4(colour, 1.0f);
 }

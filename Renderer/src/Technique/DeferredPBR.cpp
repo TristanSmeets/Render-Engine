@@ -40,11 +40,11 @@ void DeferredPBR::Render(Scene & scene)
 	GBufferToDefaultFramebuffer();
 	RenderLights(view, lights);
 
-	//glDepthFunc(GL_LEQUAL);
-	//skyboxShader.Use();
-	//skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
-	//scene.GetSkybox().Draw();
-	//glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LEQUAL);
+	skyboxShader.Use();
+	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
+	scene.GetSkybox().Draw();
+	glDepthFunc(GL_LESS);
 }
 
 void DeferredPBR::SetupGBuffers(const Window::Parameters & parameters)
@@ -63,12 +63,12 @@ void DeferredPBR::SetupGBuffers(const Window::Parameters & parameters)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gBuffer.AttachTexture(GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gBufferTextures[1].GetID());
 	//Albedo
-	gBufferTextures[2] = Texture::CreateEmpty("Albedo", parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	gBufferTextures[2] = Texture::CreateEmpty("Albedo", parameters.Width, parameters.Height, GL_SRGB, GL_RGB, GL_UNSIGNED_BYTE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gBuffer.AttachTexture(GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gBufferTextures[2].GetID());
 	//Metallic, Roughness, AO
-	gBufferTextures[3] = Texture::CreateEmpty("MetallicRoughnessAO", parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	gBufferTextures[3] = Texture::CreateEmpty("MetallicRoughnessAO", parameters.Width, parameters.Height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gBuffer.AttachTexture(GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gBufferTextures[3].GetID());
@@ -93,10 +93,10 @@ void DeferredPBR::SetupShaders(Scene & scene)
 
 	geometry.Use();
 	geometry.SetInt("material.Albedo", 0);
-	geometry.SetInt("material.Normal", 0);
-	geometry.SetInt("material.Metallic", 0);
-	geometry.SetInt("material.Roughness", 0);
-	geometry.SetInt("material.AO", 0);
+	geometry.SetInt("material.Normal", 1);
+	geometry.SetInt("material.Metallic", 2);
+	geometry.SetInt("material.Roughness", 3);
+	geometry.SetInt("material.AO", 4);
 	geometry.SetMat4("projection", projection);
 
 	skyboxShader.Use();
@@ -110,7 +110,7 @@ void DeferredPBR::SetupShaders(Scene & scene)
 	pbrLighting.SetInt("gPosition", 0);
 	pbrLighting.SetInt("gNormal", 1);
 	pbrLighting.SetInt("gAlbedo", 2);
-	pbrLighting.SetInt("gMetalicRoughnessAO", 3);
+	pbrLighting.SetInt("gMetallicRoughnessAO", 3);
 	pbrLighting.SetInt("irradianceMap", 4);
 	pbrLighting.SetInt("prefilterMap", 5);
 	pbrLighting.SetInt("brdfLUT", 6);
@@ -161,9 +161,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 		pbrLighting.SetFloat(lightLinear, parameters.Linear);
 		pbrLighting.SetFloat(lightQuadratic, parameters.Quadratic);
 	}
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, scene.GetActors()[1].GetRenderComponent().GetMaterial().GetTexture(Texture::Albedo).GetID());
-	//glBindTexture(GL_TEXTURE_2D, gBufferTextures[0].GetID());
+	
 	for (unsigned int i = 0; i < 4; ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);

@@ -13,11 +13,11 @@ uniform mat4 projection;
 
 void main()
 {
-    vec4 worldPosition = view * model * vec4(position, 1.0f);
-
-    FragmentPosition = worldPosition.xyz;
+    // vec4 worldPosition = view * model * vec4(position, 1.0f);
+    // FragmentPosition = worldPosition.xyz;
+    FragmentPosition = vec3(model * vec4(position, 1.0f));
     UV = uv;
     Normal = mat3(model) * normal;
 
-    gl_Position = projection * worldPosition;
+    gl_Position = projection * view * vec4(FragmentPosition, 1.0f);
 }
