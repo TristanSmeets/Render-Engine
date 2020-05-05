@@ -204,7 +204,11 @@ void GUIHelper::RenderLight(const Light & light)
 		RenderTransform(light.GetTransform());
 		ImGui::TreePop();
 	}
-	RenderColour(light.GetColour());
+	const Light::Parameters& parameters = light.GetParameters();
+	RenderColour(parameters.Colour);
+	RenderFloat("Constant", (float&)parameters.Constant, 0.1f, 2.0f);
+	RenderFloat("Linear", (float&)parameters.Linear, 0.0f, 1.0f);
+	RenderFloat("Quadratic", (float&)parameters.Quadratic, 0.0f, 2.0f);
 }
 
 void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
