@@ -17,7 +17,10 @@ public:
 	GUIHelper();
 	virtual ~GUIHelper();
 	void Initialize(const Window& window);
+	void StartFrame();
+	void EndFrame();
 	void Render(const Scene& scene);
+	void Render(const RenderTechnique& technique);
 
 private:
 	void RenderLayout(const Scene& scene);

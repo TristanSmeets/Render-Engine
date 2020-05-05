@@ -33,20 +33,34 @@ void GUIHelper::Initialize(const Window& window)
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void GUIHelper::Render(const Scene & scene)
+void GUIHelper::StartFrame()
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+}
 
+void GUIHelper::EndFrame()
+{
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void GUIHelper::Render(const Scene & scene)
+{
 	//ImGui::ShowDemoWindow();
 
 	ImGui::Begin("Scene");
 	RenderLayout(scene);
 	ImGui::End();
+}
 
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+void GUIHelper::Render(const RenderTechnique & technique)
+{
+	ImGui::Begin("RenderTechnique");
+	RenderADSParameters(technique.GetADSParameters());
+	RenderPBRParameters(technique.GetPBRParameters());
+	ImGui::End();
 }
 
 void GUIHelper::RenderLayout(const Scene & scene)
