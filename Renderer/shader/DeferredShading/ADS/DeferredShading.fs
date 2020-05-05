@@ -11,6 +11,7 @@ struct Light{
     vec3 Position;
     vec3 Color;
 
+    float Constant;
     float Linear;
     float Quadratic;
     float Radius;
@@ -43,7 +44,7 @@ void main()
             float specularPower = pow(max(dot(Normal, halfwayDirection), 0.0f), 16.0f);
             vec3 specular = lights[i].Color * specularPower * SpecularTextureColour;
             //Attenuation
-            float attenuation = 1.0f / (1.0f + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
+            float attenuation = 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
             diffuse *= attenuation;
             specular *= attenuation;
             lighting += diffuse + specular;

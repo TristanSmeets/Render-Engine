@@ -21,6 +21,9 @@ uniform Light lights[NumberOfLights];
 uniform vec3 viewPosition;
 uniform float ambientStrength;
 
+uniform float exposure;
+uniform float gammaCorrection;
+
 void main()
 {
     vec3 FragmentPosition = texture(gPosition, UV).rgb;
@@ -50,8 +53,8 @@ void main()
         lighting += diffuse + specular;
     }
 
-    vec3 result = vec3(1.0f) - exp(-lighting * 1.0f);
-    result = pow(result, vec3(1.0f/ 2.2f));
+    vec3 result = vec3(1.0f) - exp(-lighting * exposure);
+    result = pow(result, vec3(1.0f/ gammaCorrection));
 
     FragmentColour = vec4(result, 1.0f);
 }

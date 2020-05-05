@@ -5,11 +5,11 @@
 
 DeferredShading::DeferredShading(const Window& window) :
 	window(window),
-	lamp(Filepath::DeferredShader + "DeferredLamp.vs", Filepath::DeferredShader + "DeferredLamp.fs"),
-	geometryShader(Filepath::DeferredShader + "GBuffer.vs", Filepath::DeferredShader + "GBuffer.fs"),
-	ssaoLighting(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAOLighting.fs"),
-	ssao(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAO.fs"),
-	ssaoBlur(Filepath::DeferredShader + "DeferredShading.vs", Filepath::DeferredShader + "SSAOBlur.fs")
+	lamp(Filepath::DeferredShader + "ADS/DeferredLamp.vs", Filepath::DeferredShader + "ADS/DeferredLamp.fs"),
+	geometryShader(Filepath::DeferredShader + "ADS/GBuffer.vs", Filepath::DeferredShader + "ADS/GBuffer.fs"),
+	ssaoLighting(Filepath::DeferredShader + "ADS/DeferredShading.vs", Filepath::DeferredShader + "ADS/SSAOLighting.fs"),
+	ssao(Filepath::DeferredShader + "ADS/DeferredShading.vs", Filepath::DeferredShader + "ADS/SSAO.fs"),
+	ssaoBlur(Filepath::DeferredShader + "ADS/DeferredShading.vs", Filepath::DeferredShader + "ADS/SSAOBlur.fs")
 {
 }
 
@@ -118,6 +118,8 @@ void DeferredShading::SetupShaders(Scene & scene)
 	ssaoLighting.SetInt("gNormal", 1);
 	ssaoLighting.SetInt("gAlbedoSpecular", 2);
 	ssaoLighting.SetInt("ssao", 3);
+	ssaoLighting.SetFloat("exposure", 1.0f);
+	ssaoLighting.SetFloat("gammaCorrection", 2.2f);
 
 	ssao.Use();
 	ssao.SetInt("gPosition", 0);
@@ -235,12 +237,14 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Position", lightPositionView);
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 
-		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Linear", attenuationLinear);
-		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Quadratic", attenuationQuadratic);
-		for (unsigned int i = 0; i < 3; ++i)
+		const Light::Parameters& parameters = lights[i].GetParameters();
+		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Constant", parameters.Constant);
+		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Linear", parameters.Linear);
+		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Quadratic", parameters.Quadratic);
+		for (unsigned int j = 0; j < 3; ++j)
 		{
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, gBufferTextures[i].GetID());
+			glActiveTexture(GL_TEXTURE0 + j);
+			glBindTexture(GL_TEXTURE_2D, gBufferTextures[j].GetID());
 		}
 		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, aoTextures[1].GetID());
@@ -287,7 +291,6 @@ void DeferredShading::GeometryPass(const glm::mat4 &view, Scene & scene)
 {
 	gBuffer.Bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 	geometryShader.Use();
 	geometryShader.SetMat4("view", view);
