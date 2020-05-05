@@ -217,6 +217,17 @@ void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
 	RenderVec3("Direction",light.GetFront());
 }
 
+void GUIHelper::RenderADSParameters(const RenderTechnique::ADSParameters & adsParameters)
+{
+	RenderFloat("Ambient Strength", (float&)adsParameters.AmbientStrength, 0.0f, 1.0f);
+}
+
+void GUIHelper::RenderPBRParameters(const RenderTechnique::PBRParameters & pbrParameters)
+{
+	RenderText("Non Metallic Reflection Colour");
+	RenderColour(pbrParameters.NonMetallicReflectionColour);
+}
+
 void GUIHelper::RenderColour(const glm::vec3& colour)
 {
 	ImGui::ColorEdit3("Colour", (float*)&colour, ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
