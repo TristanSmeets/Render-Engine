@@ -21,6 +21,11 @@ void RenderTechnique::SetPBRParameters(const PBRParameters & pbrParameters)
 	this->pbrParameters = pbrParameters;
 }
 
+void RenderTechnique::SetDeferredParameters(const DeferredParameters & deferredParameters)
+{
+	this->deferredParameters = deferredParameters;
+}
+
 const RenderTechnique::ADSParameters & RenderTechnique::GetADSParameters() const
 {
 	return adsParameters;
@@ -29,6 +34,11 @@ const RenderTechnique::ADSParameters & RenderTechnique::GetADSParameters() const
 const RenderTechnique::PBRParameters & RenderTechnique::GetPBRParameters() const
 {
 	return pbrParameters;
+}
+
+const RenderTechnique::DeferredParameters & RenderTechnique::GetDeferredParameters() const
+{
+	return deferredParameters;
 }
 
 RenderTechnique::ADSParameters::ADSParameters(float ambientStrength) :
@@ -50,5 +60,16 @@ RenderTechnique::PBRParameters::PBRParameters(const glm::vec3 & nonMetallicRefle
 RenderTechnique::PBRParameters & RenderTechnique::PBRParameters::operator=(const PBRParameters & rhs)
 {
 	this->NonMetallicReflectionColour = rhs.NonMetallicReflectionColour;
+	return *this;
+}
+
+RenderTechnique::DeferredParameters::DeferredParameters(int occlusionPower) :
+	OcclusionPower(occlusionPower)
+{
+}
+
+RenderTechnique::DeferredParameters & RenderTechnique::DeferredParameters::operator=(const DeferredParameters & rhs)
+{
+	this->OcclusionPower = rhs.OcclusionPower;
 	return *this;
 }

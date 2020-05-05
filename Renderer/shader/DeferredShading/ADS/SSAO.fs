@@ -8,7 +8,7 @@ uniform sampler2D gNormal;
 uniform sampler2D noise;
 
 uniform vec3 samples[64];
-
+uniform int occlusionPower;
 int kernelSize = 64;
 float radius = 0.5f;
 float bias = 0.025f;
@@ -49,5 +49,5 @@ void main()
         occlusion += (sampleDepth >= sample.z + bias ? 1.0f : 0.0) * rangeCheck;
     }
     occlusion = 1.0f - (occlusion / kernelSize);
-    FragColour = pow(occlusion, 5);
+    FragColour = pow(occlusion, occlusionPower);
 }

@@ -60,6 +60,7 @@ void GUIHelper::Render(const RenderTechnique & technique)
 	ImGui::Begin("RenderTechnique");
 	RenderADSParameters(technique.GetADSParameters());
 	RenderPBRParameters(technique.GetPBRParameters());
+	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::End();
 }
 
@@ -240,6 +241,11 @@ void GUIHelper::RenderPBRParameters(const RenderTechnique::PBRParameters & pbrPa
 {
 	RenderText("Non Metallic Reflection Colour");
 	RenderColour(pbrParameters.NonMetallicReflectionColour);
+}
+
+void GUIHelper::RenderDeferredParameters(const RenderTechnique::DeferredParameters & deferredParameters)
+{
+	RenderInt("Occlusion Power", (int&)deferredParameters.OcclusionPower, 1, 200);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

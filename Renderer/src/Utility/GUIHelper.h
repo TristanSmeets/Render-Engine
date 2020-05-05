@@ -41,6 +41,7 @@ private:
 	void RenderDirectionalLight(const DirectionalLight& light);
 	void RenderADSParameters(const RenderTechnique::ADSParameters& adsParameters);
 	void RenderPBRParameters(const RenderTechnique::PBRParameters& pbrParameters);
+	void RenderDeferredParameters(const RenderTechnique::DeferredParameters& deferredParameters);
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;
 };

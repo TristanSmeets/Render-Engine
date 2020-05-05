@@ -19,6 +19,14 @@ public:
 		PBRParameters(const glm::vec3& nonMetallicReflectionColour = glm::vec3(0.04f));
 		PBRParameters& operator=(const PBRParameters& rhs);
 	};
+	struct DeferredParameters
+	{
+		int OcclusionPower = 2;
+
+		DeferredParameters(int occlusionPower = 2);
+		DeferredParameters& operator=(const DeferredParameters& rhs);
+	};
+
 public:
 	RenderTechnique();
 	virtual ~RenderTechnique();
@@ -26,10 +34,13 @@ public:
 	virtual void Render(Scene& scene) = 0;
 	void SetADSParameters(const ADSParameters& adsParameters);
 	void SetPBRParameters(const PBRParameters& pbrParameters);
+	void SetDeferredParameters(const DeferredParameters& deferredParameters);
 	const ADSParameters& GetADSParameters() const;
 	const PBRParameters& GetPBRParameters() const;
+	const DeferredParameters& GetDeferredParameters() const;
 protected:
 	Shader skyboxShader;
 	ADSParameters adsParameters;
 	PBRParameters pbrParameters;
+	DeferredParameters deferredParameters;
 };
