@@ -3,6 +3,7 @@
 #include "Technique/ForwardPBR.h"
 #include "Technique/DeferredShading.h"
 #include "Technique/ForwardADS.h"
+#include "Technique/DeferredPBR.h"
 
 Application::Application()
 {

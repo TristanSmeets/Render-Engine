@@ -118,6 +118,8 @@ void DeferredShading::SetupShaders(Scene & scene)
 	ssaoLighting.SetInt("gNormal", 1);
 	ssaoLighting.SetInt("gAlbedoSpecular", 2);
 	ssaoLighting.SetInt("ssao", 3);
+	ssaoLighting.SetFloat("exposure", 1.0f);
+	ssaoLighting.SetFloat("gammaCorrection", 2.2f);
 
 	ssao.Use();
 	ssao.SetInt("gPosition", 0);
