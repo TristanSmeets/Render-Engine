@@ -33,20 +33,34 @@ void GUIHelper::Initialize(const Window& window)
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void GUIHelper::Render(const Scene & scene)
+void GUIHelper::StartFrame()
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+}
 
+void GUIHelper::EndFrame()
+{
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void GUIHelper::Render(const Scene & scene)
+{
 	//ImGui::ShowDemoWindow();
 
 	ImGui::Begin("Scene");
 	RenderLayout(scene);
 	ImGui::End();
+}
 
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+void GUIHelper::Render(const RenderTechnique & technique)
+{
+	ImGui::Begin("RenderTechnique");
+	RenderADSParameters(technique.GetADSParameters());
+	RenderPBRParameters(technique.GetPBRParameters());
+	ImGui::End();
 }
 
 void GUIHelper::RenderLayout(const Scene & scene)
@@ -204,13 +218,28 @@ void GUIHelper::RenderLight(const Light & light)
 		RenderTransform(light.GetTransform());
 		ImGui::TreePop();
 	}
-	RenderColour(light.GetColour());
+	const Light::Parameters& parameters = light.GetParameters();
+	RenderColour(parameters.Colour);
+	RenderFloat("Constant", (float&)parameters.Constant, 0.1f, 2.0f);
+	RenderFloat("Linear", (float&)parameters.Linear, 0.0f, 1.0f);
+	RenderFloat("Quadratic", (float&)parameters.Quadratic, 0.0f, 2.0f);
 }
 
 void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
 {
 	RenderLight(light);
 	RenderVec3("Direction",light.GetFront());
+}
+
+void GUIHelper::RenderADSParameters(const RenderTechnique::ADSParameters & adsParameters)
+{
+	RenderFloat("Ambient Strength", (float&)adsParameters.AmbientStrength, 0.0f, 1.0f);
+}
+
+void GUIHelper::RenderPBRParameters(const RenderTechnique::PBRParameters & pbrParameters)
+{
+	RenderText("Non Metallic Reflection Colour");
+	RenderColour(pbrParameters.NonMetallicReflectionColour);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

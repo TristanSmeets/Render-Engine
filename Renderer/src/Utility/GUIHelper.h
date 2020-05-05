@@ -9,6 +9,7 @@
 #include "Rendering/Texture.h"
 #include "Rendering/Material.h"
 #include "Rendering/RenderComponent.h"
+#include "Technique/RenderTechnique.h"
 
 class GUIHelper
 {
@@ -16,7 +17,10 @@ public:
 	GUIHelper();
 	virtual ~GUIHelper();
 	void Initialize(const Window& window);
+	void StartFrame();
+	void EndFrame();
 	void Render(const Scene& scene);
+	void Render(const RenderTechnique& technique);
 
 private:
 	void RenderLayout(const Scene& scene);
@@ -35,6 +39,8 @@ private:
 	void RenderCamera(const Camera& camera);
 	void RenderLight(const Light& light);
 	void RenderDirectionalLight(const DirectionalLight& light);
+	void RenderADSParameters(const RenderTechnique::ADSParameters& adsParameters);
+	void RenderPBRParameters(const RenderTechnique::PBRParameters& pbrParameters);
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;
 };
