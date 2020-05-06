@@ -272,6 +272,10 @@ void DeferredShading::SSAOTexturePass()
 	glClear(GL_COLOR_BUFFER_BIT);
 	ssao.Use();
 	ssao.SetInt("occlusionPower", deferredParameters.OcclusionPower);
+	ssao.SetInt("kernelSize", deferredParameters.KernelSize);
+	ssao.SetFloat("radius", deferredParameters.Radius);
+	ssao.SetFloat("bias", deferredParameters.Bias);
+
 	for (unsigned int i = 0; i < 64; ++i)
 	{
 		ssao.SetVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);

@@ -22,8 +22,11 @@ public:
 	struct DeferredParameters
 	{
 		int OcclusionPower = 2;
+		int KernelSize = 64;
+		float Radius = 0.5f;
+		float Bias = 0.025f;
 
-		DeferredParameters(int occlusionPower = 2);
+		DeferredParameters(int occlusionPower = 2, int kernelSize = 64, float radius = 0.5f, float bias = 0.025f);
 		DeferredParameters& operator=(const DeferredParameters& rhs);
 	};
 
