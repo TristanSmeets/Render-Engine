@@ -60,6 +60,7 @@ void GUIHelper::Render(const RenderTechnique & technique)
 	ImGui::Begin("RenderTechnique");
 	RenderADSParameters(technique.GetADSParameters());
 	RenderPBRParameters(technique.GetPBRParameters());
+	ImGui::Separator();
 	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::End();
 }
@@ -245,7 +246,10 @@ void GUIHelper::RenderPBRParameters(const RenderTechnique::PBRParameters & pbrPa
 
 void GUIHelper::RenderDeferredParameters(const RenderTechnique::DeferredParameters & deferredParameters)
 {
-	RenderInt("Occlusion Power", (int&)deferredParameters.OcclusionPower, 1, 200);
+	RenderInt("SSAO Occlusion Power", (int&)deferredParameters.OcclusionPower, 1, 200);
+	RenderInt("SSAO Kernel Size", (int&)deferredParameters.KernelSize, 1, 64);
+	RenderFloat("SSAO Radius", (float&)deferredParameters.Radius, 0.0f, 5.0f);
+	RenderFloat("SSAO Bias", (float&)deferredParameters.Bias, 0.0f, 2.0f);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

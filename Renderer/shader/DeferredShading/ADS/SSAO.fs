@@ -9,9 +9,9 @@ uniform sampler2D noise;
 
 uniform vec3 samples[64];
 uniform int occlusionPower;
-int kernelSize = 64;
-float radius = 0.5f;
-float bias = 0.025f;
+uniform int kernelSize;
+uniform float radius;
+uniform float bias;
 
 const vec2 noiseScale = vec2(1280.0f/4.0f, 720.0f/4.0f);
 
