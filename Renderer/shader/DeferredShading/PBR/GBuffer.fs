@@ -3,9 +3,11 @@ layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec3 gAlbedo;
 layout (location = 3) out vec3 gMetallicRoughnessAO;
+layout (location = 4) out vec3 gViewPosition;
 
 in vec3 FragmentPosition;
 in vec3 Normal;
+in vec3 ViewPosition;
 in vec2 UV;
 
 struct Material
@@ -44,4 +46,5 @@ void main()
     gMetallicRoughnessAO.r = texture(material.Metallic, UV).r;
     gMetallicRoughnessAO.g = texture(material.Roughness, UV).r;
     gMetallicRoughnessAO.b = texture(material.AO, UV).r;
+    gViewPosition = ViewPosition;
 }

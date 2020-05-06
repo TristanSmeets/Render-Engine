@@ -140,18 +140,9 @@ void main()
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao * ssao;
     vec3 colour = ambient + Lo;
 
-     vec3 mapped = vec3(1.0f) - exp(-colour * 1.0f);
+    //  vec3 mapped = vec3(1.0f) - exp(-colour * 1.0f);
     //Gamma Correction
-    mapped = pow(mapped, vec3(1.0f/ 2.2f));
-    FragmentColour = vec4(mapped, 1.0f);
-
-    // FragmentColour = vec4(colour, 1.0f);
-    // if(gl_FragCoord.x > 690.0f)
-    // {
-        // FragmentColour = vec4(vec3(Lo), 1.0f);
-    // }
-    // else
-    // {
-        // FragmentColour = vec4(vec3(ao * ssao), 1.0f);
-    // }
+    // mapped = pow(mapped, vec3(1.0f/ 2.2f));
+    // FragmentColour = vec4(mapped, 1.0f);
+    FragmentColour = vec4(colour, 1.0f);
 }
