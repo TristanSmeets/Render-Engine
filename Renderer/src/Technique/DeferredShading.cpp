@@ -118,8 +118,6 @@ void DeferredShading::SetupShaders(Scene & scene)
 	ssaoLighting.SetInt("gNormal", 1);
 	ssaoLighting.SetInt("gAlbedoSpecular", 2);
 	ssaoLighting.SetInt("ssao", 3);
-	ssaoLighting.SetFloat("exposure", 1.0f);
-	ssaoLighting.SetFloat("gammaCorrection", 2.2f);
 
 	ssao.Use();
 	ssao.SetInt("gPosition", 0);
@@ -231,6 +229,9 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 
 	ssaoLighting.Use();
 	ssaoLighting.SetFloat("ambientStrength", adsParameters.AmbientStrength);
+	ssaoLighting.SetFloat("gammaCorrection", pbrParameters.GammaCorrection);
+	ssaoLighting.SetFloat("exposure", pbrParameters.Exposure);
+
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
 		glm::vec3 lightPositionView = glm::vec3(scene.GetCamera().GetViewMatrix() * glm::vec4(lights[i].GetWorldPosition(), 1.0f));
