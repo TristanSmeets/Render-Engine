@@ -133,3 +133,8 @@ void Bloom::Draw()
 	glEnable(GL_DEPTH_TEST);
 }
 
+const Framebuffer & Bloom::GetFramebuffer() const
+{
+	return hdrFBO;
+}
+

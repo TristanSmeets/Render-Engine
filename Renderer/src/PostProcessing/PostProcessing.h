@@ -17,4 +17,5 @@ public:
 	virtual void Bind() = 0;
 	virtual void Unbind() = 0;
 	virtual void Draw() = 0;
+	virtual const Framebuffer& GetFramebuffer() const = 0;
 };

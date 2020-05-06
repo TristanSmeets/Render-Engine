@@ -56,3 +56,8 @@ void Basic::Draw()
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
 }
+
+const Framebuffer & Basic::GetFramebuffer() const
+{
+	return framebuffer;
+}
