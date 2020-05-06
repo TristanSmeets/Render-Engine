@@ -242,6 +242,8 @@ void GUIHelper::RenderPBRParameters(const RenderTechnique::PBRParameters & pbrPa
 {
 	RenderText("Non Metallic Reflection Colour");
 	RenderColour(pbrParameters.NonMetallicReflectionColour);
+	RenderFloat("Gamma Correction", (float&)pbrParameters.GammaCorrection, 1.5f, 2.5f);
+	RenderFloat("Exposure", (float&)pbrParameters.Exposure, 0.5f, 3.0f);
 }
 
 void GUIHelper::RenderDeferredParameters(const RenderTechnique::DeferredParameters & deferredParameters)

@@ -52,14 +52,16 @@ RenderTechnique::ADSParameters& RenderTechnique::ADSParameters::operator=(const 
 	return *this;
 }
 
-RenderTechnique::PBRParameters::PBRParameters(const glm::vec3 & nonMetallicReflectionColour) :
-	NonMetallicReflectionColour(nonMetallicReflectionColour)
+RenderTechnique::PBRParameters::PBRParameters(const glm::vec3 & nonMetallicReflectionColour, float gammaCorrection, float exposure) :
+	NonMetallicReflectionColour(nonMetallicReflectionColour), GammaCorrection(gammaCorrection), Exposure(exposure)
 {
 }
 
 RenderTechnique::PBRParameters & RenderTechnique::PBRParameters::operator=(const PBRParameters & rhs)
 {
 	this->NonMetallicReflectionColour = rhs.NonMetallicReflectionColour;
+	this->GammaCorrection = rhs.GammaCorrection;
+	this->Exposure = rhs.Exposure;
 	return *this;
 }
 
