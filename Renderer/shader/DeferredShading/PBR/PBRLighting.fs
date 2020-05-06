@@ -23,6 +23,9 @@ uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
 
+//SSAO
+uniform sampler2D ssao;
+
 const int NumberOfLights = 32;
 uniform Light lights[NumberOfLights];
 
@@ -85,6 +88,7 @@ void main()
     float metallic = texture(gMetallicRoughnessAO, UV).r;
     float roughness = texture(gMetallicRoughnessAO, UV).g;
     float ao = texture(gMetallicRoughnessAO, UV).b;
+    float ssao = texture(ssao, UV).r;
 
     vec3 viewDirection = normalize(cameraPosition - FragmentPosition);
     vec3 reflectionDirection = reflect(-viewDirection, Normal);
@@ -133,7 +137,21 @@ void main()
     vec2 brdf = texture(brdfLUT, vec2(max(dot(Normal, viewDirection), 0.0f), roughness)).rg;
     vec3 specular2 = prefilterColour * (Fresnel * brdf.x + brdf.y);
 
-    vec3 ambient = (diffuseConstant * diffuse + specular2) * ao;
+    vec3 ambient = (diffuseConstant * diffuse + specular2) * ao * ssao;
     vec3 colour = ambient + Lo;
-    FragmentColour = vec4(colour, 1.0f);
+
+     vec3 mapped = vec3(1.0f) - exp(-colour * 1.0f);
+    //Gamma Correction
+    mapped = pow(mapped, vec3(1.0f/ 2.2f));
+    FragmentColour = vec4(mapped, 1.0f);
+
+    // FragmentColour = vec4(colour, 1.0f);
+    // if(gl_FragCoord.x > 690.0f)
+    // {
+        // FragmentColour = vec4(vec3(Lo), 1.0f);
+    // }
+    // else
+    // {
+        // FragmentColour = vec4(vec3(ao * ssao), 1.0f);
+    // }
 }

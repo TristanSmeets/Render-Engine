@@ -159,8 +159,8 @@ void DeferredShading::CreateSSAOKernel(std::uniform_real_distribution<GLfloat> &
 		sample *= randomFloats(generator);
 		float scale = float(i) / 64.0f;
 
-		//Scale samples so there more alligned to the center of the kernel
-		scale = 0.1f + (scale * scale) * (1.0f - 0.1f);
+		//Scale samples so they're more aligned to the center of the kernel
+		scale = 0.1f + (scale * scale) * 0.9f;
 		sample *= scale;
 		ssaoKernel[i] = sample;
 	}
