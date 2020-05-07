@@ -34,9 +34,8 @@ void DeferredPBR::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	//postProcessing = &basic;
-	//postProcessing->Initialize(parameters);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	postProcessing = &basic;
+	postProcessing->Initialize(parameters);
 }
 
 void DeferredPBR::Render(Scene & scene)
@@ -266,8 +265,10 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	pbrLighting.Use();
 	pbrLighting.SetVec3("cameraPosition", scene.GetCamera().GetWorldPosition());
 	pbrLighting.SetVec3("nonMetallicReflectionColour", pbrParameters.NonMetallicReflectionColour);
-	pbrLighting.SetFloat("gammaCorrection", pbrParameters.GammaCorrection);
-	pbrLighting.SetFloat("exposure", pbrParameters.Exposure);
+
+	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
+	pbrLighting.SetFloat("gammaCorrection", postProcessingParameters.GammaCorrection);
+	pbrLighting.SetFloat("exposure", postProcessingParameters.Exposure);
 
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{

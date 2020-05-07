@@ -3,6 +3,7 @@
 #include "Utility/Framebuffer.h"
 #include "Utility/Renderbuffer.h"
 #include "Rendering/Texture.h"
+#include "PostProcessing/Forward/Basic.h"
 
 class DeferredShading : public RenderTechnique
 {
@@ -26,6 +27,8 @@ private:
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
 	
 	const Window& window;
+	//Post processing
+	Basic basic;
 
 	Framebuffer aoBuffers[2];
 	Framebuffer gBuffer;

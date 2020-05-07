@@ -3,7 +3,6 @@
 #include "Utility/Framebuffer.h"
 #include "Utility/Renderbuffer.h"
 #include "Rendering/Texture.h"
-#include "PostProcessing/PostProcessing.h"
 #include "PostProcessing/Forward/Basic.h"
 
 class DeferredPBR : public RenderTechnique
@@ -28,8 +27,8 @@ private:
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
 
 	const Window& window;
-	//PostProcessing* postProcessing;
-	//Basic basic;
+	//Post processing
+	Basic basic;
 
 	Framebuffer gBuffer;
 	Framebuffer aoBuffers[2];

@@ -41,6 +41,11 @@ const RenderTechnique::DeferredParameters & RenderTechnique::GetDeferredParamete
 	return deferredParameters;
 }
 
+const PostProcessing & RenderTechnique::GetPostProcessing() const
+{
+	return *postProcessing;
+}
+
 RenderTechnique::ADSParameters::ADSParameters(float ambientStrength) :
 	AmbientStrength(ambientStrength)
 {
@@ -52,16 +57,14 @@ RenderTechnique::ADSParameters& RenderTechnique::ADSParameters::operator=(const 
 	return *this;
 }
 
-RenderTechnique::PBRParameters::PBRParameters(const glm::vec3 & nonMetallicReflectionColour, float gammaCorrection, float exposure) :
-	NonMetallicReflectionColour(nonMetallicReflectionColour), GammaCorrection(gammaCorrection), Exposure(exposure)
+RenderTechnique::PBRParameters::PBRParameters(const glm::vec3 & nonMetallicReflectionColour) :
+	NonMetallicReflectionColour(nonMetallicReflectionColour)
 {
 }
 
 RenderTechnique::PBRParameters & RenderTechnique::PBRParameters::operator=(const PBRParameters & rhs)
 {
 	this->NonMetallicReflectionColour = rhs.NonMetallicReflectionColour;
-	this->GammaCorrection = rhs.GammaCorrection;
-	this->Exposure = rhs.Exposure;
 	return *this;
 }
 

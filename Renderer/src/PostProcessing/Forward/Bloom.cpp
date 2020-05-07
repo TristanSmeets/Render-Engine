@@ -128,7 +128,7 @@ void Bloom::Draw()
 	colourBuffers[0].Bind(bloom, Texture::Albedo);
 	blurTextures[1].Bind(bloom, Texture::Normal);
 	bloom.SetFloat("exposure", parameters.Exposure);
-	bloom.SetFloat("gammaCorection", parameters.GammaCorrection);
+	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);

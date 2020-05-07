@@ -10,6 +10,7 @@
 #include "Rendering/Material.h"
 #include "Rendering/RenderComponent.h"
 #include "Technique/RenderTechnique.h"
+#include "PostProcessing/PostProcessing.h"
 
 class GUIHelper
 {
@@ -21,6 +22,7 @@ public:
 	void EndFrame();
 	void Render(const Scene& scene);
 	void Render(const RenderTechnique& technique);
+
 
 private:
 	void RenderLayout(const Scene& scene);
@@ -42,6 +44,8 @@ private:
 	void RenderADSParameters(const RenderTechnique::ADSParameters& adsParameters);
 	void RenderPBRParameters(const RenderTechnique::PBRParameters& pbrParameters);
 	void RenderDeferredParameters(const RenderTechnique::DeferredParameters& deferredParameters);
+	void RenderPostProcessingParameters(const PostProcessing::Parameters& postProcessingParameters);
+
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;
 };

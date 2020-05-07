@@ -42,6 +42,9 @@ void DeferredShading::Initialize(Scene & scene)
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
+	postProcessing = &basic;
+	postProcessing->Initialize(parameters);
 }
 
 void DeferredShading::SetupSSAOBuffers(const Window::Parameters &parameters)
@@ -229,8 +232,10 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 
 	ssaoLighting.Use();
 	ssaoLighting.SetFloat("ambientStrength", adsParameters.AmbientStrength);
-	ssaoLighting.SetFloat("gammaCorrection", pbrParameters.GammaCorrection);
-	ssaoLighting.SetFloat("exposure", pbrParameters.Exposure);
+	
+	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
+	ssaoLighting.SetFloat("gammaCorrection", postProcessingParameters.GammaCorrection);
+	ssaoLighting.SetFloat("exposure", postProcessingParameters.Exposure);
 
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{

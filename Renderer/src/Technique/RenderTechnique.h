@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Scene.h"
 #include "Rendering/Shader.h"
+#include "PostProcessing/PostProcessing.h"
 
 class RenderTechnique
 {
@@ -15,10 +16,8 @@ public:
 	struct PBRParameters
 	{
 		glm::vec3 NonMetallicReflectionColour;
-		float GammaCorrection;
-		float Exposure;
 
-		PBRParameters(const glm::vec3& nonMetallicReflectionColour = glm::vec3(0.04f), float gammaCorrection = 2.2f, float exposure = 1.0f);
+		PBRParameters(const glm::vec3& nonMetallicReflectionColour = glm::vec3(0.04f));
 		PBRParameters& operator=(const PBRParameters& rhs);
 	};
 	struct DeferredParameters
@@ -43,9 +42,12 @@ public:
 	const ADSParameters& GetADSParameters() const;
 	const PBRParameters& GetPBRParameters() const;
 	const DeferredParameters& GetDeferredParameters() const;
+	const PostProcessing& GetPostProcessing() const;
+
 protected:
 	Shader skyboxShader;
 	ADSParameters adsParameters;
 	PBRParameters pbrParameters;
 	DeferredParameters deferredParameters;
+	PostProcessing* postProcessing;
 };
