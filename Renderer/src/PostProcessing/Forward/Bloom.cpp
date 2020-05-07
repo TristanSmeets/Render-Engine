@@ -127,9 +127,15 @@ void Bloom::Draw()
 	bloom.Use();
 	colourBuffers[0].Bind(bloom, Texture::Albedo);
 	blurTextures[1].Bind(bloom, Texture::Normal);
-	bloom.SetFloat("exposure", 1.0f);
+	bloom.SetFloat("exposure", parameters.Exposure);
+	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
+}
+
+const Framebuffer & Bloom::GetFramebuffer() const
+{
+	return hdrFBO;
 }
 

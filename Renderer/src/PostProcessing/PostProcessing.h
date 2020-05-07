@@ -11,10 +11,21 @@
 class PostProcessing
 {
 public:
+	struct Parameters
+	{
+		float GammaCorrection = 2.2f;
+		float Exposure = 1.0f;
+	};
+public:
 	PostProcessing();
 	virtual ~PostProcessing();
 	virtual void Initialize(const Window::Parameters& parameters) = 0;
 	virtual void Bind() = 0;
 	virtual void Unbind() = 0;
 	virtual void Draw() = 0;
+	virtual const Framebuffer& GetFramebuffer() const = 0;
+	virtual const Parameters& GetParameters() const;
+	virtual void SetParameters(const Parameters& parameters);
+protected:
+	Parameters parameters;
 };

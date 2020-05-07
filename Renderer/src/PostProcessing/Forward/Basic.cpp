@@ -49,10 +49,15 @@ void Basic::Unbind()
 void Basic::Draw()
 {
 	shader.Use();
-	shader.SetFloat("gammaCorrection", 2.2f);
-	shader.SetFloat("exposure", 1.0f);
+	shader.SetFloat("gammaCorrection", parameters.GammaCorrection);
+	shader.SetFloat("exposure", parameters.Exposure);
 	empty.Bind(shader, Texture::Albedo);
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
+}
+
+const Framebuffer & Basic::GetFramebuffer() const
+{
+	return framebuffer;
 }

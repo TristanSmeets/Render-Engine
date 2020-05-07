@@ -3,6 +3,7 @@
 #include "Utility/Framebuffer.h"
 #include "Utility/Renderbuffer.h"
 #include "Rendering/Texture.h"
+#include "PostProcessing/Forward/Basic.h"
 
 class DeferredPBR : public RenderTechnique
 {
@@ -24,12 +25,15 @@ private:
 	void LightingPass(const std::vector<Light> & lights, Scene & scene);
 	void GBufferToDefaultFramebuffer();
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
+
 	const Window& window;
+	//Post processing
+	Basic basic;
 
 	Framebuffer gBuffer;
 	Framebuffer aoBuffers[2];
 	Renderbuffer renderbuffer;
-	Texture gBufferTextures[4];
+	Texture gBufferTextures[5];
 	Texture aoTextures[2];
 	Texture noise;
 	Shader lamp;
@@ -39,4 +43,5 @@ private:
 	Shader ssaoBlur;
 	NDCQuad quad;
 	glm::vec3 ssaoKernel[64];
+
 };

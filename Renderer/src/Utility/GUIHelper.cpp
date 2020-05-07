@@ -62,6 +62,8 @@ void GUIHelper::Render(const RenderTechnique & technique)
 	RenderPBRParameters(technique.GetPBRParameters());
 	ImGui::Separator();
 	RenderDeferredParameters(technique.GetDeferredParameters());
+	ImGui::Separator();
+	RenderPostProcessingParameters(technique.GetPostProcessing().GetParameters());
 	ImGui::End();
 }
 
@@ -250,6 +252,12 @@ void GUIHelper::RenderDeferredParameters(const RenderTechnique::DeferredParamete
 	RenderInt("SSAO Kernel Size", (int&)deferredParameters.KernelSize, 1, 64);
 	RenderFloat("SSAO Radius", (float&)deferredParameters.Radius, 0.0f, 5.0f);
 	RenderFloat("SSAO Bias", (float&)deferredParameters.Bias, 0.0f, 2.0f);
+}
+
+void GUIHelper::RenderPostProcessingParameters(const PostProcessing::Parameters & postProcessingParameters)
+{
+	RenderFloat("Gamma Correction", (float&)postProcessingParameters.GammaCorrection, 1.0f, 3.0f);
+	RenderFloat("Exposure", (float&)postProcessingParameters.Exposure, 0.1f, 10.0f);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

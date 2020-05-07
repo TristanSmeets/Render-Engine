@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/Scene.h"
 #include "Rendering/Shader.h"
+#include "PostProcessing/PostProcessing.h"
 
 class RenderTechnique
 {
@@ -41,9 +42,12 @@ public:
 	const ADSParameters& GetADSParameters() const;
 	const PBRParameters& GetPBRParameters() const;
 	const DeferredParameters& GetDeferredParameters() const;
+	const PostProcessing& GetPostProcessing() const;
+
 protected:
 	Shader skyboxShader;
 	ADSParameters adsParameters;
 	PBRParameters pbrParameters;
 	DeferredParameters deferredParameters;
+	PostProcessing* postProcessing;
 };

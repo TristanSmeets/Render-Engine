@@ -26,7 +26,6 @@ private:
 	const int shadowHeight = 1024;
 
 	Window& window;
-	PostProcessing* postProcessing;
 	Shader lamp;
 	Shader adsLighting;
 	Shader pointShadowDepth;

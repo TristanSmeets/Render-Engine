@@ -11,6 +11,7 @@ public:
 	void Bind();
 	void Unbind();
 	void Draw();
+	const Framebuffer& GetFramebuffer() const;
 	
 private:
 	void BlurTextureBuffers();

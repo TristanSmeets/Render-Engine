@@ -41,6 +41,11 @@ const RenderTechnique::DeferredParameters & RenderTechnique::GetDeferredParamete
 	return deferredParameters;
 }
 
+const PostProcessing & RenderTechnique::GetPostProcessing() const
+{
+	return *postProcessing;
+}
+
 RenderTechnique::ADSParameters::ADSParameters(float ambientStrength) :
 	AmbientStrength(ambientStrength)
 {

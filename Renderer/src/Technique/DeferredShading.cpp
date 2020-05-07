@@ -42,6 +42,9 @@ void DeferredShading::Initialize(Scene & scene)
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
+	postProcessing = &basic;
+	postProcessing->Initialize(parameters);
 }
 
 void DeferredShading::SetupSSAOBuffers(const Window::Parameters &parameters)
@@ -118,8 +121,6 @@ void DeferredShading::SetupShaders(Scene & scene)
 	ssaoLighting.SetInt("gNormal", 1);
 	ssaoLighting.SetInt("gAlbedoSpecular", 2);
 	ssaoLighting.SetInt("ssao", 3);
-	ssaoLighting.SetFloat("exposure", 1.0f);
-	ssaoLighting.SetFloat("gammaCorrection", 2.2f);
 
 	ssao.Use();
 	ssao.SetInt("gPosition", 0);
@@ -231,6 +232,11 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 
 	ssaoLighting.Use();
 	ssaoLighting.SetFloat("ambientStrength", adsParameters.AmbientStrength);
+	
+	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
+	ssaoLighting.SetFloat("gammaCorrection", postProcessingParameters.GammaCorrection);
+	ssaoLighting.SetFloat("exposure", postProcessingParameters.Exposure);
+
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
 		glm::vec3 lightPositionView = glm::vec3(scene.GetCamera().GetViewMatrix() * glm::vec4(lights[i].GetWorldPosition(), 1.0f));

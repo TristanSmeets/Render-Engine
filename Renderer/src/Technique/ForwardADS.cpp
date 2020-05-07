@@ -23,7 +23,7 @@ void ForwardADS::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	
-	postProcessing = &bloom;
+	postProcessing = &basic;
 	postProcessing->Initialize(window.GetWindowParameters());
 	printf("Initialization Complete\n");
 }
