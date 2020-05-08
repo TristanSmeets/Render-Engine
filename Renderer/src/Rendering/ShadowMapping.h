@@ -12,7 +12,7 @@ public:
 	struct Parameters
 	{
 		glm::ivec2 Resolution = glm::ivec2(1024, 1024);
-		float AspectRatio = Resolution.x / Resolution.y;
+		float AspectRatio = (float)Resolution.x / (float)Resolution.y;
 		float NearPlane = 1.0f;
 		float FarPlane = 25.0f;
 	};
