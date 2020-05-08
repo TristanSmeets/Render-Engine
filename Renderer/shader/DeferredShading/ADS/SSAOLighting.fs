@@ -16,7 +16,7 @@ struct Light{
     float Quadratic;
 };
 
-const int NumberOfLights = 32;
+const int NumberOfLights = 10;
 uniform Light lights[NumberOfLights];
 uniform vec3 viewPosition;
 uniform float ambientStrength;

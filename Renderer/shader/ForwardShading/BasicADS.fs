@@ -63,9 +63,8 @@ float ShadowCalculation(vec3 fragmentPosition, samplerCube shadowCubeMap, vec3 l
             shadow += 1.0f;
         }
     }
-    FragmentColour = vec4(vec3(currentDepth), 1.0f);
-    shadow /= float(samples);
 
+    shadow /= float(samples);
     return shadow;
 }
 

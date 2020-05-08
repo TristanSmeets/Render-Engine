@@ -29,7 +29,7 @@ uniform sampler2D ssao;
 uniform float gammaCorrection;
 uniform float exposure;
 
-const int NumberOfLights = 32;
+const int NumberOfLights = 10;
 uniform Light lights[NumberOfLights];
 
 uniform vec3 cameraPosition;
