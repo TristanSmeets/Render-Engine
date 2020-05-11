@@ -114,7 +114,7 @@ void ForwardPBR::SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, cons
 	glActiveTexture(GL_TEXTURE6);
 	skybox.GetPrefilter().Bind();
 	skybox.GetLookup().Bind(pbr, (Texture::Type)7);
-	for (int i = 0; i < lights.size(); ++i)
+	for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
 	{
 		glActiveTexture(GL_TEXTURE9 + i);
 		shadowMapping.BindShadowMap(i);
