@@ -9,6 +9,7 @@ public:
 	struct ADSParameters
 	{
 		float AmbientStrength;
+		float Shininess;
 
 		ADSParameters(float ambientStrength = 0.01f);
 		ADSParameters& operator=(const ADSParameters& rhs);
