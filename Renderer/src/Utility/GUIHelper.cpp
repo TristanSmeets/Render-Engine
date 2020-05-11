@@ -238,6 +238,7 @@ void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
 void GUIHelper::RenderADSParameters(const RenderTechnique::ADSParameters & adsParameters)
 {
 	RenderFloat("Ambient Strength", (float&)adsParameters.AmbientStrength, 0.0f, 1.0f);
+	RenderFloat("Material Shiniess", (float&)adsParameters.Shininess, 2.0f, 256.0f);
 }
 
 void GUIHelper::RenderPBRParameters(const RenderTechnique::PBRParameters & pbrParameters)

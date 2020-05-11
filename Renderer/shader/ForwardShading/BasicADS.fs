@@ -23,9 +23,10 @@ struct Material
     sampler2D Specular;
 
     float AmbientStrength;
+    float Shininess;
 };
 
-#define MaximumLights 10
+#define MaximumLights 1
 uniform Light lights[MaximumLights];
 uniform Material material;
 uniform vec3 viewPosition;
@@ -65,12 +66,14 @@ float ShadowCalculation(vec3 fragmentPosition, samplerCube shadowCubeMap, vec3 l
     }
 
     shadow /= float(samples);
+    // FragmentColour = vec4(vec3(1 - shadow), 1.0f);
     return shadow;
 }
 
 void main()
 {
     vec3 diffuseColour = texture(material.Diffuse, UV).rgb;
+    vec3 specularColour = texture(material.Specular, UV).rgb;
     vec3 normal = normalize(Normal);
 
     vec3 ambient = material.AmbientStrength * diffuseColour;
@@ -79,16 +82,25 @@ void main()
     
     for(int i = 0; i < MaximumLights; ++i)
     {
+        //Diffuse
         vec3 lightDirection = normalize(lights[i].Position - FragmentPosition);
-        float diffuseImpact = max(dot(lightDirection, normal), 0.0f);
-        vec3 result = lights[i].Colour * diffuseImpact * diffuseColour;
+        float diffuseImpact = max(dot(normal, lightDirection), 0.0f);
+        vec3 diffuse = lights[i].Colour * diffuseImpact * diffuseColour;
+        //Specular
+        vec3 reflectDirection = reflect(-lightDirection, normal);
+        float specularImpact = pow(max(dot(viewDirection, reflectDirection), 0.0f), material.Shininess);
+        vec3 specular = lights[i].Colour * specularImpact * specularColour;
         //Attenuation
         float distance = length(FragmentPosition - lights[i].Position);
-        result *= 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
+        float attenuation = 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
+        diffuse *= attenuation;
+        specular *= attenuation;
+
         //Shadow
         float shadow = ShadowCalculation(FragmentPosition, shadowCubeMaps[i], lights[i].Position);
-        result *= (1.0f - shadow);
-        lighting += result;
+        vec3 lightColour = diffuse + specular; 
+        lightColour *= (1.0f - shadow);
+        lighting += lightColour;
     }
 
     vec3 result = ambient + lighting;
