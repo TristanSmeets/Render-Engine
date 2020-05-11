@@ -2,9 +2,11 @@
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec4 gAlbedoSpecular;
+layout (location = 3) out vec3 gViewPosition;
 
 in vec3 FragmentPosition;
 in vec3 Normal;
+in vec3 ViewPosition;
 in vec2 TextureCoordinates;
 
 uniform sampler2D diffuse;
@@ -14,6 +16,7 @@ void main()
 {
     gPosition = FragmentPosition;
     gNormal = Normal;
+    gViewPosition = ViewPosition;
     gAlbedoSpecular.rbg = texture(diffuse, TextureCoordinates).rgb;
     gAlbedoSpecular.a = texture(specular, TextureCoordinates).r;
 }

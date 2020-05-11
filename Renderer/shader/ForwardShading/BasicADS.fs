@@ -26,7 +26,7 @@ struct Material
     float Shininess;
 };
 
-#define MaximumLights 1
+#define MaximumLights 10
 uniform Light lights[MaximumLights];
 uniform Material material;
 uniform vec3 viewPosition;
@@ -66,7 +66,6 @@ float ShadowCalculation(vec3 fragmentPosition, samplerCube shadowCubeMap, vec3 l
     }
 
     shadow /= float(samples);
-    // FragmentColour = vec4(vec3(1 - shadow), 1.0f);
     return shadow;
 }
 
@@ -98,13 +97,16 @@ void main()
 
         //Shadow
         float shadow = ShadowCalculation(FragmentPosition, shadowCubeMaps[i], lights[i].Position);
+
         vec3 lightColour = diffuse + specular; 
         lightColour *= (1.0f - shadow);
         lighting += lightColour;
     }
 
-    vec3 result = ambient + lighting;
-    FragmentColour = vec4(result, 1.0f);
+    // vec3 result = ambient + lighting;
+    vec3 result = lighting;
+    // FragmentColour = vec4(result, 1.0f);
+    FragmentColour = vec4(normal, 1.0f);
 
     float brightness = dot(result, vec3(0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)

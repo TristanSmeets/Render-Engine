@@ -4,6 +4,7 @@
 #include "Utility/Renderbuffer.h"
 #include "Rendering/Texture.h"
 #include "PostProcessing/Forward/Basic.h"
+#include "Rendering/ShadowMapping.h"
 
 class DeferredShading : public RenderTechnique
 {
@@ -33,7 +34,7 @@ private:
 	Framebuffer aoBuffers[2];
 	Framebuffer gBuffer;
 	Renderbuffer renderbuffer;
-	Texture gBufferTextures[3];
+	Texture gBufferTextures[4];
 	Texture aoTextures[2];
 	Texture noise;
 	Shader lamp;
@@ -42,6 +43,7 @@ private:
 	Shader ssaoBlur;
 	Shader ssaoLighting;
 	NDCQuad quad;
+	ShadowMapping shadowMapping;
 
 	glm::vec3 ssaoKernel[64];
 };

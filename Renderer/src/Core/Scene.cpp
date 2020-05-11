@@ -145,8 +145,8 @@ void Scene::InitializeActors()
 
 	for (unsigned int i = 0; i < NumberOfLights; ++i)
 	{
-		float x = ((rand() % 100) / 100.0f) * 30.0f - 15.0f;
-		float y = ((rand() % 100) / 100.0f) * 5.0f + 1.0f;
+		float x = ((rand() % 100) / 100.0f) * 30.0f - 10.0f;
+		float y = ((rand() % 100) / 100.0f) * 5.0f + 2.0f;
 		float z = ((rand() % 100) / 100.0f) * 30.0f - 12.0f;
 
 		float r = ((rand() % 100) / 200.0f) + 0.5f;

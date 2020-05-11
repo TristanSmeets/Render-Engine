@@ -27,6 +27,11 @@ void DeferredShading::Initialize(Scene & scene)
 	//SSAO buffer setup
 	SetupSSAOBuffers(parameters);
 
+	ShadowMapping::Parameters shadowParameters;
+	shadowParameters.AspectRatio = 1.0f;
+	shadowParameters.Resolution = glm::vec2(1024, 1024);
+	shadowMapping.Initialize(shadowParameters);
+
 	//Generate sample kernel
 	std::uniform_real_distribution<GLfloat> randomFloats(0.0f, 1.0f);
 	std::default_random_engine generator;
@@ -85,9 +90,14 @@ void DeferredShading::SetupGBuffer(const Window::Parameters &parameters)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gBuffer.AttachTexture(GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gBufferTextures[2].GetID());
+	//View positions
+	gBufferTextures[3] = Texture::CreateEmpty("ViewPositions", parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	gBuffer.AttachTexture(GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gBufferTextures[3].GetID());
 
-	GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3, attachments);
+	GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+	glDrawBuffers(4, attachments);
 
 	renderbuffer.Generate();
 	renderbuffer.Bind();
@@ -121,6 +131,10 @@ void DeferredShading::SetupShaders(Scene & scene)
 	ssaoLighting.SetInt("gNormal", 1);
 	ssaoLighting.SetInt("gAlbedoSpecular", 2);
 	ssaoLighting.SetInt("ssao", 3);
+	for (unsigned int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
+	{
+		ssaoLighting.SetInt("shadowCubeMaps[" + std::to_string(i) + "]", i + 4);
+	}
 
 	ssao.Use();
 	ssao.SetInt("gPosition", 0);
@@ -171,6 +185,12 @@ void DeferredShading::Render(Scene & scene)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	shadowMapping.MapPointLights(scene.GetLights(), scene.GetActors());
+
+	glViewport(0, 0, window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
 	//Geometry pass
@@ -232,15 +252,18 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 
 	ssaoLighting.Use();
 	ssaoLighting.SetFloat("ambientStrength", adsParameters.AmbientStrength);
+	ssaoLighting.SetFloat("shininess", adsParameters.Shininess);
+	ssaoLighting.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
 	
 	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
 	ssaoLighting.SetFloat("gammaCorrection", postProcessingParameters.GammaCorrection);
 	ssaoLighting.SetFloat("exposure", postProcessingParameters.Exposure);
+	ssaoLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
 
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
-		glm::vec3 lightPositionView = glm::vec3(scene.GetCamera().GetViewMatrix() * glm::vec4(lights[i].GetWorldPosition(), 1.0f));
-		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Position", lightPositionView);
+		//glm::vec3 lightPositionView = glm::vec3(scene.GetCamera().GetViewMatrix() * glm::vec4(lights[i].GetWorldPosition(), 1.0f));
+		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Position", lights[i].GetWorldPosition());
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 
 		const Light::Parameters& parameters = lights[i].GetParameters();
@@ -254,6 +277,8 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 		}
 		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, aoTextures[1].GetID());
+		glActiveTexture(GL_TEXTURE4 + i);
+		shadowMapping.BindShadowMap(i);
 	}
 
 	glDisable(GL_DEPTH_TEST);
@@ -286,11 +311,15 @@ void DeferredShading::SSAOTexturePass()
 	{
 		ssao.SetVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
 	}
-	for (unsigned int i = 0; i < 2; ++i)
-	{
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, gBufferTextures[i].GetID());
-	}
+	//for (unsigned int i = 0; i < 2; ++i)
+	//{
+	//	glActiveTexture(GL_TEXTURE0 + i);
+	//	glBindTexture(GL_TEXTURE_2D, gBufferTextures[i].GetID());
+	//}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gBufferTextures[3].GetID());
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gBufferTextures[1].GetID());
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, noise.GetID());
 	quad.Render();
