@@ -22,6 +22,12 @@ void DeferredPBR::Initialize(Scene & scene)
 	SetupGBuffers(parameters);
 	SetupSSAOBuffers(parameters);
 
+	ShadowMapping::Parameters shadowParameters;
+	shadowParameters.AspectRatio = 1.0f;
+	shadowParameters.Resolution = glm::vec2(1024, 1024);
+	shadowMapping.Initialize(shadowParameters);
+
+	//Generate sample kernel
 	std::uniform_real_distribution<GLfloat> randomFloats(0.0f, 1.0f);
 	std::default_random_engine generator;
 	CreateSSAOKernel(randomFloats, generator);
@@ -42,6 +48,12 @@ void DeferredPBR::Render(Scene & scene)
 {
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	shadowMapping.MapPointLights(scene.GetLights(), scene.GetActors());
+
+	glViewport(0, 0, window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
 
@@ -92,9 +104,14 @@ void DeferredPBR::SetupGBuffers(const Window::Parameters & parameters)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gBuffer.AttachTexture(GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gBufferTextures[4].GetID());
+	//View Normals
+	gBufferTextures[5] = Texture::CreateEmpty("ViewNormals", parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	gBuffer.AttachTexture(GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, gBufferTextures[5].GetID());
 
-	GLuint attachments[5] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
-	glDrawBuffers(5, attachments);
+	GLuint attachments[6] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
+	glDrawBuffers(6, attachments);
 
 	renderbuffer.Generate();
 	renderbuffer.Bind();
@@ -188,6 +205,10 @@ void DeferredPBR::SetupShaders(Scene & scene)
 	pbrLighting.SetInt("prefilterMap", 5);
 	pbrLighting.SetInt("brdfLUT", 6);
 	pbrLighting.SetInt("ssao", 7);
+	for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
+	{
+		pbrLighting.SetInt("shadowCubeMaps[" + std::to_string(i) + "]", i + 8);
+	}
 
 	ssao.Use();
 	ssao.SetInt("gPosition", 0);
@@ -240,7 +261,7 @@ void DeferredPBR::SSAOTexturePass()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gBufferTextures[4].GetID());
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gBufferTextures[1].GetID());
+	glBindTexture(GL_TEXTURE_2D, gBufferTextures[5].GetID());
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, noise.GetID());
 	quad.Render();
@@ -265,26 +286,12 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	pbrLighting.Use();
 	pbrLighting.SetVec3("cameraPosition", scene.GetCamera().GetWorldPosition());
 	pbrLighting.SetVec3("nonMetallicReflectionColour", pbrParameters.NonMetallicReflectionColour);
+	pbrLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
 
 	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
 	pbrLighting.SetFloat("gammaCorrection", postProcessingParameters.GammaCorrection);
 	pbrLighting.SetFloat("exposure", postProcessingParameters.Exposure);
 
-	for (unsigned int i = 0; i < lights.size(); ++i)
-	{
-		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
-		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
-		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
-		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
-		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
-
-		const Light::Parameters& parameters = lights[i].GetParameters();
-		pbrLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
-		pbrLighting.SetVec3(lightColour, parameters.Colour);
-		pbrLighting.SetFloat(lightConstant, parameters.Constant);
-		pbrLighting.SetFloat(lightLinear, parameters.Linear);
-		pbrLighting.SetFloat(lightQuadratic, parameters.Quadratic);
-	}
 	
 	for (unsigned int i = 0; i < 4; ++i)
 	{
@@ -301,6 +308,25 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, aoTextures[1].GetID());
 
+	for (unsigned int i = 0; i < lights.size(); ++i)
+	{
+		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
+		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
+		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
+		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
+		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
+
+		const Light::Parameters& parameters = lights[i].GetParameters();
+		pbrLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
+		pbrLighting.SetVec3(lightColour, parameters.Colour);
+		pbrLighting.SetFloat(lightConstant, parameters.Constant);
+		pbrLighting.SetFloat(lightLinear, parameters.Linear);
+		pbrLighting.SetFloat(lightQuadratic, parameters.Quadratic);
+		
+		//Attach shadow map
+		glActiveTexture(GL_TEXTURE8 + i);
+		shadowMapping.BindShadowMap(i);
+	}
 	glActiveTexture(GL_TEXTURE0);
 
 	glDisable(GL_DEPTH_TEST);

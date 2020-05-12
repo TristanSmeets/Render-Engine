@@ -136,7 +136,7 @@ void DeferredShading::SetupShaders(Scene & scene)
 	ssaoLighting.SetInt("gNormal", 1);
 	ssaoLighting.SetInt("gAlbedoSpecular", 2);
 	ssaoLighting.SetInt("ssao", 3);
-	for (unsigned int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
+	for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
 	{
 		ssaoLighting.SetInt("shadowCubeMaps[" + std::to_string(i) + "]", i + 4);
 	}

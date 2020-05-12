@@ -28,7 +28,6 @@ private:
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
 	
 	const Window& window;
-	//Post processing
 	Basic basic;
 
 	Framebuffer aoBuffers[2];

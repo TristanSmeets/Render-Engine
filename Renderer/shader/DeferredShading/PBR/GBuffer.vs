@@ -4,8 +4,9 @@ layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 uv;
 
 out vec3 FragmentPosition;
-out vec3 Normal;
 out vec3 ViewPosition;
+out vec3 Normal;
+out vec3 ViewNormal;
 out vec2 UV;
 
 uniform mat4 model;
@@ -19,6 +20,7 @@ void main()
     FragmentPosition = vec3(model * vec4(position, 1.0f));
     UV = uv;
     Normal = mat3(model) * normal;
+    ViewNormal = mat3(view * model) * normal;
 
     gl_Position = projection * viewPosition;
 }
