@@ -102,7 +102,6 @@ void ForwardADS::SetADSLightingUniforms(Scene & scene, const std::vector<Light>&
 	adsLighting.Use();
 	adsLighting.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	adsLighting.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
-
 	
 	lamp.Use();
 	lamp.SetMat4("view", scene.GetCamera().GetViewMatrix());
