@@ -83,8 +83,8 @@ void main()
         float diffuseImpact = max(dot(Normal, lightDirection), 0.0f);
         vec3 diffuse = lights[i].Color * diffuseImpact * DiffuseTextureColour;
         //Specular Colour
-        vec3 reflectionDirection = normalize(lightDirection + viewDirection);
-        float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0f), shininess);
+        vec3 halfWayVector = normalize(lightDirection + viewDirection);
+        float specularPower = pow(max(dot(viewDirection, halfWayVector), 0.0f), shininess);
         vec3 specular = lights[i].Color * specularPower * SpecularTextureColour;
         //Attenuation
         float distance = length(FragmentPosition - lights[i].Position);

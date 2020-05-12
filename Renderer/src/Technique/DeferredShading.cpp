@@ -317,15 +317,11 @@ void DeferredShading::SSAOTexturePass()
 	{
 		ssao.SetVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
 	}
-	//for (unsigned int i = 0; i < 2; ++i)
-	//{
-	//	glActiveTexture(GL_TEXTURE0 + i);
-	//	glBindTexture(GL_TEXTURE_2D, gBufferTextures[i].GetID());
-	//}
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gBufferTextures[3].GetID());
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gBufferTextures[4].GetID());
+	for (unsigned int i = 0; i < 2; ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, gBufferTextures[i + 3].GetID());
+	}
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, noise.GetID());
 	quad.Render();
