@@ -29,13 +29,49 @@ uniform sampler2D ssao;
 uniform float gammaCorrection;
 uniform float exposure;
 
+//Lights
 const int NumberOfLights = 10;
 uniform Light lights[NumberOfLights];
+uniform samplerCube shadowCubeMaps[NumberOfLights];
+uniform float farPlane;
 
 uniform vec3 cameraPosition;
 uniform vec3 nonMetallicReflectionColour;
 
 const float PI = 3.14159265359f;
+
+vec3 gridSamplingDisk[20] = vec3[](
+    vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+    vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+    vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+    vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
+float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition)
+{
+    vec3 fragmentToLight = fragPos - lightPosition;
+
+    float currentDepth = length(fragmentToLight);
+
+    float shadow = 0.0f;
+    float bias = 0.1f;
+    int samples = 20;
+    float viewDistance = length(cameraPosition - fragPos);
+    float diskRadius = (1.0f + (viewDistance / farPlane)) / 25.0f;
+    for (int i = 0; i < samples; ++i)
+    {
+        float closestDepth = texture(shadowCubeMap, fragmentToLight + gridSamplingDisk[i] * diskRadius).r;
+        closestDepth *= farPlane;
+
+        if(currentDepth - bias > closestDepth)
+        {
+            shadow += 1.0f;
+        }
+    }
+    shadow /= float(samples);
+    return shadow;
+}
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -123,7 +159,12 @@ void main()
         kD *= (1.0f - metallic);
 
         float NdotL = max(dot(Normal, lightDirection), 0.0f);
+
+        float shadow = ShadowCalculation(FragmentPosition, shadowCubeMaps[i], lights[i].Position);
+
         vec3 outgoingRadiance = (kD * albedo / PI + specular) * radiance * NdotL;
+        outgoingRadiance *= (1 - shadow);
+
         Lo += outgoingRadiance;
     }
 

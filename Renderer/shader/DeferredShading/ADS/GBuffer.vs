@@ -20,7 +20,6 @@ void main()
     ViewPosition = viewPosition.xyz;
 
     FragmentPosition = vec3(model * vec4(position, 1.0f));
-    //FragmentPosition = ViewPosition;
     TextureCoordinates = textureCoordinates;
 
     mat3 viewNormalMatrix = transpose(inverse(mat3(view * model)));
