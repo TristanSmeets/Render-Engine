@@ -34,7 +34,7 @@ private:
 	Framebuffer aoBuffers[2];
 	Framebuffer gBuffer;
 	Renderbuffer renderbuffer;
-	Texture gBufferTextures[4];
+	Texture gBufferTextures[5];
 	Texture aoTextures[2];
 	Texture noise;
 	Shader lamp;

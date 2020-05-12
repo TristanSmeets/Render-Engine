@@ -33,17 +33,17 @@ void main()
     for(int i = 0; i < kernelSize; ++i)
     {
         //Get sample position
-        vec3 sample = TBN * samples[i];
+        vec3 sample = TBN * samples[i]; //From tangent to view-space
         sample = fragmentPosition + sample * radius;
 
         //Project sample position (to sample texture) (to get position on screen/texture)
         vec4 offset = vec4(sample, 1.0f);
-        offset = projection * offset;
-        offset.xyz /= offset.w;
-        offset.xyz = offset.xyz * 0.5f + 0.5f;
+        offset = projection * offset; //from view to clip space
+        offset.xyz /= offset.w; //perspective divide
+        offset.xyz = offset.xyz * 0.5f + 0.5f; //transform to range 0.0 - 1.0
 
         //Get sample depth
-        float sampleDepth = texture(gPosition, offset.xy).z;
+        float sampleDepth = texture(gPosition, offset.xy).z; //Get depth value of kernel sample.
 
         float rangeCheck = smoothstep(0.0f, 1.0f, radius / abs(fragmentPosition.z - sampleDepth));
         occlusion += (sampleDepth >= sample.z + bias ? 1.0f : 0.0) * rangeCheck;

@@ -60,7 +60,6 @@ float ShadowCalculation(vec3 fragmentPosition, samplerCube shadowCubeMap, vec3 l
             shadow += 1.0f;
         }
     }
-
     shadow /= float(samples);
     return shadow;
 }
@@ -73,8 +72,7 @@ void main()
     float SpecularTextureColour = texture(gAlbedoSpecular, UV).a;
     float AmbientOcclusion = texture(ssao, UV).r;
 
-    // vec3 ambient = vec3(ambientStrength * DiffuseTextureColour * AmbientOcclusion);
-    vec3 ambient = vec3(ambientStrength * DiffuseTextureColour);
+    vec3 ambient = vec3(ambientStrength * DiffuseTextureColour * AmbientOcclusion);
     vec3 lighting = vec3(0.0f);
     vec3 viewDirection = normalize(viewPosition - FragmentPosition);
 
@@ -85,7 +83,7 @@ void main()
         float diffuseImpact = max(dot(Normal, lightDirection), 0.0f);
         vec3 diffuse = lights[i].Color * diffuseImpact * DiffuseTextureColour;
         //Specular Colour
-        vec3 reflectionDirection = reflect(-lightDirection, Normal);
+        vec3 reflectionDirection = normalize(lightDirection + viewDirection);
         float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0f), shininess);
         vec3 specular = lights[i].Color * specularPower * SpecularTextureColour;
         //Attenuation
@@ -100,11 +98,8 @@ void main()
         lighting += lightColour;
     }
 
-    // vec3 result = ambient + lighting;
-    vec3 result = lighting;
+    vec3 result = ambient + lighting;
     vec3 mapped = vec3(1.0f) - exp(-result * exposure);
     mapped = pow(mapped, vec3(1.0f / gammaCorrection));
     FragmentColour = vec4(mapped, 1.0f);
-
-    // FragmentColour = vec4(Normal, 1.0f);
 }

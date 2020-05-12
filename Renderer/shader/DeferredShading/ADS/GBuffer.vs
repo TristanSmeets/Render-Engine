@@ -6,6 +6,7 @@ layout (location = 2) in vec2 textureCoordinates;
 out vec3 FragmentPosition;
 out vec3 Normal;
 out vec3 ViewPosition;
+out vec3 ViewNormal;
 out vec2 TextureCoordinates;
 
 uniform mat4 model;
@@ -19,11 +20,14 @@ void main()
     ViewPosition = viewPosition.xyz;
 
     FragmentPosition = vec3(model * vec4(position, 1.0f));
+    //FragmentPosition = ViewPosition;
     TextureCoordinates = textureCoordinates;
 
-    mat3 normalMatrix = transpose(inverse(mat3(view * model)));
-    // mat3 normalMatrix = transpose(inverse(mat3(model)));
-    Normal = normalize(normalMatrix * normal);
+    mat3 viewNormalMatrix = transpose(inverse(mat3(view * model)));
+    ViewNormal = viewNormalMatrix * normal;
+    
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    Normal = normalMatrix * normal;
 
     gl_Position = projection * viewPosition;
 }
