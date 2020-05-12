@@ -29,7 +29,7 @@ uniform sampler2D ssao;
 uniform float gammaCorrection;
 uniform float exposure;
 
-const int NumberOfLights = 32;
+const int NumberOfLights = 10;
 uniform Light lights[NumberOfLights];
 
 uniform vec3 cameraPosition;
@@ -147,5 +147,5 @@ void main()
     //Gamma Correction
     mapped = pow(mapped, vec3(1.0f/ gammaCorrection));
     FragmentColour = vec4(mapped, 1.0f);
-    //FragmentColour = vec4(colour, 1.0f);
+    // FragmentColour = vec4(vec3(ssao), 1.0f);
 }

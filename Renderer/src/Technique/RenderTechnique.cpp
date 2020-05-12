@@ -54,6 +54,7 @@ RenderTechnique::ADSParameters::ADSParameters(float ambientStrength) :
 RenderTechnique::ADSParameters& RenderTechnique::ADSParameters::operator=(const ADSParameters & rhs)
 {
 	this->AmbientStrength = rhs.AmbientStrength;
+	this->Shininess = rhs.Shininess;
 	return *this;
 }
 
