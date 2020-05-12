@@ -128,9 +128,14 @@ void Scene::InitializeMaterials()
 	sand.AddTexture(Texture::Metallic,			Filepath::Texture + "cobblestone/Metallic.png");
 	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
 	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
+
+	Material leaf = Material("Leaf");
+	leaf.AddTexture(Texture::Albedo, Filepath::Texture + "Leaf/Leaf.png", true);
+
 	materials.push_back(aluminium);
 	materials.push_back(rustedIron);
 	materials.push_back(sand);
+	materials.push_back(leaf);
 
 	printf("Created %d materials\n", (int)materials.size());
 }
@@ -182,6 +187,13 @@ void Scene::InitializeActors()
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);
 
+	Actor LeafPlane = Actor("Leaf");
+	LeafPlane.GetTransform().Translate(glm::vec3(0.0f, 0.0f, 15.0f));
+	LeafPlane.GetTransform().Rotate(glm::vec3(90.0f, 0.0f, 0.0f));
+	LeafPlane.GetTransform().Scale(glm::vec3(0.1f));
+	LeafPlane.GetRenderComponent().SetMesh(meshes[2]);
+	LeafPlane.GetRenderComponent().SetMaterial(materials[3]);
+	actors.push_back(LeafPlane);
 
 	printf("Created %d actors\n", (int)actors.size());
 }

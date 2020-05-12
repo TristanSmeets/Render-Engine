@@ -78,6 +78,12 @@ void main()
     vec3 ambient = material.AmbientStrength * diffuseColour;
     vec3 lighting = vec3(0.0f);
     vec3 viewDirection = normalize(viewPosition - FragmentPosition);
+
+    vec4 textureColour = texture(material.Diffuse, UV);
+    if(textureColour.a < 0.1f)
+    {
+        discard;
+    }
     
     for(int i = 0; i < MaximumLights; ++i)
     {
