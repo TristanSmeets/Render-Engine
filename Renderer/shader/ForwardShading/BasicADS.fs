@@ -72,10 +72,10 @@ float ShadowCalculation(vec3 fragmentPosition, samplerCube shadowCubeMap, vec3 l
 void main()
 {
     vec4 diffuseColour = texture(material.Diffuse, UV);
-    // if(diffuseColour.a < 0.1f)
-    // {
-        // discard;
-    // }
+    if(diffuseColour.a < 0.1f)
+    {
+        discard;
+    }
 
     float specularColour = texture(material.Specular, UV).r;
     vec3 normal = normalize(Normal);
