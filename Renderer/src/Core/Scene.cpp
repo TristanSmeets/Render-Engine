@@ -91,7 +91,7 @@ void Scene::InitializeMeshes()
 		meshes.push_back(cubeMeshes[i]);
 	}
 
-	const std::vector<Mesh>& sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "sphere.obj");
+	const std::vector<Mesh>& sphereMeshes = MeshLoader::LoadModel(Filepath::Mesh + "Demo.obj");
 	for (unsigned int i = 0; i < sphereMeshes.size(); ++i)
 	{
 		meshes.push_back(sphereMeshes[i]);
@@ -122,19 +122,30 @@ void Scene::InitializeMaterials()
 	rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
 	rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
 
-	Material sand = Material("Sand");
-	sand.AddTexture(Texture::Albedo,			Filepath::Texture + "cobblestone/Albedo.png", true);
-	sand.AddTexture(Texture::Normal,			Filepath::Texture + "cobblestone/Normal.png");
-	sand.AddTexture(Texture::Metallic,			Filepath::Texture + "cobblestone/Metallic.png");
-	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
-	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
+	Material cobblestone = Material("Cobblestone");
+	cobblestone.AddTexture(Texture::Albedo,			Filepath::Texture + "cobblestone/Albedo.png", true);
+	cobblestone.AddTexture(Texture::Normal,			Filepath::Texture + "cobblestone/Normal.png");
+	cobblestone.AddTexture(Texture::Metallic,			Filepath::Texture + "cobblestone/Metallic.png");
+	cobblestone.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
+	cobblestone.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
+
+	Material demo = Material("Demo");
+	demo.AddTexture(Texture::Albedo,			Filepath::Texture + "Demo/Albedo.png", true);
+	//demo.AddTexture(Texture::Albedo,			Filepath::Texture + "Aluminium/Albedo.png", true);
+	demo.AddTexture(Texture::Normal,			Filepath::Texture + "Demo/Normal.png");
+	demo.AddTexture(Texture::Metallic,			Filepath::Texture + "Demo/Metallic.png");
+	//demo.AddTexture(Texture::Metallic,			Filepath::Texture + "Aluminium/Metallic.png");
+	//demo.AddTexture(Texture::Roughness,			Filepath::Texture + "Demo/Roughness.png");
+	demo.AddTexture(Texture::Roughness,			Filepath::Texture + "Auminium/Roughness.png");
+	demo.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "Demo/AmbientOcclusion_2.png");
 
 	Material leaf = Material("Window");
 	leaf.AddTexture(Texture::Albedo, Filepath::Texture + "Leaf/blending_transparent_window.png", true);
 
 	materials.push_back(aluminium);
 	materials.push_back(rustedIron);
-	materials.push_back(sand);
+	materials.push_back(cobblestone);
+	materials.push_back(demo);
 	materials.push_back(leaf);
 
 	printf("Created %d materials\n", (int)materials.size());
@@ -151,7 +162,7 @@ void Scene::InitializeActors()
 	for (unsigned int i = 0; i < NumberOfLights; ++i)
 	{
 		float x = ((rand() % 100) / 100.0f) * 30.0f - 10.0f;
-		float y = ((rand() % 100) / 100.0f) * 5.0f + 2.0f;
+		float y = ((rand() % 100) / 100.0f) * 5.0f + 12.0f;
 		float z = ((rand() % 100) / 100.0f) * 30.0f - 12.0f;
 
 		float r = ((rand() % 100) / 200.0f) + 0.5f;
@@ -168,18 +179,29 @@ void Scene::InitializeActors()
 	directional.GetTransform().Translate(glm::vec3(-3.5f, 5.0f, -3.5f));
 	directional.GetRenderComponent().SetMesh(meshes[0]);
 
-	for (int i = 0; i < 5; ++i)
-	{
-		for (int j = 0; j < 5; ++j)
-		{
-			std::string name = std::string("Object[") + std::to_string(i) + std::string("][") + std::to_string(j) + std::string("]");
-			Actor sphere = Actor(name);
-			sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0,(j * 3.0f) - 2.5f));
-			sphere.GetRenderComponent().SetMesh(meshes[1]);
-			sphere.GetRenderComponent().SetMaterial(materials[(i + j) % 2]);
-			actors.push_back(sphere);
-		}
-	}
+	Actor sphere = Actor("Demo_Material#3");
+	sphere.GetTransform().Translate(glm::vec3(0, 6, 0));
+	sphere.GetRenderComponent().SetMesh(meshes[1]);
+	sphere.GetRenderComponent().SetMaterial(materials[3]);
+	actors.push_back(sphere);
+	
+	sphere.SetName("Demo_Material#1");
+	sphere.GetTransform().Translate(glm::vec3(15, 0, 0));
+	sphere.GetRenderComponent().SetMaterial(materials[1]);
+	actors.push_back(sphere);
+
+	//for (int i = 0; i < 5; ++i)
+	//{
+	//	for (int j = 0; j < 5; ++j)
+	//	{
+	//		std::string name = std::string("Object[") + std::to_string(i) + std::string("][") + std::to_string(j) + std::string("]");
+	//		Actor sphere = Actor(name);
+	//		sphere.GetTransform().Translate(glm::vec3((i * 4.0f) - 2.5f, 0,(j * 3.0f) - 2.5f));
+	//		sphere.GetRenderComponent().SetMesh(meshes[1]);
+	//		sphere.GetRenderComponent().SetMaterial(materials[(i + j) % 2]);
+	//		actors.push_back(sphere);
+	//	}
+	//}
 
 	Actor terrain = Actor("Terrain");
 	terrain.GetTransform().Translate(glm::vec3(0.0f, -1.0f, 0.0f));
@@ -187,16 +209,16 @@ void Scene::InitializeActors()
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);
 
-	Actor windowPlane = Actor("Window1");
-	windowPlane.GetTransform().Translate(glm::vec3(0.0f, 4.0f, 15.0f));
-	windowPlane.GetTransform().Rotate(glm::vec3(90.0f, 0.0f, 0.0f));
-	windowPlane.GetTransform().Scale(glm::vec3(0.1f));
-	windowPlane.GetRenderComponent().SetMesh(meshes[2]);
-	windowPlane.GetRenderComponent().SetMaterial(materials[3]);
-	actors.push_back(windowPlane);
-	windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
-	windowPlane.SetName("Window2");
-	actors.push_back(windowPlane);
+	//Actor windowPlane = Actor("Window1");
+	//windowPlane.GetTransform().Translate(glm::vec3(0.0f, 4.0f, 15.0f));
+	//windowPlane.GetTransform().Rotate(glm::vec3(90.0f, 0.0f, 0.0f));
+	//windowPlane.GetTransform().Scale(glm::vec3(0.1f));
+	//windowPlane.GetRenderComponent().SetMesh(meshes[2]);
+	//windowPlane.GetRenderComponent().SetMaterial(materials[4]);
+	//actors.push_back(windowPlane);
+	//windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
+	//windowPlane.SetName("Window2");
+	//actors.push_back(windowPlane);
 
 	printf("Created %d actors\n", (int)actors.size());
 }
