@@ -25,6 +25,8 @@ void ForwardPBR::Initialize(Scene & scene)
 	//Setup depth testing and culling
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	postProcessing = &basic;
 	postProcessing->Initialize(window.GetWindowParameters());
@@ -76,20 +78,41 @@ void ForwardPBR::Render(Scene & scene)
 
 	SetPBRShaderUniforms(scene, skybox, lights);
 
+	std::map<float, const Actor*> distanceSortedActors;
+	for (unsigned int i = 0; i < actors.size(); ++i)
+	{
+		float distance = glm::length(scene.GetCamera().GetWorldPosition() - actors[i].GetWorldPosition());
+		distanceSortedActors[distance] = &actors[i];
+	}
+
 	//Render actors
 	pbr.Use();
 	pbr.SetVec3("NonMetallicReflectionColour", pbrParameters.NonMetallicReflectionColour);
-	for (unsigned int i = 0; i < actors.size(); ++i)
+	//for (unsigned int i = 0; i < actors.size(); ++i)
+	//{
+	//	pbr.SetMat4("model", actors[i].GetWorldMatrix());
+	//	const Material& material = actors[i].GetRenderComponent().GetMaterial();
+	//	material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
+	//	material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
+	//	material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
+	//	material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
+	//	material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
+	//	actors[i].GetRenderComponent().GetMesh().Draw();
+	//}
+	
+	for (std::map<float, const Actor*>::reverse_iterator it = distanceSortedActors.rbegin(); it != distanceSortedActors.rend(); ++it)
 	{
-		pbr.SetMat4("model", actors[i].GetWorldMatrix());
-		const Material& material = actors[i].GetRenderComponent().GetMaterial();
+		const Actor* actor = it->second;
+		pbr.SetMat4("model", actor->GetWorldMatrix());
+		const Material& material = actor->GetRenderComponent().GetMaterial();
 		material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
 		material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
 		material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
 		material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
 		material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
-		actors[i].GetRenderComponent().GetMesh().Draw();
+		actor->GetRenderComponent().GetMesh().Draw();
 	}
+	
 	//Render skybox
 	glDepthFunc(GL_LEQUAL);
 	skyboxShader.Use();
