@@ -129,7 +129,7 @@ void Scene::InitializeMaterials()
 	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
 	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
 
-	Material leaf = Material("Leaf");
+	Material leaf = Material("Window");
 	leaf.AddTexture(Texture::Albedo, Filepath::Texture + "Leaf/blending_transparent_window.png", true);
 
 	materials.push_back(aluminium);

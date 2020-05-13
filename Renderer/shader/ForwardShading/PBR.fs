@@ -71,7 +71,12 @@ float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosit
 
 void main()
 {
-    vec3 albedo     = texture(material.Albedo, TexCoords).rgb;
+    vec4 albedo     = texture(material.Albedo, TexCoords);
+    if(albedo.a < 0.1f)
+    {
+        discard;
+    }
+
     float metallic  = texture(material.Metallic, TexCoords).r;
     float roughness = texture(material.Roughness, TexCoords).r;
     float ao        = texture(material.AO, TexCoords).r;
@@ -83,7 +88,7 @@ void main()
     //Calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
     //If it's a metal use the albedo color as F0 (metallic workflow) 
     vec3 F0 = NonMetallicReflectionColour;
-    F0 = mix(F0, albedo, metallic);
+    F0 = mix(F0, albedo.rgb, metallic);
 
     vec3 Lo = vec3(0.0f);
 
@@ -123,7 +128,7 @@ void main()
         //add to outgoing radiance Lo.
         //note that we already multiplied the BRDF by the Fresnel (kS)
         //so we won't multiply by kS again
-        vec3 outgoingRadiance = (1.0f - pointShadow) * (kD * albedo / PI + specular) * radiance * NdotL;
+        vec3 outgoingRadiance = (1.0f - pointShadow) * (kD * albedo.rgb / PI + specular) * radiance * NdotL;
         Lo += outgoingRadiance; 
     }
 
@@ -133,7 +138,7 @@ void main()
     diffuseConstant *= 1.0f - metallic;
 
     vec3 irradiance = texture(irradianceMap, normal).rgb;
-    vec3 diffuse = irradiance * albedo;
+    vec3 diffuse = irradiance * albedo.rgb;
     
     //Sample both the pre-filter map and the BRDF LUT and combine them together as per the Split-Sum approximation to get the IBL specular part.
     const float MAX_REFLECTION_LOD = 4.0f;
@@ -156,7 +161,7 @@ void main()
     {
         BrightColor = vec4(vec3(0.0f), 1.0f);
     }
-    FragColor = vec4(color, 1.0f);
+    FragColor = vec4(color, albedo.a);
 }
 
 vec3 GetNormalFromMap()
