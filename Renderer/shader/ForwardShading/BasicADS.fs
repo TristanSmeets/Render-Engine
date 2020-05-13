@@ -72,10 +72,10 @@ float ShadowCalculation(vec3 fragmentPosition, samplerCube shadowCubeMap, vec3 l
 void main()
 {
     vec4 diffuseColour = texture(material.Diffuse, UV);
-    if(diffuseColour.a < 0.1f)
-    {
-        discard;
-    }
+    // if(diffuseColour.a < 0.1f)
+    // {
+        // discard;
+    // }
 
     float specularColour = texture(material.Specular, UV).r;
     vec3 normal = normalize(Normal);
@@ -109,7 +109,7 @@ void main()
     }
 
     vec3 result = ambient + lighting;
-    FragmentColour = vec4(result, 1.0f);
+    FragmentColour = vec4(result, diffuseColour.a);
 
     float brightness = dot(result, vec3(0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)
