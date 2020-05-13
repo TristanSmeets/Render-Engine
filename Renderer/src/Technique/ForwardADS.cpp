@@ -24,6 +24,8 @@ void ForwardADS::Initialize(Scene & scene)
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	postProcessing = &basic;
 	postProcessing->Initialize(window.GetWindowParameters());
@@ -47,19 +49,38 @@ void ForwardADS::Render(Scene & scene)
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	SetADSLightingUniforms(scene, lights);
 
+	std::map<float, const Actor*> distanceSortedActors;
+	for (unsigned int i = 0; i < actors.size(); ++i)
+	{
+		float distance = glm::length(scene.GetCamera().GetWorldPosition() - actors[i].GetWorldPosition());
+		distanceSortedActors[distance] = &actors[i];
+	}
+
 	//Render actors
 	adsLighting.Use();
 	adsLighting.SetFloat("material.AmbientStrength", adsParameters.AmbientStrength);
 	adsLighting.SetFloat("material.Shininess", adsParameters.Shininess);
-	for (unsigned int i = 0; i < actors.size(); ++i)
+	//for (unsigned int i = 0; i < actors.size(); ++i)
+	//{
+	//	adsLighting.SetMat4("model", actors[i].GetWorldMatrix());
+	//	const Material& material = actors[i].GetRenderComponent().GetMaterial();
+	//	glActiveTexture(GL_TEXTURE0);
+	//	glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
+	//	glActiveTexture(GL_TEXTURE1);
+	//	glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
+	//	actors[i].GetRenderComponent().GetMesh().Draw();
+	//}
+
+	for (std::map<float, const Actor*>::reverse_iterator it = distanceSortedActors.rbegin(); it != distanceSortedActors.rend(); ++it)
 	{
-		adsLighting.SetMat4("model", actors[i].GetWorldMatrix());
-		const Material& material = actors[i].GetRenderComponent().GetMaterial();
+		const Actor* actor = it->second;
+		adsLighting.SetMat4("model", actor->GetWorldMatrix());
+		const Material& material = actor->GetRenderComponent().GetMaterial();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
-		actors[i].GetRenderComponent().GetMesh().Draw();
+		actor->GetRenderComponent().GetMesh().Draw();
 	}
 
 	//Render skybox
@@ -102,7 +123,6 @@ void ForwardADS::SetADSLightingUniforms(Scene & scene, const std::vector<Light>&
 	adsLighting.Use();
 	adsLighting.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	adsLighting.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
-
 	
 	lamp.Use();
 	lamp.SetMat4("view", scene.GetCamera().GetViewMatrix());

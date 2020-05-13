@@ -71,11 +71,16 @@ float ShadowCalculation(vec3 fragmentPosition, samplerCube shadowCubeMap, vec3 l
 
 void main()
 {
-    vec3 diffuseColour = texture(material.Diffuse, UV).rgb;
+    vec4 diffuseColour = texture(material.Diffuse, UV);
+    if(diffuseColour.a < 0.1f)
+    {
+        discard;
+    }
+
     float specularColour = texture(material.Specular, UV).r;
     vec3 normal = normalize(Normal);
 
-    vec3 ambient = material.AmbientStrength * diffuseColour;
+    vec3 ambient = material.AmbientStrength * diffuseColour.rgb;
     vec3 lighting = vec3(0.0f);
     vec3 viewDirection = normalize(viewPosition - FragmentPosition);
     
@@ -84,7 +89,7 @@ void main()
         //Diffuse
         vec3 lightDirection = normalize(lights[i].Position - FragmentPosition);
         float diffuseImpact = max(dot(normal, lightDirection), 0.0f);
-        vec3 diffuse = lights[i].Colour * diffuseImpact * diffuseColour;
+        vec3 diffuse = lights[i].Colour * diffuseImpact * diffuseColour.rgb;
         //Specular
         vec3 halfWayVector = normalize(lightDirection + viewDirection);
         float specularImpact = pow(max(dot(normal, halfWayVector), 0.0f), material.Shininess);
@@ -104,7 +109,7 @@ void main()
     }
 
     vec3 result = ambient + lighting;
-    FragmentColour = vec4(result, 1.0f);
+    FragmentColour = vec4(result, diffuseColour.a);
 
     float brightness = dot(result, vec3(0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)

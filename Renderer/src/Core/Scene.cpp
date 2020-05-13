@@ -128,9 +128,14 @@ void Scene::InitializeMaterials()
 	sand.AddTexture(Texture::Metallic,			Filepath::Texture + "cobblestone/Metallic.png");
 	sand.AddTexture(Texture::Roughness,			Filepath::Texture + "cobblestone/Roughness.png");
 	sand.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "cobblestone/AmbientOcclusion.png");
+
+	Material leaf = Material("Leaf");
+	leaf.AddTexture(Texture::Albedo, Filepath::Texture + "Leaf/blending_transparent_window.png", true);
+
 	materials.push_back(aluminium);
 	materials.push_back(rustedIron);
 	materials.push_back(sand);
+	materials.push_back(leaf);
 
 	printf("Created %d materials\n", (int)materials.size());
 }
@@ -182,6 +187,16 @@ void Scene::InitializeActors()
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);
 
+	Actor windowPlane = Actor("Window1");
+	windowPlane.GetTransform().Translate(glm::vec3(0.0f, 4.0f, 15.0f));
+	windowPlane.GetTransform().Rotate(glm::vec3(90.0f, 0.0f, 0.0f));
+	windowPlane.GetTransform().Scale(glm::vec3(0.1f));
+	windowPlane.GetRenderComponent().SetMesh(meshes[2]);
+	windowPlane.GetRenderComponent().SetMaterial(materials[3]);
+	actors.push_back(windowPlane);
+	windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
+	windowPlane.SetName("Window2");
+	actors.push_back(windowPlane);
 
 	printf("Created %d actors\n", (int)actors.size());
 }
