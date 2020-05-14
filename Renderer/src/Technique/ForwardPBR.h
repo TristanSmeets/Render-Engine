@@ -8,6 +8,7 @@
 #include "PostProcessing/Forward/Bloom.h"
 #include "PostProcessing/Forward/Basic.h"
 #include "Rendering/ShadowMapping.h"
+#include "Utility/MSAA.h"
 
 class ForwardPBR : public RenderTechnique
 {
@@ -26,6 +27,7 @@ private:
 	Shader lamp;
 	Shader pbr;
 	ShadowMapping shadowMapping;
+	MSAA msaa;
 
 	Bloom bloom;
 	Basic basic;
