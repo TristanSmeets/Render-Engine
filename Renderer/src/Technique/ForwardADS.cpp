@@ -25,8 +25,13 @@ void ForwardADS::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
+	MSAA::Parameters msaaParameters;
+	msaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	msaaParameters.Samples = 4;
+	msaaParameters.TextureFormat = GL_RGB16F;
+	msaa.Initialize(msaaParameters);
+
 	postProcessing = &basic;
 	postProcessing->Initialize(window.GetWindowParameters());
 	printf("Initialization Complete\n");
@@ -37,16 +42,20 @@ void ForwardADS::Render(Scene & scene)
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
 	const std::vector<Light>& lights = scene.GetLights();
 	const std::vector<Actor>& actors = scene.GetActors();
 
 	shadowMapping.MapPointLights(lights, actors);
 
-	postProcessing->Bind();
+	msaa.Bind();
+	//postProcessing->Bind();
 	Window::Parameters windowParameters = window.GetWindowParameters();
 	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	
+	
 	SetADSLightingUniforms(scene, lights);
 
 	std::map<float, const Actor*> distanceSortedActors;
@@ -90,6 +99,12 @@ void ForwardADS::Render(Scene & scene)
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
 
+	Framebuffer::BlitParameters blitParameters;
+	blitParameters.Destination = &postProcessing->GetFramebuffer();
+	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	blitParameters.Mask = GL_COLOR_BUFFER_BIT;
+	blitParameters.Filter = GL_NEAREST;
+	msaa.Blit(blitParameters);
 	postProcessing->Unbind();
 	postProcessing->Draw();
 }

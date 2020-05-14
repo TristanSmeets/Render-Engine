@@ -6,6 +6,7 @@
 #include "PostProcessing/Forward/Bloom.h"
 #include "PostProcessing/Forward/Basic.h"
 #include "Rendering/ShadowMapping.h"
+#include "Utility/MSAA.h"
 
 class ForwardADS : public RenderTechnique
 {
@@ -26,4 +27,5 @@ private:
 	Bloom bloom;
 	Basic basic;
 	ShadowMapping shadowMapping;
+	MSAA msaa;
 };
