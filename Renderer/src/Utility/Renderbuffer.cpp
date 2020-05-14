@@ -33,6 +33,14 @@ void Renderbuffer::SetStorage(GLenum format, GLsizei width, GLsizei height)
 	glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
 }
 
+void Renderbuffer::SetStorageMultiSample(const MultiSampleParameters & parameters)
+{
+	this->width = parameters.Resolution.x;
+	this->height = parameters.Resolution.y;
+
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, parameters.Samples, parameters.InternalFormat, width, height);
+}
+
 GLuint Renderbuffer::GetID() const
 {
 	return id;

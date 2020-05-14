@@ -8,6 +8,14 @@
 class Framebuffer
 {
 public:
+	struct BlitParameters
+	{
+		const Framebuffer* Destination;
+		glm::ivec2 Resolution;
+		GLbitfield Mask;
+		GLenum Filter;
+	};
+public:
 	Framebuffer();
 	~Framebuffer();
 	void Generate();
@@ -17,6 +25,7 @@ public:
 	void AttachTexture(GLenum attachement, GLenum texTarget, GLuint texture);
 	void AttachRenderbuffer(GLenum attachment, const Renderbuffer& buffer);
 	void AttachCubemap(const Cubemap& cubemap);
+	void BlitFramebuffer(const BlitParameters& parameters);
 	bool IsCompleted();
 	GLuint GetBuffer() const;
 
