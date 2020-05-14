@@ -28,6 +28,12 @@ void ForwardPBR::Initialize(Scene & scene)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	MSAA::Parameters msaaParameters;
+	msaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	msaaParameters.Samples = 4;
+	msaaParameters.TextureFormat = GL_RGB16F;
+	msaa.Initialize(msaaParameters);
+
 	postProcessing = &basic;
 	postProcessing->Initialize(window.GetWindowParameters());
 	printf("Initializion Complete\n");
@@ -69,7 +75,9 @@ void ForwardPBR::Render(Scene & scene)
 	shadowMapping.MapPointLights(lights, actors);
 
 	//Render the scene as normal with shadow mapping(using depth map)
-	postProcessing->Bind();
+	
+	msaa.Bind();
+	//postProcessing->Bind();
 	Window::Parameters windowParameters = window.GetWindowParameters();
 	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -120,6 +128,12 @@ void ForwardPBR::Render(Scene & scene)
 	skybox.Draw();
 	glDepthFunc(GL_LESS);
 
+	Framebuffer::BlitParameters blitParameters;
+	blitParameters.Destination = &postProcessing->GetFramebuffer();
+	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	blitParameters.Mask = GL_COLOR_BUFFER_BIT;
+	blitParameters.Filter = GL_NEAREST;
+	msaa.Blit(blitParameters);
 	postProcessing->Unbind();
 	postProcessing->Draw();
 }
