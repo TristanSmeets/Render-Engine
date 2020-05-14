@@ -16,6 +16,14 @@ public:
 		Count
 	};
 
+	struct MultiSampleParameters
+	{
+		std::string Name;
+		GLsizei Samples;
+		GLint InternalFormat;
+		glm::ivec2 Resolution;
+		GLboolean FixedSampleLocations;
+	};
 public:
 	Texture();
 	Texture(const std::string& name, GLuint id);
@@ -24,6 +32,7 @@ public:
 	Texture(const Texture& rhs);
 	~Texture();
 	static Texture CreateEmpty(const std::string& name, int width, int height, GLenum internalformat, GLenum format, GLenum type);
+	static Texture CreateMultiSample(const MultiSampleParameters& parameters);
 	static const std::string TypeToString(Type type);
 	const GLuint& GetID() const;
 	const std::string& GetName() const;
