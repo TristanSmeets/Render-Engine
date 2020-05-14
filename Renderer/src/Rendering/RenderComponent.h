@@ -32,10 +32,13 @@ public:
 	void SetPBRParameters(const PBRParameters& pbrParameters);
 	const ADSParameters& GetADSParameters() const;
 	const PBRParameters& GetPBRParameters() const;
+	void SetIsTransparent(bool value);
+	const bool IsTransparent() const;
 
 private:
 	const Mesh* mesh = nullptr;
 	const Material* material = nullptr;
 	ADSParameters adsParameters;
 	PBRParameters pbrParameters;
+	bool isTransparent = false;
 };

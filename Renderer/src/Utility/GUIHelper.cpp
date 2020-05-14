@@ -182,6 +182,8 @@ void GUIHelper::RenderRenderComponent(const RenderComponent & renderComponent)
 	RenderADSParameters(renderComponent.GetADSParameters());
 	RenderPBRParameters(renderComponent.GetPBRParameters());
 	RenderMaterial(renderComponent.GetMaterial());
+	bool isTransparent = renderComponent.IsTransparent();
+	ImGui::Checkbox("Has Transparency", &isTransparent);
 }
 
 void GUIHelper::RenderActor(const Actor & actor)

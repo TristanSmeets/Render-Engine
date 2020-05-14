@@ -49,6 +49,16 @@ const RenderComponent::PBRParameters & RenderComponent::GetPBRParameters() const
 	return pbrParameters;
 }
 
+void RenderComponent::SetIsTransparent(bool value)
+{
+	isTransparent = value;
+}
+
+const bool RenderComponent::IsTransparent() const
+{
+	return isTransparent;
+}
+
 RenderComponent::ADSParameters::ADSParameters(float ambientStrength, float shininess) :
 	AmbientStrength(ambientStrength), Shininess(shininess)
 {

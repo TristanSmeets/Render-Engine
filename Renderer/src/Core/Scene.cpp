@@ -135,8 +135,8 @@ void Scene::InitializeMaterials()
 	demo.AddTexture(Texture::Normal,			Filepath::Texture + "Demo/Normal.png");
 	demo.AddTexture(Texture::Metallic,			Filepath::Texture + "Demo/Metallic.png");
 	//demo.AddTexture(Texture::Metallic,			Filepath::Texture + "Aluminium/Metallic.png");
-	//demo.AddTexture(Texture::Roughness,			Filepath::Texture + "Demo/Roughness.png");
-	demo.AddTexture(Texture::Roughness,			Filepath::Texture + "Auminium/Roughness.png");
+	demo.AddTexture(Texture::Roughness,			Filepath::Texture + "Demo/Roughness.png");
+	//demo.AddTexture(Texture::Roughness,			Filepath::Texture + "Auminium/Roughness.png");
 	demo.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "Demo/AmbientOcclusion_2.png");
 
 	Material leaf = Material("Window");
@@ -215,6 +215,7 @@ void Scene::InitializeActors()
 	windowPlane.GetTransform().Scale(glm::vec3(0.1f));
 	windowPlane.GetRenderComponent().SetMesh(meshes[2]);
 	windowPlane.GetRenderComponent().SetMaterial(materials[4]);
+	windowPlane.GetRenderComponent().SetIsTransparent(true);
 	actors.push_back(windowPlane);
 	windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
 	windowPlane.SetName("Window2");
