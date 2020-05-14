@@ -41,8 +41,8 @@ private:
 	void RenderCamera(const Camera& camera);
 	void RenderLight(const Light& light);
 	void RenderDirectionalLight(const DirectionalLight& light);
-	void RenderADSParameters(const RenderTechnique::ADSParameters& adsParameters);
-	void RenderPBRParameters(const RenderTechnique::PBRParameters& pbrParameters);
+	void RenderADSParameters(const RenderComponent::ADSParameters& adsParameters);
+	void RenderPBRParameters(const RenderComponent::PBRParameters& pbrParameters);
 	void RenderDeferredParameters(const RenderTechnique::DeferredParameters& deferredParameters);
 	void RenderPostProcessingParameters(const PostProcessing::Parameters& postProcessingParameters);
 

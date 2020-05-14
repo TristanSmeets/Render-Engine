@@ -256,8 +256,8 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ssaoLighting.Use();
-	ssaoLighting.SetFloat("ambientStrength", adsParameters.AmbientStrength);
-	ssaoLighting.SetFloat("shininess", adsParameters.Shininess);
+	ssaoLighting.SetFloat("ambientStrength", deferredParameters.AdsParameters.AmbientStrength);
+	ssaoLighting.SetFloat("shininess", deferredParameters.AdsParameters.Shininess);
 	ssaoLighting.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
 	
 	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();

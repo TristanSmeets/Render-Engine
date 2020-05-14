@@ -57,9 +57,7 @@ void GUIHelper::Render(const Scene & scene)
 
 void GUIHelper::Render(const RenderTechnique & technique)
 {
-	ImGui::Begin("RenderTechnique");
-	RenderADSParameters(technique.GetADSParameters());
-	RenderPBRParameters(technique.GetPBRParameters());
+	ImGui::Begin("Deferred Parameters");
 	ImGui::Separator();
 	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::Separator();
@@ -181,6 +179,8 @@ void GUIHelper::RenderRenderComponent(const RenderComponent & renderComponent)
 {
 	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName().c_str());
 	RenderText("Material");
+	RenderADSParameters(renderComponent.GetADSParameters());
+	RenderPBRParameters(renderComponent.GetPBRParameters());
 	RenderMaterial(renderComponent.GetMaterial());
 }
 
@@ -235,13 +235,13 @@ void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
 	RenderVec3("Direction",light.GetFront());
 }
 
-void GUIHelper::RenderADSParameters(const RenderTechnique::ADSParameters & adsParameters)
+void GUIHelper::RenderADSParameters(const RenderComponent::ADSParameters & adsParameters)
 {
 	RenderFloat("Ambient Strength", (float&)adsParameters.AmbientStrength, 0.0f, 1.0f);
 	RenderFloat("Material Shiniess", (float&)adsParameters.Shininess, 2.0f, 256.0f);
 }
 
-void GUIHelper::RenderPBRParameters(const RenderTechnique::PBRParameters & pbrParameters)
+void GUIHelper::RenderPBRParameters(const RenderComponent::PBRParameters & pbrParameters)
 {
 	RenderText("Non Metallic Reflection Colour");
 	RenderColour(pbrParameters.NonMetallicReflectionColour);
@@ -253,6 +253,9 @@ void GUIHelper::RenderDeferredParameters(const RenderTechnique::DeferredParamete
 	RenderInt("SSAO Kernel Size", (int&)deferredParameters.KernelSize, 1, 64);
 	RenderFloat("SSAO Radius", (float&)deferredParameters.Radius, 0.0f, 5.0f);
 	RenderFloat("SSAO Bias", (float&)deferredParameters.Bias, 0.0f, 2.0f);
+	ImGui::Separator();
+	RenderADSParameters(deferredParameters.AdsParameters);
+	RenderPBRParameters(deferredParameters.PbrParameters);
 }
 
 void GUIHelper::RenderPostProcessingParameters(const PostProcessing::Parameters & postProcessingParameters)

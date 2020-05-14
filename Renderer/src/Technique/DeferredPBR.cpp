@@ -285,7 +285,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 
 	pbrLighting.Use();
 	pbrLighting.SetVec3("cameraPosition", scene.GetCamera().GetWorldPosition());
-	pbrLighting.SetVec3("nonMetallicReflectionColour", pbrParameters.NonMetallicReflectionColour);
+	pbrLighting.SetVec3("nonMetallicReflectionColour", deferredParameters.PbrParameters.NonMetallicReflectionColour);
 	pbrLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
 
 	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
