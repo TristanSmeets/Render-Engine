@@ -8,7 +8,8 @@ DeferredPBR::DeferredPBR(const Window & window) :
 	geometry(Shader(Filepath::DeferredShader + "PBR/GBuffer.vs", Filepath::DeferredShader + "PBR/GBuffer.fs")),
 	pbrLighting(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "PBR/PBRLighting.fs")),
 	ssao(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAO.fs")),
-	ssaoBlur(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAOBlur.fs"))
+	ssaoBlur(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAOBlur.fs")),
+	forwardLighting(Shader(Filepath::ForwardShader + "PBR.vs", Filepath::ForwardShader + "PBR.fs"))
 {
 }
 
@@ -66,6 +67,7 @@ void DeferredPBR::Render(Scene & scene)
 	LightingPass(lights, scene);
 	GBufferToDefaultFramebuffer();
 	RenderLights(view, lights);
+	RenderTransparentActors(scene);
 
 	glDepthFunc(GL_LEQUAL);
 	skyboxShader.Use();
@@ -218,6 +220,18 @@ void DeferredPBR::SetupShaders(Scene & scene)
 
 	ssaoBlur.Use();
 	ssaoBlur.SetInt("ssaoInput", 0);
+
+	forwardLighting.Use();
+	forwardLighting.SetMat4("projection", projection);
+	forwardLighting.SetInt("irradianceMap", 5);
+	forwardLighting.SetInt("prefilterMap", 6);
+	forwardLighting.SetInt("brdfLUT", 7);
+	forwardLighting.SetInt("shadowMap", 8);
+
+	for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
+	{
+		forwardLighting.SetInt("shadowCubeMaps[" + std::to_string(i) + "]", i + 9);
+	}
 }
 
 void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
@@ -231,6 +245,10 @@ void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
 	const std::vector<Actor>& actors = scene.GetActors();
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
+		if (actors[i].GetRenderComponent().GetPBRParameters().IsTransparent)
+		{
+			continue;
+		}
 		geometry.SetMat4("model", actors[i].GetWorldMatrix());
 		const Material& material = actors[i].GetRenderComponent().GetMaterial();
 		for (int j = 0; j < Texture::Count; ++j)
@@ -355,5 +373,78 @@ void DeferredPBR::RenderLights(const glm::mat4 & view, const std::vector<Light>&
 		lamp.SetMat4("model", lights[i].GetWorldMatrix());
 		lamp.SetVec3("lightColour", lights[i].GetColour());
 		lights[i].GetRenderComponent().GetMesh().Draw();
+	}
+}
+
+void DeferredPBR::RenderTransparentActors(Scene & scene)
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	std::vector<Actor>& actors = scene.GetActors();
+
+	std::map<float, const Actor*> distanceSortedActors;
+
+	for (int i = 0; i < actors.size(); ++i)
+	{
+		if (!actors[i].GetRenderComponent().GetPBRParameters().IsTransparent)
+		{
+			continue;
+		}
+		float distance = glm::length(scene.GetCamera().GetWorldPosition() - actors[i].GetWorldPosition());
+		distanceSortedActors[distance] = &actors[i];
+	}
+
+	SetPBRShaderUniforms(scene.GetCamera(), scene.GetSkybox(), scene.GetLights());
+
+	for (std::map<float, const Actor*>::reverse_iterator it = distanceSortedActors.rbegin(); it != distanceSortedActors.rend(); ++it)
+	{
+		const Actor* actor = it->second;
+		forwardLighting.SetMat4("model", actor->GetWorldMatrix());
+		forwardLighting.SetVec3("NonMetallicReflectionColour", actor->GetRenderComponent().GetPBRParameters().NonMetallicReflectionColour);
+
+		const Material& material = actor->GetRenderComponent().GetMaterial();
+		material.GetTexture(Texture::Albedo)			.Bind(forwardLighting, Texture::Albedo);
+		material.GetTexture(Texture::Normal)			.Bind(forwardLighting, Texture::Normal);
+		material.GetTexture(Texture::Metallic)			.Bind(forwardLighting, Texture::Metallic);
+		material.GetTexture(Texture::Roughness)			.Bind(forwardLighting, Texture::Roughness);
+		material.GetTexture(Texture::AmbientOcclusion)	.Bind(forwardLighting, Texture::AmbientOcclusion);
+		actor->GetRenderComponent().GetMesh().Draw();
+	}
+	glDisable(GL_BLEND);
+}
+
+void DeferredPBR::SetPBRShaderUniforms(const Camera & camera, const Skybox & skybox, const std::vector<Light>& lights)
+{
+	forwardLighting.Use();
+	forwardLighting.SetMat4("view", camera.GetViewMatrix());
+	forwardLighting.SetVec3("cameraPos", camera.GetWorldPosition());
+	forwardLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
+
+	glActiveTexture(GL_TEXTURE5);
+	skybox.GetIrradiance().Bind();
+	glActiveTexture(GL_TEXTURE6);
+	skybox.GetPrefilter().Bind();
+	skybox.GetLookup().Bind(forwardLighting, (Texture::Type)7);
+	for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
+	{
+		glActiveTexture(GL_TEXTURE9 + i);
+		shadowMapping.BindShadowMap(i);
+	}
+	glActiveTexture(GL_TEXTURE0);
+
+	for (int i = 0; i < lights.size(); ++i)
+	{
+		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
+		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
+		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
+		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
+		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
+		forwardLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
+		forwardLighting.SetVec3(lightColour, lights[i].GetColour());
+		const Light::Parameters& parameters = lights[i].GetParameters();
+		forwardLighting.SetFloat(lightConstant, parameters.Constant);
+		forwardLighting.SetFloat(lightLinear, parameters.Linear);
+		forwardLighting.SetFloat(lightQuadratic, parameters.Quadratic);
 	}
 }

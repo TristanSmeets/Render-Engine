@@ -26,6 +26,8 @@ private:
 	void LightingPass(const std::vector<Light> & lights, Scene & scene);
 	void GBufferToDefaultFramebuffer();
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
+	void RenderTransparentActors(Scene& scene);
+	void SetPBRShaderUniforms(const Camera& camera, const Skybox& skybox, const std::vector<Light>& lights);
 
 	const Window& window;
 	Basic basic;
@@ -43,6 +45,7 @@ private:
 	Shader ssaoBlur;
 	NDCQuad quad;
 	ShadowMapping shadowMapping;
+	Shader forwardLighting;
 
 	glm::vec3 ssaoKernel[64];
 

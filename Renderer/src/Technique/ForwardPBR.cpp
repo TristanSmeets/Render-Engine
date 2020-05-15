@@ -145,7 +145,6 @@ void ForwardPBR::SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, cons
 	pbr.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	pbr.SetVec3("cameraPos", scene.GetCamera().GetWorldPosition());
 	pbr.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
-	pbr.SetVec3("viewpos", scene.GetCamera().GetWorldPosition());
 
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetIrradiance().Bind();

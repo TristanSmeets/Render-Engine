@@ -43,9 +43,9 @@ private:
 	Shader ssao;
 	Shader ssaoBlur;
 	Shader ssaoLighting;
-	Shader adsLighting;
 	NDCQuad quad;
 	ShadowMapping shadowMapping;
+	Shader adsLighting;
 
 	glm::vec3 ssaoKernel[64];
 };
