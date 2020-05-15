@@ -46,7 +46,7 @@ void GUIHelper::EndFrame()
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void GUIHelper::Render(const Scene & scene)
+void GUIHelper::Render(Scene & scene)
 {
 	//ImGui::ShowDemoWindow();
 
@@ -55,11 +55,9 @@ void GUIHelper::Render(const Scene & scene)
 	ImGui::End();
 }
 
-void GUIHelper::Render(const RenderTechnique & technique)
+void GUIHelper::Render(RenderTechnique & technique)
 {
-	ImGui::Begin("RenderTechnique");
-	RenderADSParameters(technique.GetADSParameters());
-	RenderPBRParameters(technique.GetPBRParameters());
+	ImGui::Begin("Deferred Parameters");
 	ImGui::Separator();
 	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::Separator();
@@ -67,7 +65,7 @@ void GUIHelper::Render(const RenderTechnique & technique)
 	ImGui::End();
 }
 
-void GUIHelper::RenderLayout(const Scene & scene)
+void GUIHelper::RenderLayout(Scene & scene)
 {
 	ImGui::Columns(2);
 	RenderText("Framerate");
@@ -111,7 +109,7 @@ void GUIHelper::RenderLayout(const Scene & scene)
 	ImGui::Separator();
 	if (ImGui::TreeNode("Actors"))
 	{
-		const std::vector<Actor>& actors = scene.GetActors();
+		std::vector<Actor>& actors = scene.GetActors();
 		static int selectedActor = -1;
 		for (int i = 0; i < actors.size(); i++)
 		{
@@ -177,14 +175,16 @@ void GUIHelper::RenderMaterial(const Material & material)
 	}
 }
 
-void GUIHelper::RenderRenderComponent(const RenderComponent & renderComponent)
+void GUIHelper::RenderRenderComponent(RenderComponent & renderComponent)
 {
 	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName().c_str());
 	RenderText("Material");
+	RenderADSParameters(renderComponent.GetADSParameters());
+	RenderPBRParameters(renderComponent.GetPBRParameters());
 	RenderMaterial(renderComponent.GetMaterial());
 }
 
-void GUIHelper::RenderActor(const Actor & actor)
+void GUIHelper::RenderActor(Actor & actor)
 {
 	//RenderText("Name: %s", actor.GetName());
 	if (ImGui::TreeNode("Transform"))
@@ -235,24 +235,28 @@ void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
 	RenderVec3("Direction",light.GetFront());
 }
 
-void GUIHelper::RenderADSParameters(const RenderTechnique::ADSParameters & adsParameters)
+void GUIHelper::RenderADSParameters(RenderComponent::ADSParameters & adsParameters)
 {
 	RenderFloat("Ambient Strength", (float&)adsParameters.AmbientStrength, 0.0f, 1.0f);
 	RenderFloat("Material Shiniess", (float&)adsParameters.Shininess, 2.0f, 256.0f);
+	ImGui::Checkbox("Is Transparent", &adsParameters.IsTransparent);
 }
 
-void GUIHelper::RenderPBRParameters(const RenderTechnique::PBRParameters & pbrParameters)
+void GUIHelper::RenderPBRParameters(RenderComponent::PBRParameters & pbrParameters)
 {
 	RenderText("Non Metallic Reflection Colour");
 	RenderColour(pbrParameters.NonMetallicReflectionColour);
 }
 
-void GUIHelper::RenderDeferredParameters(const RenderTechnique::DeferredParameters & deferredParameters)
+void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & deferredParameters)
 {
 	RenderInt("SSAO Occlusion Power", (int&)deferredParameters.OcclusionPower, 1, 200);
 	RenderInt("SSAO Kernel Size", (int&)deferredParameters.KernelSize, 1, 64);
 	RenderFloat("SSAO Radius", (float&)deferredParameters.Radius, 0.0f, 5.0f);
 	RenderFloat("SSAO Bias", (float&)deferredParameters.Bias, 0.0f, 2.0f);
+	ImGui::Separator();
+	RenderADSParameters(deferredParameters.AdsParameters);
+	RenderPBRParameters(deferredParameters.PbrParameters);
 }
 
 void GUIHelper::RenderPostProcessingParameters(const PostProcessing::Parameters & postProcessingParameters)

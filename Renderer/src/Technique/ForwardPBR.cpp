@@ -95,7 +95,6 @@ void ForwardPBR::Render(Scene & scene)
 
 	//Render actors
 	pbr.Use();
-	pbr.SetVec3("NonMetallicReflectionColour", pbrParameters.NonMetallicReflectionColour);
 	//for (unsigned int i = 0; i < actors.size(); ++i)
 	//{
 	//	pbr.SetMat4("model", actors[i].GetWorldMatrix());
@@ -112,6 +111,8 @@ void ForwardPBR::Render(Scene & scene)
 	{
 		const Actor* actor = it->second;
 		pbr.SetMat4("model", actor->GetWorldMatrix());
+		pbr.SetVec3("NonMetallicReflectionColour", actor->GetRenderComponent().GetPBRParameters().NonMetallicReflectionColour);
+
 		const Material& material = actor->GetRenderComponent().GetMaterial();
 		material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
 		material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
@@ -144,7 +145,6 @@ void ForwardPBR::SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, cons
 	pbr.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	pbr.SetVec3("cameraPos", scene.GetCamera().GetWorldPosition());
 	pbr.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
-	pbr.SetVec3("viewpos", scene.GetCamera().GetWorldPosition());
 
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetIrradiance().Bind();

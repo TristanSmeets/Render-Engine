@@ -37,7 +37,6 @@ uniform sampler2D brdfLUT;
 //uniform vec3 lightDirection;
 uniform samplerCube shadowCubeMaps[MaximumLights];
 //uniform vec3 directionalLightPosition;
-uniform vec3 viewpos;
 uniform float farPlane;
 
 //Material parameters
@@ -263,7 +262,7 @@ float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosit
     float shadow = 0.0f;
     float bias = 0.1f;
     int samples = 20;
-    float viewDistance = length(viewpos - fragPos);
+    float viewDistance = length(cameraPos - fragPos);
     float diskRadius = (1.0f + (viewDistance / farPlane)) / 25.0f;
     for (int i = 0; i < samples; ++i)
     {

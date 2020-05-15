@@ -25,6 +25,7 @@ void ForwardADS::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	MSAA::Parameters msaaParameters;
 	msaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
@@ -67,8 +68,6 @@ void ForwardADS::Render(Scene & scene)
 
 	//Render actors
 	adsLighting.Use();
-	adsLighting.SetFloat("material.AmbientStrength", adsParameters.AmbientStrength);
-	adsLighting.SetFloat("material.Shininess", adsParameters.Shininess);
 	//for (unsigned int i = 0; i < actors.size(); ++i)
 	//{
 	//	adsLighting.SetMat4("model", actors[i].GetWorldMatrix());
@@ -83,6 +82,8 @@ void ForwardADS::Render(Scene & scene)
 	for (std::map<float, const Actor*>::reverse_iterator it = distanceSortedActors.rbegin(); it != distanceSortedActors.rend(); ++it)
 	{
 		const Actor* actor = it->second;
+		adsLighting.SetFloat("material.Shininess", actor->GetRenderComponent().GetADSParameters().Shininess);
+		adsLighting.SetFloat("material.AmbientStrength", actor->GetRenderComponent().GetADSParameters().AmbientStrength);
 		adsLighting.SetMat4("model", actor->GetWorldMatrix());
 		const Material& material = actor->GetRenderComponent().GetMaterial();
 		glActiveTexture(GL_TEXTURE0);
