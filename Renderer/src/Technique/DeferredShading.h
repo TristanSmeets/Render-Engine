@@ -26,6 +26,8 @@ private:
 	void LightingPass(const std::vector<Light> & lights, Scene & scene);
 	void GBufferToDefaultFramebuffer();
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
+	void RenderTransparentActors(const glm::mat4& view, Scene& scene);
+	void SetADSLightingUniforms(const glm::mat4& view, const glm::vec3& viewPosition, const std::vector<Light>& lights);
 	
 	const Window& window;
 	Basic basic;
@@ -41,6 +43,7 @@ private:
 	Shader ssao;
 	Shader ssaoBlur;
 	Shader ssaoLighting;
+	Shader adsLighting;
 	NDCQuad quad;
 	ShadowMapping shadowMapping;
 
