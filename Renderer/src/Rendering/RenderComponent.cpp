@@ -49,14 +49,14 @@ const RenderComponent::PBRParameters & RenderComponent::GetPBRParameters() const
 	return pbrParameters;
 }
 
-void RenderComponent::SetIsTransparent(bool value)
+RenderComponent::ADSParameters & RenderComponent::GetADSParameters()
 {
-	isTransparent = value;
+	return adsParameters;
 }
 
-const bool RenderComponent::IsTransparent() const
+RenderComponent::PBRParameters & RenderComponent::GetPBRParameters()
 {
-	return isTransparent;
+	return pbrParameters;
 }
 
 RenderComponent::ADSParameters::ADSParameters(float ambientStrength, float shininess) :
@@ -65,9 +65,10 @@ RenderComponent::ADSParameters::ADSParameters(float ambientStrength, float shini
 }
 
 RenderComponent::ADSParameters & RenderComponent::ADSParameters::operator=(const ADSParameters & rhs)
-{
+{	
 	this->AmbientStrength = rhs.AmbientStrength;
 	this->Shininess = rhs.Shininess;
+	this->IsTransparent = rhs.IsTransparent;
 	return *this;
 }
 
@@ -79,5 +80,6 @@ RenderComponent::PBRParameters::PBRParameters(const glm::vec3 & nonMetallicRefle
 RenderComponent::PBRParameters & RenderComponent::PBRParameters::operator=(const PBRParameters & rhs)
 {
 	this->NonMetallicReflectionColour = rhs.NonMetallicReflectionColour;
+	this->IsTransparent = rhs.IsTransparent;
 	return *this;
 }

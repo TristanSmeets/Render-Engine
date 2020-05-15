@@ -20,12 +20,12 @@ public:
 	void Initialize(const Window& window);
 	void StartFrame();
 	void EndFrame();
-	void Render(const Scene& scene);
-	void Render(const RenderTechnique& technique);
+	void Render(Scene& scene);
+	void Render(RenderTechnique& technique);
 
 
 private:
-	void RenderLayout(const Scene& scene);
+	void RenderLayout(Scene& scene);
 	void RenderFPS();
 	void RenderText(const char* text, ...);
 	void RenderInt(const char* name, int& value, int minimum, int maximum);
@@ -36,14 +36,14 @@ private:
 	void RenderFrustum(const Camera::Frustum& frustum);
 	void RenderTexture(const Texture& texture);
 	void RenderMaterial(const Material& material);
-	void RenderRenderComponent(const RenderComponent& renderComponent);
-	void RenderActor(const Actor& actor);
+	void RenderRenderComponent(RenderComponent& renderComponent);
+	void RenderActor(Actor& actor);
 	void RenderCamera(const Camera& camera);
 	void RenderLight(const Light& light);
 	void RenderDirectionalLight(const DirectionalLight& light);
-	void RenderADSParameters(const RenderComponent::ADSParameters& adsParameters);
-	void RenderPBRParameters(const RenderComponent::PBRParameters& pbrParameters);
-	void RenderDeferredParameters(const RenderTechnique::DeferredParameters& deferredParameters);
+	void RenderADSParameters(RenderComponent::ADSParameters& adsParameters);
+	void RenderPBRParameters(RenderComponent::PBRParameters& pbrParameters);
+	void RenderDeferredParameters(RenderTechnique::DeferredParameters& deferredParameters);
 	void RenderPostProcessingParameters(const PostProcessing::Parameters& postProcessingParameters);
 
 	int aspectRatio = 2;

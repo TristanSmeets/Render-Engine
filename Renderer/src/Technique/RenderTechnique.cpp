@@ -21,6 +21,11 @@ const RenderTechnique::DeferredParameters & RenderTechnique::GetDeferredParamete
 	return deferredParameters;
 }
 
+RenderTechnique::DeferredParameters & RenderTechnique::GetDeferredParameters()
+{
+	return deferredParameters;
+}
+
 const PostProcessing & RenderTechnique::GetPostProcessing() const
 {
 	return *postProcessing;

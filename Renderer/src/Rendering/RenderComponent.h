@@ -10,6 +10,7 @@ public:
 	{
 		float AmbientStrength;
 		float Shininess;
+		bool IsTransparent = false;
 
 		ADSParameters(float ambientStrength = 0.01f, float shininess = 256.0f);
 		ADSParameters& operator=(const ADSParameters& rhs);
@@ -17,6 +18,7 @@ public:
 	struct PBRParameters
 	{
 		glm::vec3 NonMetallicReflectionColour;
+		bool IsTransparent = false;
 
 		PBRParameters(const glm::vec3& nonMetallicReflectionColour = glm::vec3(0.04f));
 		PBRParameters& operator=(const PBRParameters& rhs);
@@ -32,13 +34,12 @@ public:
 	void SetPBRParameters(const PBRParameters& pbrParameters);
 	const ADSParameters& GetADSParameters() const;
 	const PBRParameters& GetPBRParameters() const;
-	void SetIsTransparent(bool value);
-	const bool IsTransparent() const;
+	ADSParameters& GetADSParameters();
+	PBRParameters& GetPBRParameters();
 
 private:
 	const Mesh* mesh = nullptr;
 	const Material* material = nullptr;
 	ADSParameters adsParameters;
 	PBRParameters pbrParameters;
-	bool isTransparent = false;
 };

@@ -34,6 +34,11 @@ const std::vector<Actor>& Scene::GetActors() const
 	return actors;
 }
 
+std::vector<Actor>& Scene::GetActors()
+{
+	return actors;
+}
+
 const std::vector<Light>& Scene::GetLights() const
 {
 	return lights;
@@ -52,11 +57,6 @@ Camera & Scene::GetCamera()
 const Skybox & Scene::GetSkybox() const
 {
 	return skybox;
-}
-
-const DirectionalLight& Scene::GetDirectionalLight() const
-{
-	return directional;
 }
 
 void Scene::Initialize()
@@ -176,9 +176,6 @@ void Scene::InitializeActors()
 		lights.push_back(light);
 	}
 
-	directional.GetTransform().Translate(glm::vec3(-3.5f, 5.0f, -3.5f));
-	directional.GetRenderComponent().SetMesh(meshes[0]);
-
 	Actor sphere = Actor("Demo_Material#3");
 	sphere.GetTransform().Translate(glm::vec3(0, 6, 0));
 	sphere.GetRenderComponent().SetMesh(meshes[1]);
@@ -215,7 +212,9 @@ void Scene::InitializeActors()
 	windowPlane.GetTransform().Scale(glm::vec3(0.1f));
 	windowPlane.GetRenderComponent().SetMesh(meshes[2]);
 	windowPlane.GetRenderComponent().SetMaterial(materials[4]);
-	windowPlane.GetRenderComponent().SetIsTransparent(true);
+	windowPlane.GetRenderComponent().GetADSParameters().IsTransparent = true;
+	windowPlane.GetRenderComponent().GetPBRParameters().IsTransparent = true;
+
 	actors.push_back(windowPlane);
 	windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
 	windowPlane.SetName("Window2");

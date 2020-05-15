@@ -18,11 +18,11 @@ public:
 	Scene(const Scene& rhs);
 	~Scene();
 	const std::vector<Actor>& GetActors() const;
+	std::vector<Actor>& GetActors();
 	const std::vector<Light>& GetLights() const;
 	const Camera& GetCamera() const;
 	Camera& GetCamera();
 	const Skybox& GetSkybox() const;
-	const DirectionalLight& GetDirectionalLight() const;
 	void Initialize();
 	Scene& operator=(const Scene& rhs);
 
@@ -35,7 +35,6 @@ private:
 	std::vector<Light> lights;
 	std::vector<Material> materials;
 	std::vector<Mesh> meshes;
-	DirectionalLight directional;
 	Camera camera;
 	Skybox skybox;
 };

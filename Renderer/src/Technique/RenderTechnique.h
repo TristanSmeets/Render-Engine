@@ -28,6 +28,7 @@ public:
 	virtual void Render(Scene& scene) = 0;
 	void SetDeferredParameters(const DeferredParameters& deferredParameters);
 	const DeferredParameters& GetDeferredParameters() const;
+	DeferredParameters& GetDeferredParameters();
 	const PostProcessing& GetPostProcessing() const;
 
 protected:
