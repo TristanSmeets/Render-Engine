@@ -24,7 +24,6 @@ private:
 	void SSAOTexturePass();
 	void BlurPass();
 	void LightingPass(const std::vector<Light> & lights, Scene & scene);
-	void GBufferToDefaultFramebuffer();
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
 	void RenderTransparentActors(const glm::mat4& view, Scene& scene);
 	void SetADSLightingUniforms(const glm::mat4& view, const glm::vec3& viewPosition, const std::vector<Light>& lights);

@@ -220,7 +220,6 @@ void DeferredShading::Render(Scene & scene)
 	//Blur ssao texture to remove noise
 	BlurPass();
 
-	//GBufferToDefaultFramebuffer();
 	Framebuffer::BlitParameters blitParameters;
 	blitParameters.Destination = &postProcessing->GetFramebuffer();
 	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
@@ -319,17 +318,6 @@ void DeferredShading::SetADSLightingUniforms(const glm::mat4& view, const glm::v
 		adsLighting.SetFloat(lightQuadratic, parameters.Quadratic);
 	}
 	glActiveTexture(GL_TEXTURE0);
-}
-
-void DeferredShading::GBufferToDefaultFramebuffer()
-{
-	//Copy content of geometry shader to default framebuffer's depth buffer
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.GetBuffer());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	Window::Parameters parameter = window.GetWindowParameters();
-
-	glBlitFramebuffer(0, 0, parameter.Width, parameter.Height, 0, 0, parameter.Width, parameter.Height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-	gBuffer.Unbind();
 }
 
 void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & scene)

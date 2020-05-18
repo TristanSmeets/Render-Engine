@@ -69,7 +69,6 @@ void DeferredPBR::Render(Scene & scene)
 	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
 	blitParameters.Filter = GL_NEAREST;
 	gBuffer.BlitFramebuffer(blitParameters);
-	//GBufferToDefaultFramebuffer();
 	
 	//Lighting pass
 	const std::vector<Light>& lights = scene.GetLights();
@@ -355,17 +354,6 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
-}
-
-void DeferredPBR::GBufferToDefaultFramebuffer()
-{
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.GetBuffer());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-	Window::Parameters parameter = window.GetWindowParameters();
-
-	glBlitFramebuffer(0, 0, parameter.Width, parameter.Height, 0, 0, parameter.Width, parameter.Height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-	gBuffer.Unbind();
 }
 
 void DeferredPBR::RenderLights(const glm::mat4 & view, const std::vector<Light>& lights)
