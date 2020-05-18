@@ -26,9 +26,6 @@ uniform sampler2D brdfLUT;
 //SSAO
 uniform sampler2D ssao;
 
-uniform float gammaCorrection;
-uniform float exposure;
-
 //Lights
 const int NumberOfLights = 10;
 uniform Light lights[NumberOfLights];
@@ -184,8 +181,5 @@ void main()
     vec3 ambient = (diffuseConstant * diffuse + specular2) * ao * ssao;
     vec3 colour = ambient + Lo;
 
-    vec3 mapped = vec3(1.0f) - exp(-colour * exposure);
-    //Gamma Correction
-    mapped = pow(mapped, vec3(1.0f/ gammaCorrection));
-    FragmentColour = vec4(mapped, 1.0f);
+    FragmentColour = vec4(colour, 1.0f);
 }

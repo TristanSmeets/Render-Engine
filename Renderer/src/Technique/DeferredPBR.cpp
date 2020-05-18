@@ -63,9 +63,17 @@ void DeferredPBR::Render(Scene & scene)
 	SSAOTexturePass();
 	BlurPass();
 
+	Framebuffer::BlitParameters blitParameters;
+	blitParameters.Destination = &postProcessing->GetFramebuffer();
+	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
+	blitParameters.Filter = GL_NEAREST;
+	gBuffer.BlitFramebuffer(blitParameters);
+	//GBufferToDefaultFramebuffer();
+	
+	//Lighting pass
 	const std::vector<Light>& lights = scene.GetLights();
 	LightingPass(lights, scene);
-	GBufferToDefaultFramebuffer();
 	RenderLights(view, lights);
 	RenderTransparentActors(scene);
 
@@ -74,6 +82,8 @@ void DeferredPBR::Render(Scene & scene)
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
+	postProcessing->Unbind();
+	postProcessing->Draw();
 }
 
 void DeferredPBR::SetupGBuffers(const Window::Parameters & parameters)
@@ -299,17 +309,12 @@ void DeferredPBR::BlurPass()
 
 void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	pbrLighting.Use();
 	pbrLighting.SetVec3("cameraPosition", scene.GetCamera().GetWorldPosition());
 	pbrLighting.SetVec3("nonMetallicReflectionColour", deferredParameters.PbrParameters.NonMetallicReflectionColour);
 	pbrLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
-
-	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
-	pbrLighting.SetFloat("gammaCorrection", postProcessingParameters.GammaCorrection);
-	pbrLighting.SetFloat("exposure", postProcessingParameters.Exposure);
-
 	
 	for (unsigned int i = 0; i < 4; ++i)
 	{
