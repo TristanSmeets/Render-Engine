@@ -99,7 +99,5 @@ void main()
     }
 
     vec3 result = ambient + lighting;
-    vec3 mapped = vec3(1.0f) - exp(-result * exposure);
-    mapped = pow(mapped, vec3(1.0f / gammaCorrection));
-    FragmentColour = vec4(mapped, 1.0f);
+    FragmentColour = vec4(result, 1.0f);
 }

@@ -51,7 +51,14 @@ void Framebuffer::AttachCubemap(const Cubemap & cubemap)
 void Framebuffer::BlitFramebuffer(const Framebuffer::BlitParameters& parameters)
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, buffer);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, parameters.Destination->GetBuffer());
+	if (parameters.Destination == nullptr)
+	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
+	else
+	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, parameters.Destination->GetBuffer());
+	}
 	glBlitFramebuffer(0, 0, parameters.Resolution.x, parameters.Resolution.y, 0, 0, parameters.Resolution.x, parameters.Resolution.y, parameters.Mask, parameters.Filter);
 }
 

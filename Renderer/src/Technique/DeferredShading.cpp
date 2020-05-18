@@ -48,7 +48,7 @@ void DeferredShading::Initialize(Scene & scene)
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	
+
 
 	postProcessing = &basic;
 	postProcessing->Initialize(parameters);
@@ -221,12 +221,18 @@ void DeferredShading::Render(Scene & scene)
 	BlurPass();
 
 	//Lighting pass
+
+	//GBufferToDefaultFramebuffer();
+	Framebuffer::BlitParameters blitParameters;
+	blitParameters.Destination = &postProcessing->GetFramebuffer();
+	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
+	blitParameters.Filter = GL_NEAREST;
+	gBuffer.BlitFramebuffer(blitParameters);
+
 	const std::vector<Light>& lights = scene.GetLights();
-
 	LightingPass(lights, scene);
-
-	GBufferToDefaultFramebuffer();
-
+	
 	//Render lights on top of scene
 	RenderLights(view, lights);
 	RenderTransparentActors(view, scene);
@@ -236,6 +242,8 @@ void DeferredShading::Render(Scene & scene)
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
+	postProcessing->Unbind();
+	postProcessing->Draw();
 }
 
 void DeferredShading::RenderLights(const glm::mat4 &view, const std::vector<Light> & lights)
@@ -253,7 +261,6 @@ void DeferredShading::RenderLights(const glm::mat4 &view, const std::vector<Ligh
 
 void DeferredShading::RenderTransparentActors(const glm::mat4 & view, Scene& scene)
 {
-	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -288,7 +295,7 @@ void DeferredShading::RenderTransparentActors(const glm::mat4 & view, Scene& sce
 	glDisable(GL_BLEND);
 }
 
-void DeferredShading::SetADSLightingUniforms(const glm::mat4& view, const glm::vec3& viewPosition,const std::vector<Light>& lights)
+void DeferredShading::SetADSLightingUniforms(const glm::mat4& view, const glm::vec3& viewPosition, const std::vector<Light>& lights)
 {
 	adsLighting.Use();
 	adsLighting.SetMat4("view", view);
@@ -328,13 +335,13 @@ void DeferredShading::GBufferToDefaultFramebuffer()
 
 void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & scene)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	ssaoLighting.Use();
 	ssaoLighting.SetFloat("ambientStrength", deferredParameters.AdsParameters.AmbientStrength);
 	ssaoLighting.SetFloat("shininess", deferredParameters.AdsParameters.Shininess);
 	ssaoLighting.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
-	
+
 	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
 	ssaoLighting.SetFloat("gammaCorrection", postProcessingParameters.GammaCorrection);
 	ssaoLighting.SetFloat("exposure", postProcessingParameters.Exposure);
