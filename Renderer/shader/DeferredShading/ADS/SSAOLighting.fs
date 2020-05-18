@@ -26,9 +26,6 @@ uniform vec3 viewPosition;
 uniform float ambientStrength;
 uniform float shininess;
 
-uniform float exposure;
-uniform float gammaCorrection;
-
 vec3 gridSamplingDisk[20] = vec3[](
     vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
     vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),

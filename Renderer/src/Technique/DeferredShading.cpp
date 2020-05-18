@@ -220,8 +220,6 @@ void DeferredShading::Render(Scene & scene)
 	//Blur ssao texture to remove noise
 	BlurPass();
 
-	//Lighting pass
-
 	//GBufferToDefaultFramebuffer();
 	Framebuffer::BlitParameters blitParameters;
 	blitParameters.Destination = &postProcessing->GetFramebuffer();
@@ -230,6 +228,7 @@ void DeferredShading::Render(Scene & scene)
 	blitParameters.Filter = GL_NEAREST;
 	gBuffer.BlitFramebuffer(blitParameters);
 
+	//Lighting pass
 	const std::vector<Light>& lights = scene.GetLights();
 	LightingPass(lights, scene);
 	
@@ -341,10 +340,6 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 	ssaoLighting.SetFloat("ambientStrength", deferredParameters.AdsParameters.AmbientStrength);
 	ssaoLighting.SetFloat("shininess", deferredParameters.AdsParameters.Shininess);
 	ssaoLighting.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
-
-	const PostProcessing::Parameters& postProcessingParameters = postProcessing->GetParameters();
-	ssaoLighting.SetFloat("gammaCorrection", postProcessingParameters.GammaCorrection);
-	ssaoLighting.SetFloat("exposure", postProcessingParameters.Exposure);
 	ssaoLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
 
 	for (unsigned int i = 0; i < lights.size(); ++i)
