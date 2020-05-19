@@ -25,7 +25,7 @@ public:
 	void AttachTexture(GLenum attachement, GLenum texTarget, GLuint texture);
 	void AttachRenderbuffer(GLenum attachment, const Renderbuffer& buffer);
 	void AttachCubemap(const Cubemap& cubemap);
-	void BlitFramebuffer(const BlitParameters& parameters);
+	void BlitFramebuffer(const BlitParameters& parameters) const;
 	bool IsCompleted();
 	GLuint GetBuffer() const;
 

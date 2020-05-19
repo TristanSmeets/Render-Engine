@@ -20,7 +20,6 @@ public:
 	void Blit(const Framebuffer::BlitParameters& parameters);
 	const Framebuffer& GetMultiSampleBuffer() const;
 
-
 private:
 	Framebuffer multiSampleBuffer;
 	Renderbuffer renderbuffer;

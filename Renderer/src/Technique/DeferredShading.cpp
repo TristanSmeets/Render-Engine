@@ -50,6 +50,13 @@ void DeferredShading::Initialize(Scene & scene)
 	glEnable(GL_CULL_FACE);
 
 
+	FXAA::Parameters fxaaParameters;
+	fxaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	fxaaParameters.ReduceMinumum = deferredParameters.FxaaParameters.ReduceMinumum;
+	fxaaParameters.ReduceMultiplier = deferredParameters.FxaaParameters.ReduceMultiplier;
+	fxaaParameters.SpanMax = deferredParameters.FxaaParameters.SpanMax;
+	fxaa.Initialize(fxaaParameters);
+
 	postProcessing = &basic;
 	postProcessing->Initialize(parameters);
 }
@@ -221,11 +228,16 @@ void DeferredShading::Render(Scene & scene)
 	BlurPass();
 
 	Framebuffer::BlitParameters blitParameters;
+	//blitParameters.Destination = &fxaa.GetFramebuffer();
 	blitParameters.Destination = &postProcessing->GetFramebuffer();
+	//blitParameters.Destination = 0;
 	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
 	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
 	blitParameters.Filter = GL_NEAREST;
 	gBuffer.BlitFramebuffer(blitParameters);
+
+	//fxaa.Bind();
+	//postProcessing->Bind();
 
 	//Lighting pass
 	const std::vector<Light>& lights = scene.GetLights();
@@ -240,8 +252,24 @@ void DeferredShading::Render(Scene & scene)
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
-	postProcessing->Unbind();
+	//postProcessing->Bind();
+	//postProcessing->Unbind();
 	postProcessing->Draw();
+
+	blitParameters.Destination = &fxaa.GetFramebuffer();
+	blitParameters.Mask = GL_COLOR_BUFFER_BIT;
+	postProcessing->GetFramebuffer().BlitFramebuffer(blitParameters);
+
+	FXAA::Parameters fxaaParameters;
+	fxaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	fxaaParameters.ReduceMinumum = deferredParameters.FxaaParameters.ReduceMinumum;
+	fxaaParameters.ReduceMultiplier = deferredParameters.FxaaParameters.ReduceMultiplier;
+	fxaaParameters.SpanMax = deferredParameters.FxaaParameters.SpanMax;
+	fxaa.Unbind();
+	fxaa.Apply(fxaaParameters);
+	//blitParameters.Destination = &postProcessing->GetFramebuffer();
+	//blitParameters.Mask = GL_COLOR_BUFFER_BIT;
+	//fxaa.Blit(blitParameters);
 }
 
 void DeferredShading::RenderLights(const glm::mat4 &view, const std::vector<Light> & lights)

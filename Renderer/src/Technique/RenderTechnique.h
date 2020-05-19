@@ -3,6 +3,7 @@
 #include "Rendering/Shader.h"
 #include "PostProcessing/PostProcessing.h"
 #include "Rendering/RenderComponent.h"
+#include "Utility/FXAA.h"
 
 class RenderTechnique
 {
@@ -16,6 +17,7 @@ public:
 
 		RenderComponent::ADSParameters AdsParameters;
 		RenderComponent::PBRParameters PbrParameters;
+		FXAA::Parameters FxaaParameters;
 
 		DeferredParameters(int occlusionPower = 2, int kernelSize = 64, float radius = 0.5f, float bias = 0.025f);
 		DeferredParameters& operator=(const DeferredParameters& rhs);
