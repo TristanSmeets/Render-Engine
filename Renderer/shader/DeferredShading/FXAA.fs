@@ -30,8 +30,6 @@ void main()
 
     blurDirection = min(vec2(spanMax), max(vec2(-spanMax), blurDirection * inverseDirectionAdjustment)) * textureOffset;
 
-    // FragmentColour = vec4(vec3(directionReduce), 1.0f);
-
     vec3 result1 = 0.5f * (
         texture(colourTexture, UV + (blurDirection * vec2(1.0f/3.0f - 0.5f))).xyz +
         texture(colourTexture, UV + (blurDirection * vec2(2.0f/3.0f - 0.5f))).xyz);

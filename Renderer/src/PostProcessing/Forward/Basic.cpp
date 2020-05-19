@@ -61,3 +61,8 @@ const Framebuffer & Basic::GetFramebuffer() const
 {
 	return framebuffer;
 }
+
+const Texture & Basic::GetTexture() const
+{
+	return empty;
+}

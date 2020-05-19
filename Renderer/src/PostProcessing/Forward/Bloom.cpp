@@ -139,3 +139,8 @@ const Framebuffer & Bloom::GetFramebuffer() const
 	return hdrFBO;
 }
 
+const Texture & Bloom::GetTexture() const
+{
+	return colourBuffers[0];
+}
+

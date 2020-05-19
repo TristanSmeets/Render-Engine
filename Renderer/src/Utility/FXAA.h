@@ -20,7 +20,7 @@ public:
 	void Bind();
 	void Unbind();
 	void Blit(const Framebuffer::BlitParameters& parameters);
-	void Apply(const Parameters& parameters);
+	void Apply(const Parameters& parameters, const Texture& screenTexture);
 	const Framebuffer& GetFramebuffer() const;
 
 private:

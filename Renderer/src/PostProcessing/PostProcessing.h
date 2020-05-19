@@ -25,6 +25,7 @@ public:
 	virtual void Draw() = 0;
 	virtual const Framebuffer& GetFramebuffer() const = 0;
 	virtual const Parameters& GetParameters() const;
+	virtual const Texture& GetTexture() const = 0;
 	virtual void SetParameters(const Parameters& parameters);
 protected:
 	Parameters parameters;
