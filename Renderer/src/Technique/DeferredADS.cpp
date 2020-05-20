@@ -1,9 +1,9 @@
 #include "Rendererpch.h"
-#include "DeferredShading.h"
+#include "DeferredADS.h"
 #include "Utility/Filepath.h"
 
 
-DeferredShading::DeferredShading(const Window& window) :
+DeferredADS::DeferredADS(const Window& window) :
 	window(window),
 	lamp(Filepath::DeferredShader + "ADS/DeferredLamp.vs", Filepath::DeferredShader + "ADS/DeferredLamp.fs"),
 	geometryShader(Filepath::DeferredShader + "ADS/GBuffer.vs", Filepath::DeferredShader + "ADS/GBuffer.fs"),
@@ -14,11 +14,11 @@ DeferredShading::DeferredShading(const Window& window) :
 {
 }
 
-DeferredShading::~DeferredShading()
+DeferredADS::~DeferredADS()
 {
 }
 
-void DeferredShading::Initialize(Scene & scene)
+void DeferredADS::Initialize(Scene & scene)
 {
 	const Window::Parameters parameters = window.GetWindowParameters();
 
@@ -57,7 +57,7 @@ void DeferredShading::Initialize(Scene & scene)
 	postProcessing->Initialize(parameters);
 }
 
-void DeferredShading::SetupSSAOBuffers(const Window::Parameters &parameters)
+void DeferredADS::SetupSSAOBuffers(const Window::Parameters &parameters)
 {
 	for (int i = 0; i < 2; ++i)
 	{
@@ -75,7 +75,7 @@ void DeferredShading::SetupSSAOBuffers(const Window::Parameters &parameters)
 	}
 }
 
-void DeferredShading::SetupGBuffer(const Window::Parameters &parameters)
+void DeferredADS::SetupGBuffer(const Window::Parameters &parameters)
 {
 	gBuffer.Generate();
 	gBuffer.Bind();
@@ -120,7 +120,7 @@ void DeferredShading::SetupGBuffer(const Window::Parameters &parameters)
 	gBuffer.Unbind();
 }
 
-void DeferredShading::SetupShaders(Scene & scene)
+void DeferredADS::SetupShaders(Scene & scene)
 {
 	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
 
@@ -167,7 +167,7 @@ void DeferredShading::SetupShaders(Scene & scene)
 	adsLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
 }
 
-void DeferredShading::CreateNoiseTexture(std::uniform_real_distribution<GLfloat> &randomFloats, std::default_random_engine &generator)
+void DeferredADS::CreateNoiseTexture(std::uniform_real_distribution<GLfloat> &randomFloats, std::default_random_engine &generator)
 {
 	glm::vec3 ssaoNoise[16];
 	for (unsigned int i = 0; i < 16; ++i)
@@ -186,7 +186,7 @@ void DeferredShading::CreateNoiseTexture(std::uniform_real_distribution<GLfloat>
 	noise = Texture("aoNoise", noiseTexture);
 }
 
-void DeferredShading::CreateSSAOKernel(std::uniform_real_distribution<GLfloat> &randomFloats, std::default_random_engine &generator)
+void DeferredADS::CreateSSAOKernel(std::uniform_real_distribution<GLfloat> &randomFloats, std::default_random_engine &generator)
 {
 	for (unsigned int i = 0; i < 64; ++i)
 	{
@@ -202,7 +202,7 @@ void DeferredShading::CreateSSAOKernel(std::uniform_real_distribution<GLfloat> &
 	}
 }
 
-void DeferredShading::Render(Scene & scene)
+void DeferredADS::Render(Scene & scene)
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -250,7 +250,7 @@ void DeferredShading::Render(Scene & scene)
 	fxaa.Apply(deferredParameters.FxaaParameters);
 }
 
-void DeferredShading::RenderLights(const glm::mat4 &view, const std::vector<Light> & lights)
+void DeferredADS::RenderLights(const glm::mat4 &view, const std::vector<Light> & lights)
 {
 	lamp.Use();
 	lamp.SetMat4("view", view);
@@ -263,7 +263,7 @@ void DeferredShading::RenderLights(const glm::mat4 &view, const std::vector<Ligh
 	}
 }
 
-void DeferredShading::RenderTransparentActors(const glm::mat4 & view, Scene& scene)
+void DeferredADS::RenderTransparentActors(const glm::mat4 & view, Scene& scene)
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -299,7 +299,7 @@ void DeferredShading::RenderTransparentActors(const glm::mat4 & view, Scene& sce
 	glDisable(GL_BLEND);
 }
 
-void DeferredShading::SetADSLightingUniforms(const glm::mat4& view, const glm::vec3& viewPosition, const std::vector<Light>& lights)
+void DeferredADS::SetADSLightingUniforms(const glm::mat4& view, const glm::vec3& viewPosition, const std::vector<Light>& lights)
 {
 	adsLighting.Use();
 	adsLighting.SetMat4("view", view);
@@ -326,7 +326,7 @@ void DeferredShading::SetADSLightingUniforms(const glm::mat4& view, const glm::v
 	glActiveTexture(GL_TEXTURE0);
 }
 
-void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & scene)
+void DeferredADS::LightingPass(const std::vector<Light> & lights, Scene & scene)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -361,7 +361,7 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 	glEnable(GL_DEPTH_TEST);
 }
 
-void DeferredShading::BlurPass()
+void DeferredADS::BlurPass()
 {
 	aoBuffers[1].Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -372,7 +372,7 @@ void DeferredShading::BlurPass()
 	aoBuffers[1].Unbind();
 }
 
-void DeferredShading::SSAOTexturePass()
+void DeferredADS::SSAOTexturePass()
 {
 	aoBuffers[0].Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -397,7 +397,7 @@ void DeferredShading::SSAOTexturePass()
 	aoBuffers[0].Unbind();
 }
 
-void DeferredShading::GeometryPass(const glm::mat4 &view, Scene & scene)
+void DeferredADS::GeometryPass(const glm::mat4 &view, Scene & scene)
 {
 	gBuffer.Bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

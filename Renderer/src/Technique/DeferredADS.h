@@ -7,11 +7,11 @@
 #include "Rendering/ShadowMapping.h"
 #include "Utility/FXAA.h"
 
-class DeferredShading : public RenderTechnique
+class DeferredADS : public RenderTechnique
 {
 public:
-	DeferredShading(const Window& window);
-	virtual ~DeferredShading();
+	DeferredADS(const Window& window);
+	virtual ~DeferredADS();
 	void Initialize(Scene& scene);
 	void Render(Scene& scene);
 

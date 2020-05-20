@@ -1,7 +1,7 @@
 #include "Rendererpch.h"
 #include "Application.h"
 #include "Technique/ForwardPBR.h"
-#include "Technique/DeferredShading.h"
+#include "Technique/DeferredADS.h"
 #include "Technique/ForwardADS.h"
 #include "Technique/DeferredPBR.h"
 
@@ -25,7 +25,7 @@ void Application::Initialize()
 	scene->Initialize();
 	//renderTechnique = new ForwardPBR(window);
 	//renderTechnique = new ForwardADS(window);
-	//renderTechnique = new DeferredShading(window);
+	//renderTechnique = new DeferredADS(window);
 	renderTechnique = new DeferredPBR(window);
 	renderTechnique->Initialize(*scene);
 	guiHelper.Initialize(window);
