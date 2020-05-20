@@ -49,12 +49,8 @@ void DeferredShading::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-
-	FXAA::Parameters fxaaParameters;
-	fxaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
-	fxaaParameters.ReduceMinumum = deferredParameters.FxaaParameters.ReduceMinumum;
-	fxaaParameters.ReduceMultiplier = deferredParameters.FxaaParameters.ReduceMultiplier;
-	fxaaParameters.SpanMax = deferredParameters.FxaaParameters.SpanMax;
+	FXAA::Parameters fxaaParameters = deferredParameters.FxaaParameters;
+	fxaaParameters.Resolution = glm::ivec2(parameters.Width, parameters.Height);
 	fxaa.Initialize(fxaaParameters);
 
 	postProcessing = &basic;
@@ -234,8 +230,6 @@ void DeferredShading::Render(Scene & scene)
 	blitParameters.Filter = GL_NEAREST;
 	gBuffer.BlitFramebuffer(blitParameters);
 
-	postProcessing->Bind();
-
 	//Lighting pass
 	const std::vector<Light>& lights = scene.GetLights();
 	LightingPass(lights, scene);
@@ -253,11 +247,7 @@ void DeferredShading::Render(Scene & scene)
 	fxaa.Bind();
 	postProcessing->Draw();
 	fxaa.Unbind();
-	FXAA::Parameters fxaaParameters;
-	fxaaParameters.ReduceMinumum = deferredParameters.FxaaParameters.ReduceMinumum;
-	fxaaParameters.ReduceMultiplier = deferredParameters.FxaaParameters.ReduceMultiplier;
-	fxaaParameters.SpanMax = deferredParameters.FxaaParameters.SpanMax;
-	fxaa.Apply(fxaaParameters);
+	fxaa.Apply(deferredParameters.FxaaParameters);
 }
 
 void DeferredShading::RenderLights(const glm::mat4 &view, const std::vector<Light> & lights)

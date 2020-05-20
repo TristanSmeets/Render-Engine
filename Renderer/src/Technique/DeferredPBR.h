@@ -5,6 +5,7 @@
 #include "Rendering/Texture.h"
 #include "PostProcessing/Forward/Basic.h"
 #include "Rendering/ShadowMapping.h"
+#include "Utility/FXAA.h"
 
 class DeferredPBR : public RenderTechnique
 {
@@ -45,6 +46,7 @@ private:
 	NDCQuad quad;
 	ShadowMapping shadowMapping;
 	Shader forwardLighting;
+	FXAA fxaa;
 
 	glm::vec3 ssaoKernel[64];
 

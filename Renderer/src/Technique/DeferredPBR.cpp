@@ -41,6 +41,10 @@ void DeferredPBR::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
+	FXAA::Parameters fxaaParameters = deferredParameters.FxaaParameters;
+	fxaaParameters.Resolution = glm::ivec2(parameters.Width, parameters.Height);
+	fxaa.Initialize(fxaaParameters);
+
 	postProcessing = &basic;
 	postProcessing->Initialize(parameters);
 }
@@ -81,8 +85,10 @@ void DeferredPBR::Render(Scene & scene)
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
-	postProcessing->Unbind();
+	fxaa.Bind();
 	postProcessing->Draw();
+	fxaa.Unbind();
+	fxaa.Apply(deferredParameters.FxaaParameters);
 }
 
 void DeferredPBR::SetupGBuffers(const Window::Parameters & parameters)
