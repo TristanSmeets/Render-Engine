@@ -51,7 +51,7 @@ void FXAA::Blit(const Framebuffer::BlitParameters & parameters)
 	framebuffer.BlitFramebuffer(parameters);
 }
 
-void FXAA::Apply(const Parameters& parameters, const Texture& screenTexture)
+void FXAA::Apply(const Parameters& parameters)
 {
 	shader.Use();
 	shader.SetFloat("spanMax", parameters.SpanMax);

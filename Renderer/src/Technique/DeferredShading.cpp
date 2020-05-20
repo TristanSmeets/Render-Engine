@@ -219,11 +219,7 @@ void DeferredShading::Render(Scene & scene)
 
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
 	//Geometry pass
-	gBuffer.Bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	GeometryPass(view, scene);
-	gBuffer.Unbind();
 
 	//Generate SSSAO textures
 	SSAOTexturePass();
@@ -232,15 +228,12 @@ void DeferredShading::Render(Scene & scene)
 	BlurPass();
 
 	Framebuffer::BlitParameters blitParameters;
-	//blitParameters.Destination = 0;
-	//blitParameters.Destination = &fxaa.GetFramebuffer();
 	blitParameters.Destination = &postProcessing->GetFramebuffer();
 	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
 	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
 	blitParameters.Filter = GL_NEAREST;
 	gBuffer.BlitFramebuffer(blitParameters);
 
-	//fxaa.Bind();
 	postProcessing->Bind();
 
 	//Lighting pass
@@ -256,25 +249,15 @@ void DeferredShading::Render(Scene & scene)
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
-	//postProcessing->Unbind();
+
 	fxaa.Bind();
 	postProcessing->Draw();
-	//postProcessing->Draw();
-	//blitParameters.Destination = &fxaa.GetFramebuffer();
-	//blitParameters.Mask = GL_COLOR_BUFFER_BIT;
-	//postProcessing->GetFramebuffer().BlitFramebuffer(blitParameters);
-	//
 	fxaa.Unbind();
 	FXAA::Parameters fxaaParameters;
-	fxaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
 	fxaaParameters.ReduceMinumum = deferredParameters.FxaaParameters.ReduceMinumum;
 	fxaaParameters.ReduceMultiplier = deferredParameters.FxaaParameters.ReduceMultiplier;
 	fxaaParameters.SpanMax = deferredParameters.FxaaParameters.SpanMax;
-	fxaa.Apply(fxaaParameters, postProcessing->GetTexture());
-	//fxaa.Unbind();
-	//blitParameters.Destination = &postProcessing->GetFramebuffer();
-	//blitParameters.Mask = GL_COLOR_BUFFER_BIT;
-	//fxaa.Blit(blitParameters);
+	fxaa.Apply(fxaaParameters);
 }
 
 void DeferredShading::RenderLights(const glm::mat4 &view, const std::vector<Light> & lights)
@@ -365,8 +348,6 @@ void DeferredShading::LightingPass(const std::vector<Light> & lights, Scene & sc
 
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{
-		//glm::vec3 lightPositionView = glm::vec3(scene.GetCamera().GetViewMatrix() * glm::vec4(lights[i].GetWorldPosition(), 1.0f));
-		//ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Position", lightPositionView);
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Position", lights[i].GetWorldPosition());
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 
@@ -428,6 +409,9 @@ void DeferredShading::SSAOTexturePass()
 
 void DeferredShading::GeometryPass(const glm::mat4 &view, Scene & scene)
 {
+	gBuffer.Bind();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	geometryShader.Use();
 	geometryShader.SetMat4("view", view);
 
@@ -447,4 +431,5 @@ void DeferredShading::GeometryPass(const glm::mat4 &view, Scene & scene)
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
+	gBuffer.Unbind();
 }
