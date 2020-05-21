@@ -77,7 +77,6 @@ void ForwardPBR::Render(Scene & scene)
 	//Render the scene as normal with shadow mapping(using depth map)
 	
 	msaa.Bind();
-	//postProcessing->Bind();
 	Window::Parameters windowParameters = window.GetWindowParameters();
 	glViewport(0, 0, windowParameters.Width, windowParameters.Height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -89,23 +88,31 @@ void ForwardPBR::Render(Scene & scene)
 	std::map<float, const Actor*> distanceSortedActors;
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
+		if (!actors[i].GetRenderComponent().GetPBRParameters().IsTransparent)
+		{
+			continue;
+		}
 		float distance = glm::length(scene.GetCamera().GetWorldPosition() - actors[i].GetWorldPosition());
 		distanceSortedActors[distance] = &actors[i];
 	}
 
 	//Render actors
 	pbr.Use();
-	//for (unsigned int i = 0; i < actors.size(); ++i)
-	//{
-	//	pbr.SetMat4("model", actors[i].GetWorldMatrix());
-	//	const Material& material = actors[i].GetRenderComponent().GetMaterial();
-	//	material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
-	//	material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
-	//	material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
-	//	material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
-	//	material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
-	//	actors[i].GetRenderComponent().GetMesh().Draw();
-	//}
+	for (unsigned int i = 0; i < actors.size(); ++i)
+	{
+		if (actors[i].GetRenderComponent().GetPBRParameters().IsTransparent)
+		{
+			continue;
+		}
+		pbr.SetMat4("model", actors[i].GetWorldMatrix());
+		const Material& material = actors[i].GetRenderComponent().GetMaterial();
+		material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
+		material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
+		material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
+		material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
+		material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
+		actors[i].GetRenderComponent().GetMesh().Draw();
+	}
 	
 	for (std::map<float, const Actor*>::reverse_iterator it = distanceSortedActors.rbegin(); it != distanceSortedActors.rend(); ++it)
 	{
@@ -136,6 +143,7 @@ void ForwardPBR::Render(Scene & scene)
 	blitParameters.Filter = GL_NEAREST;
 	msaa.Blit(blitParameters);
 	postProcessing->Unbind();
+	postProcessing->Apply();
 	postProcessing->Draw();
 }
 
