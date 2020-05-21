@@ -23,6 +23,7 @@ public:
 	virtual void Bind() = 0;
 	virtual void Unbind() = 0;
 	virtual void Draw() = 0;
+	virtual void Apply() = 0;
 	virtual const Framebuffer& GetFramebuffer() const = 0;
 	virtual const Parameters& GetParameters() const;
 	virtual const Texture& GetTexture() const = 0;

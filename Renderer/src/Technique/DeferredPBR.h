@@ -6,6 +6,7 @@
 #include "PostProcessing/Forward/Basic.h"
 #include "Rendering/ShadowMapping.h"
 #include "Utility/FXAA.h"
+#include "PostProcessing/Forward/Bloom.h"
 
 class DeferredPBR : public RenderTechnique
 {
@@ -31,6 +32,7 @@ private:
 
 	const Window& window;
 	Basic basic;
+	Bloom bloom;
 
 	Framebuffer gBuffer;
 	Framebuffer aoBuffers[2];

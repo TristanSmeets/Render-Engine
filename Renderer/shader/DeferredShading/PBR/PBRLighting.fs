@@ -1,5 +1,6 @@
 #version 460 core
-out vec4 FragmentColour;
+layout (location = 0) out vec4 FragmentColour;
+layout (location = 1) out vec4 BrightColour;
 
 struct Light
 {
@@ -182,4 +183,14 @@ void main()
     vec3 colour = ambient + Lo;
 
     FragmentColour = vec4(colour, 1.0f);
+
+    float brightness = dot(colour, vec3( 0.2126f, 0.7152f, 0.0722f));
+    if(brightness > 1.0f)
+    {
+        BrightColour = vec4(colour, 1.0f);
+    }
+    else
+    {
+        BrightColour = vec4(vec3(0.0f), 1.0f);
+    }
 }

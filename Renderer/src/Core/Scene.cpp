@@ -182,9 +182,9 @@ void Scene::InitializeActors()
 	sphere.GetRenderComponent().SetMaterial(materials[3]);
 	actors.push_back(sphere);
 	
-	sphere.SetName("Demo_Material#1");
+	sphere.SetName("Demo_Material#0");
 	sphere.GetTransform().Translate(glm::vec3(15, 0, 0));
-	sphere.GetRenderComponent().SetMaterial(materials[1]);
+	sphere.GetRenderComponent().SetMaterial(materials[0]);
 	actors.push_back(sphere);
 
 	//for (int i = 0; i < 5; ++i)

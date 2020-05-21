@@ -11,6 +11,7 @@ public:
 	void Bind();
 	void Unbind();
 	void Draw();
+	void Apply();
 	const Framebuffer& GetFramebuffer() const;
 	const Texture& GetTexture() const;
 

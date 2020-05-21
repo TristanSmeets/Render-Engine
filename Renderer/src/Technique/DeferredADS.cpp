@@ -53,7 +53,7 @@ void DeferredADS::Initialize(Scene & scene)
 	fxaaParameters.Resolution = glm::ivec2(parameters.Width, parameters.Height);
 	fxaa.Initialize(fxaaParameters);
 
-	postProcessing = &basic;
+	postProcessing = &bloom;
 	postProcessing->Initialize(parameters);
 }
 
@@ -244,6 +244,7 @@ void DeferredADS::Render(Scene & scene)
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
 
+	postProcessing->Apply();
 	fxaa.Bind();
 	postProcessing->Draw();
 	fxaa.Unbind();

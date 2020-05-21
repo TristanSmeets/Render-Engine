@@ -30,7 +30,7 @@ void ForwardPBR::Initialize(Scene & scene)
 
 	MSAA::Parameters msaaParameters;
 	msaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
-	msaaParameters.Samples = 4;
+	msaaParameters.Samples = 8;
 	msaaParameters.TextureFormat = GL_RGB16F;
 	msaa.Initialize(msaaParameters);
 

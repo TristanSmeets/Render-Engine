@@ -57,6 +57,10 @@ void Basic::Draw()
 	glEnable(GL_DEPTH_TEST);
 }
 
+void Basic::Apply()
+{
+}
+
 const Framebuffer & Basic::GetFramebuffer() const
 {
 	return framebuffer;

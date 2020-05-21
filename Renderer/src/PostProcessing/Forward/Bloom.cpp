@@ -65,8 +65,8 @@ void Bloom::SetupHDRFramebuffer(const Window::Parameters & parameters)
 	depthRenderbuffer.SetStorage(GL_DEPTH_COMPONENT, parameters.Width, parameters.Height);
 	hdrFBO.AttachRenderbuffer(GL_DEPTH_ATTACHMENT, depthRenderbuffer);
 
-	unsigned int attachements[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glDrawBuffers(2, attachements);
+	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, attachments);
 
 	if (!hdrFBO.IsCompleted())
 	{
@@ -121,7 +121,6 @@ void Bloom::BlurTextureBuffers()
 
 void Bloom::Draw()
 {
-	BlurTextureBuffers();
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	bloom.Use();
@@ -132,6 +131,11 @@ void Bloom::Draw()
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
+}
+
+void Bloom::Apply()
+{
+	BlurTextureBuffers();
 }
 
 const Framebuffer & Bloom::GetFramebuffer() const
