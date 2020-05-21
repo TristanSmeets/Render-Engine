@@ -350,11 +350,13 @@ void DeferredADS::LightingPass(const std::vector<Light> & lights, Scene & scene)
 			glActiveTexture(GL_TEXTURE0 + j);
 			glBindTexture(GL_TEXTURE_2D, gBufferTextures[j].GetID());
 		}
+
 		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, aoTextures[1].GetID());
 		glActiveTexture(GL_TEXTURE4 + i);
 		shadowMapping.BindShadowMap(i);
 	}
+	glActiveTexture(GL_TEXTURE0);
 
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();

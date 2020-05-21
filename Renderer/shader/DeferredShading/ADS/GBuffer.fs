@@ -20,6 +20,5 @@ void main()
     gNormal = normalize(Normal);
     gViewPosition = ViewPosition;
     gViewNormal = ViewNormal;
-    gAlbedoSpecular.rbg = texture(diffuse, TextureCoordinates).rgb;
-    gAlbedoSpecular.a = texture(specular, TextureCoordinates).r;
+    gAlbedoSpecular = vec4(texture(diffuse,TextureCoordinates).rgb, texture(specular, TextureCoordinates).r);
 }
