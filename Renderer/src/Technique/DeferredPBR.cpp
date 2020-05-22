@@ -85,7 +85,6 @@ void DeferredPBR::Render(Scene & scene)
 	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
-	//postProcessing->Unbind();
 	postProcessing->Apply();
 	fxaa.Bind();
 	postProcessing->Draw();

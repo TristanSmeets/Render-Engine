@@ -214,7 +214,7 @@ void Scene::InitializeActors()
 	windowPlane.GetRenderComponent().SetMaterial(materials[4]);
 	windowPlane.GetRenderComponent().GetADSParameters().IsTransparent = true;
 	windowPlane.GetRenderComponent().GetPBRParameters().IsTransparent = true;
-
+	
 	actors.push_back(windowPlane);
 	windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
 	windowPlane.SetName("Window2");

@@ -25,7 +25,6 @@ Texture::Texture(const std::string & filepath, bool usingLinearSpace)
 
 Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum format, GLenum type)
 {
-	printf("Creating Texture: %s\n", filepath.c_str());
 	Load(filepath, internalformat, format, type);
 
 	size_t position = filepath.find_last_of("/");
@@ -39,7 +38,6 @@ Texture::Texture(const Texture & rhs) :
 
 Texture::~Texture()
 {
-	printf("Destroying Texture: %s\n", name.c_str());
 	//TODO: Add glDeleteTextures. Need to figure out how to delete a texture without it breaking for all the copies as well.
 }
 

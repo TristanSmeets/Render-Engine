@@ -141,6 +141,7 @@ void main()
         vec3 halfWayVector = normalize(viewDirection + lightDirection);
         float distance = length(lights[i].Position - FragmentPosition);
         float attenuation = 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
+        // float attenuation = 1.0f / (distance * distance);
         vec3 radiance = lights[i].Colour * attenuation;
 
         //Cook-Torrance BRDF
@@ -183,6 +184,7 @@ void main()
     vec3 colour = ambient + Lo;
 
     FragmentColour = vec4(colour, 1.0f);
+    // FragmentColour = vec4(ambient, 1.0f);
 
     float brightness = dot(colour, vec3( 0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)
