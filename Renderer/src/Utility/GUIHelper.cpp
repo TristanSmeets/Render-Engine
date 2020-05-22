@@ -227,6 +227,7 @@ void GUIHelper::RenderLight(const Light & light)
 	RenderFloat("Constant", (float&)parameters.Constant, 0.1f, 2.0f);
 	RenderFloat("Linear", (float&)parameters.Linear, 0.0f, 1.0f);
 	RenderFloat("Quadratic", (float&)parameters.Quadratic, 0.0f, 2.0f);
+	RenderFloat("Radius", (float&)parameters.Radius, 0.0f, 100.0f);
 }
 
 void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)

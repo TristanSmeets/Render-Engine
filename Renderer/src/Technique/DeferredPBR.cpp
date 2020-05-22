@@ -344,6 +344,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
 		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
 		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
+		std::string lightRadius = std::string("lights[") + std::to_string(i) + std::string("].Radius");
 
 		const Light::Parameters& parameters = lights[i].GetParameters();
 		pbrLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
@@ -351,6 +352,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 		pbrLighting.SetFloat(lightConstant, parameters.Constant);
 		pbrLighting.SetFloat(lightLinear, parameters.Linear);
 		pbrLighting.SetFloat(lightQuadratic, parameters.Quadratic);
+		pbrLighting.SetFloat(lightRadius, parameters.Radius);
 		
 		//Attach shadow map
 		glActiveTexture(GL_TEXTURE8 + i);

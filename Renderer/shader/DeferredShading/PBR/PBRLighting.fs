@@ -7,6 +7,7 @@ struct Light
     vec3 Position;
     vec3 Colour;
     
+    float Radius;
     float Constant;
     float Linear;
     float Quadratic;
@@ -140,8 +141,12 @@ void main()
         vec3 lightDirection = normalize(lights[i].Position - FragmentPosition);
         vec3 halfWayVector = normalize(viewDirection + lightDirection);
         float distance = length(lights[i].Position - FragmentPosition);
-        float attenuation = 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
+        // float attenuation = 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
         // float attenuation = 1.0f / (distance * distance);
+
+        float attenuationNominator = clamp(1 - pow((distance/lights[i].Radius), 4), 0.0f, 1.0f);
+        float attenuation = (attenuationNominator * attenuationNominator) / (distance * distance + 1);
+
         vec3 radiance = lights[i].Colour * attenuation;
 
         //Cook-Torrance BRDF
