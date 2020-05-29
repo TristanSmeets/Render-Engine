@@ -137,6 +137,10 @@ void DeferredADS::SetupShaders(Scene & scene)
 	lamp.SetMat4("projection", projection);
 
 	ssaoLighting.Use();
+	ssaoLighting.SetFloat("aspectRatio", scene.GetCamera().GetFrustum().AspectRatio);
+	float tanHalfFOV = tanf(glm::radians(scene.GetCamera().GetFrustum().FieldOfView / 2.0f));
+	ssaoLighting.SetFloat("tanHalfFOV", tanHalfFOV);
+	ssaoLighting.SetMat4("projection", projection);
 	ssaoLighting.SetInt("gPosition", 0);
 	ssaoLighting.SetInt("gNormal", 1);
 	ssaoLighting.SetInt("gAlbedoSpecular", 2);
@@ -335,7 +339,8 @@ void DeferredADS::LightingPass(const std::vector<Light> & lights, Scene & scene)
 	ssaoLighting.SetFloat("ambientStrength", deferredParameters.AdsParameters.AmbientStrength);
 	ssaoLighting.SetFloat("shininess", deferredParameters.AdsParameters.Shininess);
 	ssaoLighting.SetVec3("viewPosition", scene.GetCamera().GetWorldPosition());
-	ssaoLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
+	ssaoLighting.SetFloat("farPlane", scene.GetCamera().GetFrustum().FarPlaneCutoff);
+	ssaoLighting.SetFloat("nearPlane", scene.GetCamera().GetFrustum().NearPlaneCutoff);
 
 	for (unsigned int i = 0; i < lights.size(); ++i)
 	{

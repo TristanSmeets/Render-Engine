@@ -16,7 +16,8 @@ uniform sampler2D specular;
 
 void main()
 {
-    gPosition = FragmentPosition;
+    // gPosition = FragmentPosition;
+    gPosition = vec3(gl_FragCoord.z);
     gNormal = normalize(Normal);
     gViewPosition = ViewPosition;
     gViewNormal = ViewNormal;

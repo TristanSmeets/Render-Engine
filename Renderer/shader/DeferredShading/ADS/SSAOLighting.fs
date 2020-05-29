@@ -3,6 +3,7 @@ layout (location = 0) out vec4 FragmentColour;
 layout (location = 1) out vec4 BrightColour;
 
 in vec2 UV;
+in vec2 ViewRay;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
@@ -22,7 +23,9 @@ const int NumberOfLights = 10;
 uniform Light lights[NumberOfLights];
 uniform samplerCube shadowCubeMaps[NumberOfLights];
 uniform float farPlane;
+uniform float nearPlane;
 uniform vec3 viewPosition;
+uniform mat4 projection;
 
 uniform float ambientStrength;
 uniform float shininess;
@@ -62,9 +65,26 @@ float ShadowCalculation(vec3 fragmentPosition, samplerCube shadowCubeMap, vec3 l
     return shadow;
 }
 
+float LinearizeDepth(float depth)
+{
+    float z = depth * 2.0f - 1.0f;
+    return (2.0 * nearPlane * farPlane) / (farPlane + nearPlane - z * (farPlane - nearPlane));
+}
+
+float CalculateViewZ(vec2 uv)
+{
+    float Depth = LinearizeDepth(texture(gPosition, uv).r) / farPlane;
+    return projection[3][2] / (2 * Depth - 1 - projection[2][2]);
+}
+
 void main()
 {
-    vec3 FragmentPosition = texture(gPosition, UV).rgb;
+    // vec3 FragmentPosition = texture(gPosition, UV).rgb;
+    float ViewZ = CalculateViewZ(UV);
+    float ViewX = ViewRay.x * ViewZ;
+    float ViewY = ViewRay.y * ViewZ;
+
+    vec3 FragmentPosition = vec3(ViewX, ViewY, ViewZ);
     vec3 Normal = normalize(texture(gNormal, UV).rgb);
     vec3 DiffuseTextureColour = texture(gAlbedoSpecular, UV).rgb;
     float SpecularTextureColour = texture(gAlbedoSpecular, UV).a;
@@ -97,7 +117,8 @@ void main()
     }
 
     vec3 result = ambient + lighting;
-    FragmentColour = vec4(result, 1.0f);
+    // FragmentColour = vec4(result, 1.0f);
+    FragmentColour = vec4(FragmentPosition, 1.0f);
 
     float brightness = dot(result, vec3( 0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)
