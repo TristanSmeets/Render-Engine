@@ -33,10 +33,7 @@ uniform sampler2D brdfLUT;
 
 #define MaximumLights 10
 //Shadow map
-//uniform sampler2D shadowMap;
-//uniform vec3 lightDirection;
 uniform samplerCube shadowCubeMaps[MaximumLights];
-//uniform vec3 directionalLightPosition;
 uniform float farPlane;
 
 //Material parameters
@@ -45,7 +42,7 @@ uniform vec3 NonMetallicReflectionColour;
 
 //Lights
 uniform Light lights[MaximumLights];
-
+uniform int NumberOfLights = 10;
 //Camera position
 uniform vec3 cameraPos;
 
@@ -91,7 +88,7 @@ void main()
 
     vec3 Lo = vec3(0.0f);
 
-    for(int i = 0; i < MaximumLights; ++i)
+    for(int i = 0; i < NumberOfLights; ++i)
     {
         //reflectance equation
         vec3 lightDirection = normalize(lights[i].Position - WorldPos);

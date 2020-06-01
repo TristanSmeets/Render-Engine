@@ -318,6 +318,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	pbrLighting.Use();
+	pbrLighting.SetInt("NumberOfLights", (int)lights.size());
 	pbrLighting.SetVec3("cameraPosition", scene.GetCamera().GetWorldPosition());
 	pbrLighting.SetVec3("nonMetallicReflectionColour", deferredParameters.PbrParameters.NonMetallicReflectionColour);
 	pbrLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
@@ -422,6 +423,7 @@ void DeferredPBR::SetPBRShaderUniforms(const Camera & camera, const Skybox & sky
 	forwardLighting.SetMat4("view", camera.GetViewMatrix());
 	forwardLighting.SetVec3("cameraPos", camera.GetWorldPosition());
 	forwardLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
+	forwardLighting.SetInt("NumberOfLights", (int)lights.size());
 
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetIrradiance().Bind();

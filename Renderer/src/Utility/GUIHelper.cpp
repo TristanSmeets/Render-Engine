@@ -83,12 +83,6 @@ void GUIHelper::RenderLayout(Scene & scene)
 	ImGui::Separator();
 	if (ImGui::TreeNode("Light"))
 	{
-		//RenderText(scene.GetDirectionalLight().GetName().c_str());
-		//ImGui::NextColumn();
-		//RenderDirectionalLight(scene.GetDirectionalLight());
-		//ImGui::NextColumn();
-		//ImGui::Separator();
-
 		const std::vector<Light>& lights = scene.GetLights();
 		static int selectedLight = -1;
 		for (int i = 0; i < lights.size(); ++i)

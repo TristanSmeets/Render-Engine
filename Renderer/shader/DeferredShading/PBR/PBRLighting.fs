@@ -29,9 +29,10 @@ uniform sampler2D brdfLUT;
 uniform sampler2D ssao;
 
 //Lights
-const int NumberOfLights = 10;
-uniform Light lights[NumberOfLights];
-uniform samplerCube shadowCubeMaps[NumberOfLights];
+const int MaximumLights = 10;
+uniform int NumberOfLights = 10;
+uniform Light lights[MaximumLights];
+uniform samplerCube shadowCubeMaps[MaximumLights];
 uniform float farPlane;
 
 uniform vec3 cameraPosition;
@@ -135,14 +136,13 @@ void main()
     F0 = mix(F0, albedo, metallic);
 
     vec3 Lo = vec3(0.0f);
+
     for(int i = 0; i < NumberOfLights; ++i)
     {
         //Reflectance equation
         vec3 lightDirection = normalize(lights[i].Position - FragmentPosition);
         vec3 halfWayVector = normalize(viewDirection + lightDirection);
         float distance = length(lights[i].Position - FragmentPosition);
-        // float attenuation = 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
-        // float attenuation = 1.0f / (distance * distance);
 
         float attenuationNominator = clamp(1 - pow((distance/lights[i].Radius), 4), 0.0f, 1.0f);
         float attenuation = (attenuationNominator * attenuationNominator) / (distance * distance + 1);

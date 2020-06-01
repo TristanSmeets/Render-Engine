@@ -31,6 +31,7 @@ private:
 	void InitializeMaterials();
 	void InitializeActors();
 
+	const unsigned int MaximumNumberOfLights = 10;
 	std::vector<Actor> actors;
 	std::vector<Light> lights;
 	std::vector<Material> materials;

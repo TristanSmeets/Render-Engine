@@ -155,9 +155,14 @@ void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
 
-	const unsigned int NumberOfLights = 10;
+	unsigned int NumberOfLights = 3;
 
 	srand(NumberOfLights);
+
+	if (NumberOfLights > MaximumNumberOfLights)
+	{
+		NumberOfLights = MaximumNumberOfLights;
+	}
 
 	for (unsigned int i = 0; i < NumberOfLights; ++i)
 	{
