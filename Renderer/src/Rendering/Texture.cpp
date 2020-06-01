@@ -134,8 +134,8 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 
 	if (data)
 	{
-		GLenum format;
-		GLenum gammaCorrection;
+		GLenum format = 0;
+		GLenum gammaCorrection = 0;
 
 		switch (nrChannels)
 		{
