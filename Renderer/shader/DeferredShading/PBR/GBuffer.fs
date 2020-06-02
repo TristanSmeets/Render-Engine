@@ -22,6 +22,20 @@ struct Material
 };
 
 uniform Material material;
+uniform float roughness;
+
+subroutine float RoughnessType(in float roughness);
+subroutine uniform RoughnessType roughnessType;
+
+subroutine(RoughnessType) float UsingRoughness(in float roughness)
+{
+    return clamp(roughness, 0.0f, 1.0f);
+}
+
+subroutine(RoughnessType) float UsingSmoothness(in float roughness)
+{
+    return 1.0f - clamp(roughness, 0.0f, 1.0f);
+}
 
 vec3 GetNormalFromMap(vec3 normal)
 {
@@ -46,7 +60,8 @@ void main()
     gNormal = GetNormalFromMap(Normal);
     gAlbedo.rgb = texture(material.Albedo, UV).xyz;
     gMetallicRoughnessAO.r = texture(material.Metallic, UV).r;
-    gMetallicRoughnessAO.g = texture(material.Roughness, UV).r;
+    float outputRoughness = roughness + texture(material.Roughness, UV).r;
+    gMetallicRoughnessAO.g = roughnessType(outputRoughness);
     gMetallicRoughnessAO.b = texture(material.AO, UV).r;
     gViewPosition = ViewPosition;
     gViewNormal = GetNormalFromMap(ViewNormal);

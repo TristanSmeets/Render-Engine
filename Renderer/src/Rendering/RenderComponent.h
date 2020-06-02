@@ -19,6 +19,8 @@ public:
 	{
 		glm::vec3 NonMetallicReflectionColour;
 		bool IsTransparent = false;
+		float Roughness = 0.0f;
+		bool UsingSmoothness = false;
 
 		PBRParameters(const glm::vec3& nonMetallicReflectionColour = glm::vec3(0.04f));
 		PBRParameters& operator=(const PBRParameters& rhs);

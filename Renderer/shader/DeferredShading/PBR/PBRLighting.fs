@@ -128,7 +128,7 @@ void main()
     float roughness = texture(gMetallicRoughnessAO, UV).g;
     float ao = texture(gMetallicRoughnessAO, UV).b;
     float ssao = texture(ssao, UV).r;
-    
+
     vec3 viewDirection = normalize(cameraPosition - FragmentPosition);
     vec3 reflectionDirection = reflect(-viewDirection, Normal);
 

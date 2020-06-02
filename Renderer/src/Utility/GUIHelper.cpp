@@ -173,7 +173,7 @@ void GUIHelper::RenderRenderComponent(RenderComponent & renderComponent)
 {
 	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName().c_str());
 	RenderText("Material");
-	RenderADSParameters(renderComponent.GetADSParameters());
+	//RenderADSParameters(renderComponent.GetADSParameters());
 	RenderPBRParameters(renderComponent.GetPBRParameters());
 	RenderMaterial(renderComponent.GetMaterial());
 }
@@ -241,6 +241,9 @@ void GUIHelper::RenderPBRParameters(RenderComponent::PBRParameters & pbrParamete
 {
 	RenderText("Non Metallic Reflection Colour");
 	RenderColour(pbrParameters.NonMetallicReflectionColour);
+	RenderFloat("Roughness", (float&)pbrParameters.Roughness, 0.0f, 1.0f);
+	ImGui::Checkbox("Is Transparent", &pbrParameters.IsTransparent);
+	ImGui::Checkbox("Using Smoothness", &pbrParameters.UsingSmoothness);
 }
 
 void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & deferredParameters)

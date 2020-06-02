@@ -7,7 +7,7 @@ class Shader
 public:
 	struct SubroutineParameters
 	{
-		const std::string Name;
+		std::string Name;
 		GLenum Shader;
 
 		SubroutineParameters(const std::string& name = "Default", GLenum shaderType = GL_FRAGMENT_SHADER);

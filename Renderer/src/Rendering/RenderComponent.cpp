@@ -81,5 +81,7 @@ RenderComponent::PBRParameters & RenderComponent::PBRParameters::operator=(const
 {
 	this->NonMetallicReflectionColour = rhs.NonMetallicReflectionColour;
 	this->IsTransparent = rhs.IsTransparent;
+	this->Roughness = rhs.Roughness;
+	this->UsingSmoothness = rhs.UsingSmoothness;
 	return *this;
 }

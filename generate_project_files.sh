@@ -1,2 +1,2 @@
-dependencies/premake5.exe vs2019
+dependencies/premake5.exe vs2017
 read

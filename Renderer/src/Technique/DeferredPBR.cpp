@@ -2,7 +2,7 @@
 #include "DeferredPBR.h"
 #include "Utility/Filepath.h"
 
-DeferredPBR::DeferredPBR(const Window & window) : 
+DeferredPBR::DeferredPBR(const Window & window) :
 	window(window),
 	lamp(Shader(Filepath::DeferredShader + "ADS/DeferredLamp.vs", Filepath::DeferredShader + "ADS/DeferredLamp.fs")),
 	geometry(Shader(Filepath::DeferredShader + "PBR/GBuffer.vs", Filepath::DeferredShader + "PBR/GBuffer.fs")),
@@ -73,7 +73,7 @@ void DeferredPBR::Render(Scene & scene)
 	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
 	blitParameters.Filter = GL_NEAREST;
 	gBuffer.BlitFramebuffer(blitParameters);
-	
+
 	//Lighting pass
 	const std::vector<Light>& lights = scene.GetLights();
 	LightingPass(lights, scene);
@@ -272,6 +272,21 @@ void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
 			glActiveTexture(GL_TEXTURE0 + j);
 			glBindTexture(GL_TEXTURE_2D, material.GetTexture((Texture::Type)j).GetID());
 		}
+		const RenderComponent::PBRParameters pbrParameters = actors[i].GetRenderComponent().GetPBRParameters();
+		geometry.SetFloat("roughness", pbrParameters.Roughness);
+		Shader::SubroutineParameters subroutineParameters;
+		subroutineParameters.Shader = GL_FRAGMENT_SHADER;
+
+		if (pbrParameters.UsingSmoothness)
+		{
+			subroutineParameters.Name = "UsingSmoothness";
+		}
+		else
+		{
+			subroutineParameters.Name = "UsingRoughness";
+		}
+
+		geometry.SetSubroutine(subroutineParameters);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 	gBuffer.Unbind();
@@ -322,7 +337,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	pbrLighting.SetVec3("cameraPosition", scene.GetCamera().GetWorldPosition());
 	pbrLighting.SetVec3("nonMetallicReflectionColour", deferredParameters.PbrParameters.NonMetallicReflectionColour);
 	pbrLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
-	
+
 	for (unsigned int i = 0; i < 4; ++i)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -354,7 +369,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 		pbrLighting.SetFloat(lightLinear, parameters.Linear);
 		pbrLighting.SetFloat(lightQuadratic, parameters.Quadratic);
 		pbrLighting.SetFloat(lightRadius, parameters.Radius);
-		
+
 		//Attach shadow map
 		glActiveTexture(GL_TEXTURE8 + i);
 		shadowMapping.BindShadowMap(i);
@@ -407,11 +422,11 @@ void DeferredPBR::RenderTransparentActors(Scene & scene)
 		forwardLighting.SetVec3("NonMetallicReflectionColour", actor->GetRenderComponent().GetPBRParameters().NonMetallicReflectionColour);
 
 		const Material& material = actor->GetRenderComponent().GetMaterial();
-		material.GetTexture(Texture::Albedo)			.Bind(forwardLighting, Texture::Albedo);
-		material.GetTexture(Texture::Normal)			.Bind(forwardLighting, Texture::Normal);
-		material.GetTexture(Texture::Metallic)			.Bind(forwardLighting, Texture::Metallic);
-		material.GetTexture(Texture::Roughness)			.Bind(forwardLighting, Texture::Roughness);
-		material.GetTexture(Texture::AmbientOcclusion)	.Bind(forwardLighting, Texture::AmbientOcclusion);
+		material.GetTexture(Texture::Albedo).Bind(forwardLighting, Texture::Albedo);
+		material.GetTexture(Texture::Normal).Bind(forwardLighting, Texture::Normal);
+		material.GetTexture(Texture::Metallic).Bind(forwardLighting, Texture::Metallic);
+		material.GetTexture(Texture::Roughness).Bind(forwardLighting, Texture::Roughness);
+		material.GetTexture(Texture::AmbientOcclusion).Bind(forwardLighting, Texture::AmbientOcclusion);
 		actor->GetRenderComponent().GetMesh().Draw();
 	}
 	glDisable(GL_BLEND);
