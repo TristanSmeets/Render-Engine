@@ -185,11 +185,13 @@ void Scene::InitializeActors()
 	sphere.GetTransform().Translate(glm::vec3(0, 6, 0));
 	sphere.GetRenderComponent().SetMesh(meshes[1]);
 	sphere.GetRenderComponent().SetMaterial(materials[3]);
+	sphere.GetRenderComponent().GetPBRParameters().UsingSmoothness = true;
 	actors.push_back(sphere);
 	
 	sphere.SetName("Demo_Material#0");
 	sphere.GetTransform().Translate(glm::vec3(15, 0, 0));
 	sphere.GetRenderComponent().SetMaterial(materials[0]);
+	sphere.GetRenderComponent().GetPBRParameters().UsingSmoothness = false;
 	actors.push_back(sphere);
 
 	//for (int i = 0; i < 5; ++i)
