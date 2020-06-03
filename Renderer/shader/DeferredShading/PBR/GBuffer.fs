@@ -3,8 +3,7 @@ layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec3 gAlbedo;
 layout (location = 3) out vec3 gMetallicRoughnessAO;
-layout (location = 4) out vec3 gViewPosition;
-layout (location = 5) out vec3 gViewNormal;
+layout (location = 4) out vec3 gViewNormal;
 
 in vec3 FragmentPosition;
 in vec3 ViewPosition;
@@ -56,13 +55,14 @@ vec3 GetNormalFromMap(vec3 normal)
 
 void main()
 {
-    gPosition = FragmentPosition;
+    gPosition = ViewPosition;
+    // gNormal = GetNormalFromMap(ViewNormal);
+    // gPosition = FragmentPosition;
     gNormal = GetNormalFromMap(Normal);
     gAlbedo.rgb = texture(material.Albedo, UV).xyz;
     gMetallicRoughnessAO.r = texture(material.Metallic, UV).r;
     float outputRoughness = roughness + texture(material.Roughness, UV).r;
     gMetallicRoughnessAO.g = roughnessType(outputRoughness);
     gMetallicRoughnessAO.b = texture(material.AO, UV).r;
-    gViewPosition = ViewPosition;
     gViewNormal = GetNormalFromMap(ViewNormal);
 }

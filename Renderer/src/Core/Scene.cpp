@@ -213,19 +213,19 @@ void Scene::InitializeActors()
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);
 
-	Actor windowPlane = Actor("Window1");
-	windowPlane.GetTransform().Translate(glm::vec3(0.0f, 4.0f, 15.0f));
-	windowPlane.GetTransform().Rotate(glm::vec3(90.0f, 0.0f, 0.0f));
-	windowPlane.GetTransform().Scale(glm::vec3(0.1f));
-	windowPlane.GetRenderComponent().SetMesh(meshes[2]);
-	windowPlane.GetRenderComponent().SetMaterial(materials[4]);
-	windowPlane.GetRenderComponent().GetADSParameters().IsTransparent = true;
-	windowPlane.GetRenderComponent().GetPBRParameters().IsTransparent = true;
-	
-	actors.push_back(windowPlane);
-	windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
-	windowPlane.SetName("Window2");
-	actors.push_back(windowPlane);
+	//Actor windowPlane = Actor("Window1");
+	//windowPlane.GetTransform().Translate(glm::vec3(0.0f, 4.0f, 15.0f));
+	//windowPlane.GetTransform().Rotate(glm::vec3(90.0f, 0.0f, 0.0f));
+	//windowPlane.GetTransform().Scale(glm::vec3(0.1f));
+	//windowPlane.GetRenderComponent().SetMesh(meshes[2]);
+	//windowPlane.GetRenderComponent().SetMaterial(materials[4]);
+	//windowPlane.GetRenderComponent().GetADSParameters().IsTransparent = true;
+	//windowPlane.GetRenderComponent().GetPBRParameters().IsTransparent = true;
+	//
+	//actors.push_back(windowPlane);
+	//windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
+	//windowPlane.SetName("Window2");
+	//actors.push_back(windowPlane);
 
 	printf("Created %d actors\n", (int)actors.size());
 }

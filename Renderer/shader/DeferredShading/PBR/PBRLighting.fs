@@ -37,6 +37,8 @@ uniform float farPlane;
 
 uniform vec3 cameraPosition;
 uniform vec3 nonMetallicReflectionColour;
+uniform mat4 inverseView;
+uniform mat4 view;
 
 const float PI = 3.14159265359f;
 
@@ -129,6 +131,10 @@ void main()
     float ao = texture(gMetallicRoughnessAO, UV).b;
     float ssao = texture(ssao, UV).r;
 
+    FragmentPosition = vec3(inverseView * vec4(FragmentPosition, 1.0f));
+    // Normal = normalize(vec3(inverseView * vec4(Normal, 1.0f)));
+    // Normal = normalize(mat3(view) * Normal);
+
     vec3 viewDirection = normalize(cameraPosition - FragmentPosition);
     vec3 reflectionDirection = reflect(-viewDirection, Normal);
 
@@ -189,7 +195,7 @@ void main()
     vec3 colour = ambient + Lo;
 
     FragmentColour = vec4(colour, 1.0f);
-    // FragmentColour = vec4(ambient, 1.0f);
+    // FragmentColour = vec4(vec3(ssao), 1.0f);
 
     float brightness = dot(colour, vec3( 0.2126f, 0.7152f, 0.0722f));
     if(brightness > 1.0f)

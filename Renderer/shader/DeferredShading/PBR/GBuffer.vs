@@ -19,7 +19,7 @@ void main()
     ViewPosition = viewPosition.xyz;
     FragmentPosition = vec3(model * vec4(position, 1.0f));
     UV = uv;
-    Normal = mat3(model) * normal;
+    Normal =  mat3(model) * normal;
     ViewNormal = mat3(view * model) * normal;
 
     gl_Position = projection * viewPosition;
