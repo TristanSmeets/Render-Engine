@@ -132,8 +132,6 @@ void main()
     float ssao = texture(ssao, UV).r;
 
     FragmentPosition = vec3(inverseView * vec4(FragmentPosition, 1.0f));
-    // Normal = normalize(vec3(inverseView * vec4(Normal, 1.0f)));
-    // Normal = normalize(mat3(view) * Normal);
 
     vec3 viewDirection = normalize(cameraPosition - FragmentPosition);
     vec3 reflectionDirection = reflect(-viewDirection, Normal);

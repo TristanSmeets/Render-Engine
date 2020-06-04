@@ -2,7 +2,7 @@
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec3 gAlbedo;
-layout (location = 3) out vec3 gMetallicRoughnessAO;
+layout (location = 3) out vec4 gMetallicRoughnessAO;
 layout (location = 4) out vec3 gViewNormal;
 
 in vec3 FragmentPosition;
@@ -22,6 +22,8 @@ struct Material
 
 uniform Material material;
 uniform float roughness;
+uniform float nearPlane;
+uniform float farPlane;
 
 subroutine float RoughnessType(in float roughness);
 subroutine uniform RoughnessType roughnessType;
@@ -53,6 +55,12 @@ vec3 GetNormalFromMap(vec3 normal)
     return normalize(TBN * tangentNormal);
 };
 
+float LinearizeDepth(float depth)
+{
+    float z = depth * 2.0f - 1.0f;
+    return ((2.0 * nearPlane * farPlane) / (farPlane + nearPlane - z * (farPlane - nearPlane)));
+}
+
 void main()
 {
     gPosition = ViewPosition;
@@ -64,5 +72,6 @@ void main()
     float outputRoughness = roughness + texture(material.Roughness, UV).r;
     gMetallicRoughnessAO.g = roughnessType(outputRoughness);
     gMetallicRoughnessAO.b = texture(material.AO, UV).r;
+    gMetallicRoughnessAO.a = LinearizeDepth(gl_FragCoord.z) / farPlane;
     gViewNormal = GetNormalFromMap(ViewNormal);
 }
