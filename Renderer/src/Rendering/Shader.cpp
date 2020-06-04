@@ -74,6 +74,11 @@ void Shader::SetFloat(const std::string & name, float value)
 	glUniform1f(GetUniformFromCache(name), value);
 }
 
+void Shader::SetVec2(const std::string & name, glm::vec2 value)
+{
+	glUniform2fv(GetUniformFromCache(name), 1, glm::value_ptr(value));
+}
+
 void Shader::SetVec3(const std::string & name, glm::vec3 value)
 {
 	glUniform3fv(GetUniformFromCache(name), 1, glm::value_ptr(value));
