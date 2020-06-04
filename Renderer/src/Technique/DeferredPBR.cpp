@@ -87,7 +87,8 @@ void DeferredPBR::Render(Scene & scene)
 	glDepthFunc(GL_LESS);
 	postProcessing->Apply();
 	fxaa.Bind();
-	postProcessing->Draw();
+	//postProcessing->Draw();
+	bloom.Draw(gBufferTextures[3]);
 	fxaa.Unbind();
 	fxaa.Apply(deferredParameters.FxaaParameters);
 }
@@ -252,6 +253,8 @@ void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
 
 	geometry.Use();
 	geometry.SetMat4("view", view);
+	geometry.SetFloat("nearPlane", scene.GetCamera().GetFrustum().NearPlaneCutoff);
+	geometry.SetFloat("farPlane", scene.GetCamera().GetFrustum().FarPlaneCutoff);
 
 	const std::vector<Actor>& actors = scene.GetActors();
 	for (unsigned int i = 0; i < actors.size(); ++i)

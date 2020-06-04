@@ -12,6 +12,7 @@ public:
 	void Unbind();
 	void Draw();
 	void Apply();
+	void Draw(const Texture& depth);
 	const Framebuffer& GetFramebuffer() const;
 	const Texture& GetTexture() const;
 	
@@ -20,6 +21,8 @@ private:
 	void SetupHDRFramebuffer(const Window::Parameters & parameters);
 	void SetupShaders();
 	void SetupBlurFramebuffer(const Window::Parameters & parameters);
+	void CreateSampleKernel();
+
 	
 	Shader blur;
 	Shader bloom;
@@ -29,6 +32,9 @@ private:
 
 	Framebuffer blurFramebuffers[2];
 	Texture blurTextures[2];
+
+	static const int NumberOfTaps = 8;
+	glm::vec2 sampleKernel[NumberOfTaps];
 
 	NDCQuad quad;
 };
