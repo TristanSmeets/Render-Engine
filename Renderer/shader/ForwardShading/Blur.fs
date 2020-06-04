@@ -8,16 +8,15 @@ uniform sampler2D image;
 subroutine vec3 directionalBlur(vec3 startValue, vec2 texOffset);
 subroutine uniform directionalBlur direction;
 
-float weight[5] = float[] (
-    0.2270270270, 0.1945945946, 0.1216216216, 
-    0.0540540541, 0.0162162162
-);
+#define BlurLoops 10
+
+uniform float weight[BlurLoops];
 
 subroutine(directionalBlur) vec3 Horizontal(vec3 startValue, vec2 texOffset)
 {
     vec3 result = startValue;
 
-    for(int i = 0; i < 5; ++i)
+    for(int i = 0; i < BlurLoops; ++i)
     {
         result += texture(image, UVs + vec2(texOffset.x * i, 0.0f)).rgb * weight[i];
         result += texture(image, UVs - vec2(texOffset.x * i, 0.0f)).rgb * weight[i];
@@ -29,7 +28,7 @@ subroutine(directionalBlur) vec3 Vertical(vec3 startValue, vec2 texOffset)
 {
     vec3 result = startValue;
 
-    for(int i = 0; i < 5; ++i)
+    for(int i = 0; i < BlurLoops; ++i)
     {
         result += texture(image, UVs + vec2(0.0f, texOffset.y * i)).rgb * weight[i];
         result += texture(image, UVs - vec2(0.0f, texOffset.y * i)).rgb * weight[i];

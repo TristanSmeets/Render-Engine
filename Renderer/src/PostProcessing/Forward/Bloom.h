@@ -18,11 +18,11 @@ public:
 	
 private:
 	void BlurTextureBuffers();
+	void BlurTexture(const Texture& source, Texture& destination);
 	void SetupHDRFramebuffer(const Window::Parameters & parameters);
 	void SetupShaders();
 	void SetupBlurFramebuffer(const Window::Parameters & parameters);
-	void CreateSampleKernel();
-
+	float Gauss(float x, float sigma2);
 	
 	Shader blur;
 	Shader bloom;
@@ -33,8 +33,8 @@ private:
 	Framebuffer blurFramebuffers[2];
 	Texture blurTextures[2];
 
-	static const int NumberOfTaps = 8;
-	glm::vec2 sampleKernel[NumberOfTaps];
+	Texture bloomTexture;
+	Texture blurredScene;
 
 	NDCQuad quad;
 };

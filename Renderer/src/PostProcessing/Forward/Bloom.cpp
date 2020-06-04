@@ -1,5 +1,6 @@
 #include "Rendererpch.h"
 #include "Bloom.h"
+#include "gtc/constants.hpp"
 
 Bloom::Bloom() :
 	blur(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs")),
@@ -15,7 +16,6 @@ void Bloom::Initialize(const Window::Parameters & parameters)
 {
 	SetupHDRFramebuffer(parameters);
 	SetupBlurFramebuffer(parameters);
-	CreateSampleKernel();
 	SetupShaders();
 }
 
@@ -27,11 +27,7 @@ void Bloom::SetupShaders()
 	bloom.SetInt("scene", 0);
 	bloom.SetInt("bloomBlur", 1);
 	bloom.SetInt("depthTexture", 2);
-
-	for (int i = 0; i < NumberOfTaps; ++i)
-	{
-		bloom.SetVec2("tapOffset[" + std::to_string(i) + "]", sampleKernel[i]);
-	}
+	bloom.SetInt("blurredScene", 3);
 }
 
 void Bloom::SetupBlurFramebuffer(const Window::Parameters & parameters)
@@ -53,22 +49,11 @@ void Bloom::SetupBlurFramebuffer(const Window::Parameters & parameters)
 	}
 }
 
-void Bloom::CreateSampleKernel()
+float Bloom::Gauss(float x, float sigma2)
 {
-	std::uniform_real_distribution<GLfloat> randomFloats(0.0f, 1.0f);
-	std::default_random_engine generator;
-	for (unsigned int i = 0; i < NumberOfTaps; ++i)
-	{
-		glm::vec2 sample(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f);
-		sample = glm::normalize(sample);
-		sample *= randomFloats(generator);
-		float scale = float(i) / NumberOfTaps;
-
-		//scale samples so they're more aligned to the center of the kernel
-		scale = 0.1f + (scale * scale) * 0.9f;
-		sample *= scale;
-		sampleKernel[i] = sample;
-	}
+	double coeff = 1.0 / (glm::two_pi<double>() * sigma2);
+	double expon = -(x*x) / (2.0 * sigma2);
+	return (float) (coeff * exp(expon));
 }
 
 void Bloom::SetupHDRFramebuffer(const Window::Parameters & parameters)
@@ -115,9 +100,27 @@ void Bloom::BlurTextureBuffers()
 {
 	bool horizontal = true;
 	bool firstIteration = true;
-	unsigned int amount = 10;
+	const unsigned int blurLoops = 10;
 	blur.Use();
-	for (unsigned int i = 0; i < amount; ++i)
+
+	float weights[blurLoops];
+	float sigma2 = 8.0f;
+	weights[0] = Gauss(0, sigma2);
+	float sum = weights[0];
+
+	for (int i = 1; i < 5; ++i)
+	{
+		weights[i] = Gauss(float(i), sigma2);
+		sum += 2 * weights[i];
+	}
+
+	for (int i = 0; i < blurLoops; ++i)
+	{
+		float averagedWeight = weights[i] / sum;
+		blur.SetFloat("weight[" + std::to_string(i) + "]", averagedWeight);
+	}
+
+	for (unsigned int i = 0; i < blurLoops; ++i)
 	{
 		blurFramebuffers[horizontal].Bind();
 		if (horizontal)
@@ -142,6 +145,66 @@ void Bloom::BlurTextureBuffers()
 		horizontal = !horizontal;
 	}
 	blurFramebuffers[0].Unbind();
+	bloomTexture = blurTextures[1];
+}
+
+void Bloom::BlurTexture(const Texture & source, Texture & destination)
+{
+	for (int i = 0; i < 2; ++i)
+	{
+		blurFramebuffers[i].Bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	blur.Use();
+	
+	const unsigned int blurLoops = 10;
+
+	float weights[blurLoops];
+	float sigma2 = 8.0f;
+	weights[0] = Gauss(0, sigma2);
+	float sum = weights[0];
+
+	for (int i = 1; i < blurLoops; ++i)
+	{
+		weights[i] = Gauss(float(i), sigma2);
+		sum += 2 * weights[i];
+	}
+
+	for (int i = 0; i < blurLoops; ++i)
+	{
+		float averagedWeight = weights[i] / sum;
+		blur.SetFloat("weight[" + std::to_string(i) + "]", averagedWeight);
+	}
+
+	bool horizontal = true;
+	bool firstIteration = true;
+	for (unsigned int i = 0; i < blurLoops; ++i)
+	{
+		blurFramebuffers[horizontal].Bind();
+		if (horizontal)
+		{
+			blur.SetSubroutine(Shader::SubroutineParameters("Horizontal", GL_FRAGMENT_SHADER));
+		}
+		else
+		{
+			blur.SetSubroutine(Shader::SubroutineParameters("Vertical", GL_FRAGMENT_SHADER));
+		}
+		if (firstIteration)
+		{
+			source.Bind(blur, Texture::Albedo);
+			firstIteration = false;
+		}
+		else
+		{
+			blurTextures[!horizontal].Bind(blur, Texture::Albedo);
+		}
+
+		quad.Render();
+		horizontal = !horizontal;
+	}
+	blurFramebuffers[0].Unbind();
+	destination = blurTextures[1];
 }
 
 void Bloom::Draw()
@@ -160,6 +223,7 @@ void Bloom::Draw()
 
 void Bloom::Apply()
 {
+	BlurTexture(colourBuffers[0], blurredScene);
 	BlurTextureBuffers();
 }
 
@@ -173,10 +237,11 @@ void Bloom::Draw(const Texture & depth)
 	bloom.SetFloat("maxCoC", parameters.MaxCoC);
 	bloom.SetFloat("exposure", parameters.Exposure);
 	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
-	
+
 	colourBuffers[0].Bind(bloom, Texture::Albedo);
-	blurTextures[1].Bind(bloom, Texture::Normal);
+	bloomTexture.Bind(bloom, Texture::Normal);
 	depth.Bind(bloom, Texture::Metallic);
+	blurredScene.Bind(bloom, Texture::Roughness);
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
