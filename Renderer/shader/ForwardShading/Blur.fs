@@ -4,43 +4,54 @@ out vec4 FragColour;
 in vec2 UVs;
 
 uniform sampler2D image;
+uniform int MaxLod;
 
-subroutine vec3 directionalBlur(vec3 startValue, vec2 texOffset);
+subroutine vec3 directionalBlur(vec3 startValue, vec2 texOffset, int level);
 subroutine uniform directionalBlur direction;
 
-#define BlurLoops 10
+#define kernelSize 5
 
-uniform float weight[BlurLoops];
+//Weights retrieved from Gaussian Kernel Calculator at
+//http://dev.theomader.com/gaussian-kernel-calculator/
+//Using Sigma 8.0 and kernel size 5
+float weight[kernelSize] = float[] (0.196887, 0.201549, 0.203128, 0.201549, 0.196887)
 
-subroutine(directionalBlur) vec3 Horizontal(vec3 startValue, vec2 texOffset)
+subroutine(directionalBlur) vec3 Horizontal(vec3 startValue, vec2 texOffset, int level)
 {
     vec3 result = startValue;
 
-    for(int i = 0; i < BlurLoops; ++i)
+    for(int i = 0; i < kernelSize; ++i)
     {
-        result += texture(image, UVs + vec2(texOffset.x * i, 0.0f)).rgb * weight[i];
-        result += texture(image, UVs - vec2(texOffset.x * i, 0.0f)).rgb * weight[i];
+        result += textureLod(image, UVs + vec2(texOffset.x * i, 0.0f), level).rgb * weight[i];
+        result += textureLod(image, UVs - vec2(texOffset.x * i, 0.0f), level).rgb * weight[i];
     }
     return result;
 }
 
-subroutine(directionalBlur) vec3 Vertical(vec3 startValue, vec2 texOffset)
+subroutine(directionalBlur) vec3 Vertical(vec3 startValue, vec2 texOffset, int level)
 {
     vec3 result = startValue;
 
-    for(int i = 0; i < BlurLoops; ++i)
+    for(int i = 0; i < kernelSize; ++i)
     {
-        result += texture(image, UVs + vec2(0.0f, texOffset.y * i)).rgb * weight[i];
-        result += texture(image, UVs - vec2(0.0f, texOffset.y * i)).rgb * weight[i];
+        result += textureLod(image, UVs + vec2(0.0f, texOffset.y * i), level).rgb * weight[i];
+        result += textureLod(image, UVs - vec2(0.0f, texOffset.y * i), level).rgb * weight[i];
     }
     return result;
 }
 
 void main()
 {
-    vec2 texOffset = 1.0f / textureSize(image, 0);
-    vec3 startValue = texture(image, UVs).rgb * weight[0];
-    vec3 colour = direction(startValue, texOffset);
+    int level = MaxLod;
+    vec3 result = vec3(0.0f);
+    while (level >= 0)
+    {
+        vec2 texOffset = 1.0f / textureSize(image, level);
+        result += textureLod(image, UVs, level).rgb * weight[0];
+        result += direction(result, texOffset, level);
+        --level;
+    }
 
+    vec3 colour = result / (MaxLod + 1);
     FragColour = vec4(colour, 1.0f);
 }
