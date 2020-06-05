@@ -17,7 +17,6 @@ public:
 		float Exposure = 1.0f;
 		float FocalDistance = .25f;
 		float FocalRange = .05f;
-		float MaxCoC = 5.0f;
 	};
 public:
 	PostProcessing();

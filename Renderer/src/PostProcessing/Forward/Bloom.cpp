@@ -108,7 +108,7 @@ void Bloom::BlurTextureBuffers()
 	weights[0] = Gauss(0, sigma2);
 	float sum = weights[0];
 
-	for (int i = 1; i < 5; ++i)
+	for (int i = 1; i < blurLoops; ++i)
 	{
 		weights[i] = Gauss(float(i), sigma2);
 		sum += 2 * weights[i];
@@ -212,8 +212,10 @@ void Bloom::Draw()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	bloom.Use();
+	bloom.SetFloat("focalDistance", parameters.FocalDistance);
+	bloom.SetFloat("focalRange", parameters.FocalRange);
 	colourBuffers[0].Bind(bloom, Texture::Albedo);
-	blurTextures[1].Bind(bloom, Texture::Normal);
+	blurTextures[0].Bind(bloom, Texture::Normal);
 	bloom.SetFloat("exposure", parameters.Exposure);
 	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
 	glDisable(GL_DEPTH_TEST);
@@ -223,7 +225,6 @@ void Bloom::Draw()
 
 void Bloom::Apply()
 {
-	BlurTexture(colourBuffers[0], blurredScene);
 	BlurTextureBuffers();
 }
 
@@ -234,7 +235,6 @@ void Bloom::Draw(const Texture & depth)
 	bloom.Use();
 	bloom.SetFloat("focalDistance", parameters.FocalDistance);
 	bloom.SetFloat("focalRange", parameters.FocalRange);
-	bloom.SetFloat("maxCoC", parameters.MaxCoC);
 	bloom.SetFloat("exposure", parameters.Exposure);
 	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
 

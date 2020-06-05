@@ -11,11 +11,8 @@ uniform float exposure;
 uniform float gammaCorrection;
 
 //DOF
-const int NumberOfTaps = 8;
 uniform float focalDistance;
 uniform float focalRange;
-uniform float maxCoC;
-uniform vec2 tapOffset[NumberOfTaps];
 
 float ComputeBlur(float depth, float focalDistance, float focalRange)
 {
@@ -28,7 +25,7 @@ vec4 DOF(float focalDistance, float focalRange, vec2 uv)
 {
     float depth = texture(depthTexture, uv).a;
     float blur = ComputeBlur(depth, focalDistance, focalRange);
-    vec3 blurColour = (texture(blurredScene, uv).rgb)/10.0f;
+    vec3 blurColour = (texture(blurredScene, uv).rgb);
     vec3 normalColour = texture(scene, uv).rgb;
 
     vec3 finalColour = mix(blurColour, normalColour, blur);
@@ -38,7 +35,7 @@ vec4 DOF(float focalDistance, float focalRange, vec2 uv)
 
 void main()
 {
-    vec3 hdrColour = vec3(DOF(focalDistance, focalRange, UVs));
+    vec3 hdrColour = texture(scene, UVs).rgb;
     vec3 bloomColour = texture(bloomBlur, UVs).rgb;
 
     hdrColour += bloomColour;
@@ -46,6 +43,5 @@ void main()
     vec3 result = vec3(1.0f) - exp(-hdrColour * exposure);
     //Gamma correction
     result = pow(result, vec3(1.0f / gammaCorrection));
-    // FragColour = vec4(result, 1.0f);
-    FragColour = vec4(bloomColour, 1.0f);
+    FragColour = vec4(result, 1.0f);
 }

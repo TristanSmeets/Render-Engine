@@ -263,7 +263,6 @@ void GUIHelper::RenderPostProcessingParameters(const PostProcessing::Parameters 
 	RenderFloat("Exposure", (float&)postProcessingParameters.Exposure, 0.1f, 10.0f);
 	RenderFloat("Focal Distance", (float&)postProcessingParameters.FocalDistance, 1.0f, 100.0f);
 	RenderFloat("Focal Range", (float&)postProcessingParameters.FocalRange, 2.0f, 100.0f);
-	RenderFloat("Max Circle Of Confusion", (float&)postProcessingParameters.MaxCoC, 0.1f, 20.0f);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

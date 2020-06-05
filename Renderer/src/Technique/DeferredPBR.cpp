@@ -87,8 +87,7 @@ void DeferredPBR::Render(Scene & scene)
 	glDepthFunc(GL_LESS);
 	postProcessing->Apply();
 	fxaa.Bind();
-	//postProcessing->Draw();
-	bloom.Draw(gBufferTextures[3]);
+	postProcessing->Draw();
 	fxaa.Unbind();
 	fxaa.Apply(deferredParameters.FxaaParameters);
 }
