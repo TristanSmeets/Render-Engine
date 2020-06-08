@@ -21,7 +21,14 @@ float ComputeBlur(float depth, float focalDistance, float focalRange)
 {
     float distance = abs(depth - focalDistance);
     float rangeCheck = focalRange/distance;
-    return clamp(rangeCheck, 0.0f, 1.0f);    
+    if(rangeCheck < 0.5f)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        return clamp(rangeCheck, 0.0f, 1.0f);    
+    }
 }
 
 vec4 DOF(float focalDistance, float focalRange, vec2 uv)
@@ -32,8 +39,8 @@ vec4 DOF(float focalDistance, float focalRange, vec2 uv)
     vec3 normalColour = texture(scene, uv).rgb;
     vec3 finalColour = mix(blurColour, normalColour, blur);
 
-    // return vec4(finalColour, 1.0f);
-    return vec4(vec3(blur), 1.0f);
+    return vec4(finalColour, 1.0f);
+    // return vec4(vec3(blur), 1.0f);
 }
 
 vec3 LinearToSRGB(vec3 colour)
