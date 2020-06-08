@@ -22,6 +22,7 @@ private:
 
 	Shader depthOfField;
 	Framebuffer framebuffer;
+	Renderbuffer renderbuffer;
 	GaussianBlur gaussian;
 	Texture colourBuffer;
 	Texture blurredScene;

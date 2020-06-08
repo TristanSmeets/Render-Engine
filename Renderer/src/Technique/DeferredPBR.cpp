@@ -45,7 +45,7 @@ void DeferredPBR::Initialize(Scene & scene)
 	fxaaParameters.Resolution = glm::ivec2(parameters.Width, parameters.Height);
 	fxaa.Initialize(fxaaParameters);
 
-	postProcessing = &bloom;
+	postProcessing = &depthOfField;
 	postProcessing->Initialize(parameters);
 }
 
@@ -88,7 +88,7 @@ void DeferredPBR::Render(Scene & scene)
 	postProcessing->Apply();
 	fxaa.Bind();
 	//postProcessing->Draw();
-	bloom.Draw(gBufferTextures[3]);
+	depthOfField.Draw(gBufferTextures[3]);
 	fxaa.Unbind();
 	fxaa.Apply(deferredParameters.FxaaParameters);
 }

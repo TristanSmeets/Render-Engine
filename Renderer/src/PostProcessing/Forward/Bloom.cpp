@@ -87,8 +87,6 @@ void Bloom::Draw()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	bloom.Use();
-	bloom.SetFloat("focalDistance", parameters.FocalDistance);
-	bloom.SetFloat("focalRange", parameters.FocalRange);
 	colourBuffers[0].Bind(bloom, Texture::Albedo);
 	bloomTexture.Bind(bloom, Texture::Normal);
 	bloom.SetFloat("exposure", parameters.Exposure);

@@ -48,7 +48,7 @@ void main()
     vec3 bloomColour = texture(bloomBlur, UVs).rgb;
     // vec3 blurColour = texture(blurredScene, UVs).rgb;
 
-    // hdrColour += bloomColour;
+    hdrColour += bloomColour;
     //Tone mapping
     vec3 result = vec3(1.0f) - exp(-hdrColour * exposure);
     //Gamma correction

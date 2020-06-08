@@ -7,6 +7,7 @@
 #include "Rendering/ShadowMapping.h"
 #include "Utility/FXAA.h"
 #include "PostProcessing/Forward/Bloom.h"
+#include "PostProcessing/DepthOfField.h"
 
 class DeferredPBR : public RenderTechnique
 {
@@ -33,6 +34,7 @@ private:
 	const Window& window;
 	Basic basic;
 	Bloom bloom;
+	DepthOfField depthOfField;
 
 	Framebuffer gBuffer;
 	Framebuffer aoBuffers[2];

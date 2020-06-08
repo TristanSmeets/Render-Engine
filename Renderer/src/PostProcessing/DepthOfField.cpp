@@ -2,7 +2,7 @@
 #include "DepthOfField.h"
 
 DepthOfField::DepthOfField() : 
-	depthOfField(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::PostProcessing))
+	depthOfField(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::PostProcessing + "DepthOfField.fs"))
 {
 }
 
@@ -37,7 +37,8 @@ void DepthOfField::Draw()
 	glClear(GL_COLOR_BUFFER_BIT);
 	depthOfField.Use();
 	depthOfField.SetFloat("focalDistance", parameters.FocalDistance);
-	depthOfField.SetFloat("focalRange", parameters.FocalDistance);
+	depthOfField.SetFloat("focalRange", parameters.FocalRange);
+	depthOfField.SetFloat("rangeCutoff", parameters.RangeCutoff);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, colourBuffer.GetID());
 	glActiveTexture(GL_TEXTURE2);
@@ -81,6 +82,11 @@ void DepthOfField::SetupFramebuffer(const Window::Parameters& parameters)
 
 	framebuffer.AttachTexture(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer.GetID());
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+
+	renderbuffer.Generate();
+	renderbuffer.Bind();
+	renderbuffer.SetStorage(GL_DEPTH_COMPONENT, parameters.Width, parameters.Height);
+	framebuffer.AttachRenderbuffer(GL_DEPTH_ATTACHMENT, renderbuffer);
 
 	if (!framebuffer.IsCompleted())
 	{
