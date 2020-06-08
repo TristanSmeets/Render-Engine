@@ -3,7 +3,6 @@
 #include "gtc/constants.hpp"
 
 Bloom::Bloom() :
-	//blur(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs")),
 	bloom(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Bloom.fs"))
 {
 }
@@ -15,7 +14,6 @@ Bloom::~Bloom()
 void Bloom::Initialize(const Window::Parameters & parameters)
 {
 	SetupHDRFramebuffer(parameters);
-	//SetupBlurFramebuffer(parameters);
 	SetupShaders();
 	gaussian.SetupFramebuffers(glm::ivec2(parameters.Width, parameters.Height));
 
@@ -31,8 +29,6 @@ void Bloom::Initialize(const Window::Parameters & parameters)
 
 void Bloom::SetupShaders()
 {
-	//blur.Use();
-	//blur.SetInt("image", 0);
 	bloom.Use();
 	bloom.SetInt("scene", 0);
 	bloom.SetInt("bloomBlur", 1);
@@ -89,7 +85,7 @@ void Bloom::BlurTextureBuffers()
 void Bloom::Draw()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	bloom.Use();
 	bloom.SetFloat("focalDistance", parameters.FocalDistance);
 	bloom.SetFloat("focalRange", parameters.FocalRange);
