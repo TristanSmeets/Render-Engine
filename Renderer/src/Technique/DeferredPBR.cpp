@@ -87,7 +87,8 @@ void DeferredPBR::Render(Scene & scene)
 	glDepthFunc(GL_LESS);
 	postProcessing->Apply();
 	fxaa.Bind();
-	postProcessing->Draw();
+	//postProcessing->Draw();
+	bloom.Draw(gBufferTextures[3]);
 	fxaa.Unbind();
 	fxaa.Apply(deferredParameters.FxaaParameters);
 }
@@ -112,7 +113,7 @@ void DeferredPBR::SetupGBuffers(const Window::Parameters & parameters)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	gBuffer.AttachTexture(GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gBufferTextures[2].GetID());
-	//Metallic, Roughness, AO
+	//Metallic, Roughness, AO, Depth
 	gBufferTextures[3] = Texture::CreateEmpty("MetallicRoughnessAO", parameters.Width, parameters.Height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

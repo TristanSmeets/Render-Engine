@@ -14,7 +14,7 @@ subroutine uniform directionalBlur direction;
 //Weights retrieved from Gaussian Kernel Calculator at
 //http://dev.theomader.com/gaussian-kernel-calculator/
 //Using Sigma 8.0 and kernel size 5
-float weight[kernelSize] = float[] (0.196887, 0.201549, 0.203128, 0.201549, 0.196887)
+float weight[kernelSize] = float[] (0.187691, 0.206038, 0.212543, 0.206038, 0.187691);
 
 subroutine(directionalBlur) vec3 Horizontal(vec3 startValue, vec2 texOffset, int level)
 {
@@ -42,16 +42,11 @@ subroutine(directionalBlur) vec3 Vertical(vec3 startValue, vec2 texOffset, int l
 
 void main()
 {
-    int level = MaxLod;
     vec3 result = vec3(0.0f);
-    while (level >= 0)
-    {
-        vec2 texOffset = 1.0f / textureSize(image, level);
-        result += textureLod(image, UVs, level).rgb * weight[0];
-        result += direction(result, texOffset, level);
-        --level;
-    }
+    vec2 texOffset = 1.0f / textureSize(image, MaxLod);
+    result += textureLod(image, UVs, MaxLod).rgb * weight[0];
+    result += direction(result, texOffset, MaxLod);
 
-    vec3 colour = result / (MaxLod + 1);
-    FragColour = vec4(colour, 1.0f);
+    vec3 colour = result / kernelSize;
+    FragColour = vec4(result, 1.0f);
 }

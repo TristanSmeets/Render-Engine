@@ -9,7 +9,7 @@ class GaussianBlur
 public:
 	GaussianBlur();
 	~GaussianBlur();
-	void BlurTexture(const Texture& source, Texture& destination, unsigned int maxLOD);
+	void BlurTexture(const Texture& source, Texture& destination, unsigned int maxLOD, int blurLoops);
 	void SetupFramebuffers(const glm::ivec2& resolution);
 
 private:

@@ -37,11 +37,13 @@ void main()
 {
     vec3 hdrColour = texture(scene, UVs).rgb;
     vec3 bloomColour = texture(bloomBlur, UVs).rgb;
+    vec3 blurColour = texture(blurredScene, UVs).rgb;
 
     hdrColour += bloomColour;
     //Tone mapping
     vec3 result = vec3(1.0f) - exp(-hdrColour * exposure);
     //Gamma correction
     result = pow(result, vec3(1.0f / gammaCorrection));
-    FragColour = vec4(result, 1.0f);
+    // FragColour = vec4(result, 1.0f);
+    FragColour = vec4(blurColour, 1.0f);
 }

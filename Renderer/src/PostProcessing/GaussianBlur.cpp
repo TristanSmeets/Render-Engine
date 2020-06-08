@@ -14,11 +14,18 @@ GaussianBlur::~GaussianBlur()
 	glDeleteTextures(1, &textures[1].GetID());
 }
 
-void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, unsigned int maxLOD)
+void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, unsigned int maxLOD, int blurLoops)
 {
+	for (int i = 0; i < 2; ++i)
+	{
+		framebuffers[i].Bind();
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearTexImage(textures[i].GetID(), 0, GL_RGB16F, GL_RGB, 0);
+	}
+
 	bool horizontal = true;
 	bool firstIteration = true;
-	int blurLoops = 5;
 
 	glCopyImageSubData(
 		source.GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
@@ -28,7 +35,7 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 	blur.Use();
 	blur.SetInt("MaxLod", maxLOD);
 
-	for (unsigned int i = 0; i < blurLoops; ++i)
+	for (unsigned int i = 0; i < blurLoops * 2; ++i)
 	{
 		if (horizontal)
 		{
@@ -41,12 +48,15 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 		framebuffers[horizontal].Bind();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textures[!horizontal].GetID());
+		//blur.SetInt("image", 0);
 		quad.Render();
+		glGenerateMipmap(GL_TEXTURE_2D);
+
 		horizontal = !horizontal;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	framebuffers[0].Unbind();
-	destination = textures[blurLoops % 2];
+	destination = textures[(blurLoops * 2) % 2];
 }
 
 void GaussianBlur::SetupShader()
