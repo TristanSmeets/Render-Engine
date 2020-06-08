@@ -43,8 +43,8 @@ vec4 DOF(float focalDistance, float focalRange, vec2 uv)
 
 void main()
 {
-    // vec3 hdrColour = texture(scene, UVs).rgb;
-    vec3 hdrColour = vec3(DOF(focalDistance, focalRange, UVs));
+    vec3 hdrColour = texture(scene, UVs).rgb;
+    // vec3 hdrColour = vec3(DOF(focalDistance, focalRange, UVs));
     vec3 bloomColour = texture(bloomBlur, UVs).rgb;
     // vec3 blurColour = texture(blurredScene, UVs).rgb;
 
