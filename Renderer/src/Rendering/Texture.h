@@ -38,12 +38,14 @@ public:
 	const std::string& GetName() const;
 	void Bind(Shader& shader, Type type) const;
 	Texture& operator=(const Texture& rhs);
+	const glm::ivec2& GetResolution() const;
 private:
 	void GenerateTexture();
 	void Load(const std::string& filepath, bool usingLinearSpace);
 	void Load(const std::string& filepath, GLenum internalformat, GLenum format, GLenum type);
 	const std::string EnumToString(Type type) const;
 	
-	std::string name;
+	std::string name = "Empty";
 	GLuint id = 0;
+	glm::ivec2 resolution = glm::ivec2(1280, 720);
 };

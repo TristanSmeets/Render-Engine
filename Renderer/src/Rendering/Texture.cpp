@@ -48,6 +48,7 @@ Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLe
 	emptyTexture.GenerateTexture();
 	glBindTexture(GL_TEXTURE_2D, emptyTexture.id);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, 0);
+	emptyTexture.resolution = glm::ivec2(width, height);
 	return emptyTexture;
 }
 
@@ -89,6 +90,11 @@ Texture & Texture::operator=(const Texture & rhs)
 	return *this;
 }
 
+const glm::ivec2 & Texture::GetResolution() const
+{
+	return resolution;
+}
+
 const std::string Texture::TypeToString(Type type)
 {
 	switch (type)
@@ -127,10 +133,11 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 	int width;
 	int height;
 	int nrChannels;
-
 	stbi_set_flip_vertically_on_load(true);
 
 	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+
+	resolution = glm::ivec2(width, height);
 
 	if (data)
 	{
@@ -184,6 +191,8 @@ void Texture::Load(const std::string & filepath, GLenum internalformat, GLenum f
 
 	printf("Trying to load Texture: %s\n", filepath.c_str());
 	float *data = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
+
+	resolution = glm::ivec2(width, height);
 
 	if (data)
 	{
