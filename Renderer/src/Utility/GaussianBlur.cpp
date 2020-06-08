@@ -27,10 +27,12 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 	bool horizontal = true;
 	bool firstIteration = true;
 
+	glm::ivec2 copyResolution = source.GetResolution();
+
 	glCopyImageSubData(
 		source.GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
 		textures[0].GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
-		1280, 720, 1);
+		copyResolution.x, copyResolution.y, 1);
 
 	blur.Use();
 	blur.SetInt("MaxLod", maxLOD);
@@ -48,7 +50,6 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 		framebuffers[horizontal].Bind();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textures[!horizontal].GetID());
-		//blur.SetInt("image", 0);
 		quad.Render();
 		glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -60,10 +61,7 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 	glCopyImageSubData(
 		textures[(blurLoops * 2) % 2].GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
 		destination.GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
-		1280, 720, 1
-	);
-
-	//destination = textures[(blurLoops * 2) % 2];
+		copyResolution.x, copyResolution.y, 1);
 }
 
 void GaussianBlur::SetupShader()
