@@ -18,7 +18,7 @@ public:
 		float FocalDistance = .25f;
 		float FocalRange = .05f;
 		int MaxLOD = 1;
-		int BlurLoops = 2;
+		int BlurLoops = 1 ;
 	};
 public:
 	PostProcessing();

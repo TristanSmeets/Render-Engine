@@ -56,7 +56,14 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	framebuffers[0].Unbind();
-	destination = textures[(blurLoops * 2) % 2];
+
+	glCopyImageSubData(
+		textures[(blurLoops * 2) % 2].GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
+		destination.GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
+		1280, 720, 1
+	);
+
+	//destination = textures[(blurLoops * 2) % 2];
 }
 
 void GaussianBlur::SetupShader()

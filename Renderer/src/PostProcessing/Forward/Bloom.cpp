@@ -18,6 +18,15 @@ void Bloom::Initialize(const Window::Parameters & parameters)
 	//SetupBlurFramebuffer(parameters);
 	SetupShaders();
 	gaussian.SetupFramebuffers(glm::ivec2(parameters.Width, parameters.Height));
+
+	bloomTexture = Texture::CreateEmpty("Bloom", parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	blurredScene = Texture::CreateEmpty("BlurredScene", parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 }
 
 void Bloom::SetupShaders()
