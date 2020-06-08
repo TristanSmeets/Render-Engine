@@ -9,8 +9,7 @@ uniform sampler2D depthTexture;
 uniform sampler2D blurredScene;
 uniform float exposure;
 uniform float gammaCorrection;
-
-float inverseGamma = 1.0f / gammaCorrection;
+uniform float rangeCutoff = 0.5f;
 
 
 //DOF
@@ -21,7 +20,7 @@ float ComputeBlur(float depth, float focalDistance, float focalRange)
 {
     float distance = abs(depth - focalDistance);
     float rangeCheck = focalRange/distance;
-    if(rangeCheck < 0.5f)
+    if(rangeCheck < rangeCutoff)
     {
         return 0.0f;
     }
@@ -40,12 +39,6 @@ vec4 DOF(float focalDistance, float focalRange, vec2 uv)
     vec3 finalColour = mix(blurColour, normalColour, blur);
 
     return vec4(finalColour, 1.0f);
-    // return vec4(vec3(blur), 1.0f);
-}
-
-vec3 LinearToSRGB(vec3 colour)
-{
-    return pow(colour, vec3(inverseGamma));
 }
 
 void main()
@@ -53,7 +46,6 @@ void main()
     // vec3 hdrColour = texture(scene, UVs).rgb;
     vec3 hdrColour = vec3(DOF(focalDistance, focalRange, UVs));
     vec3 bloomColour = texture(bloomBlur, UVs).rgb;
-    // vec3 blurColour = LinearToSRGB(texture(blurredScene, UVs).rgb);
     // vec3 blurColour = texture(blurredScene, UVs).rgb;
 
     // hdrColour += bloomColour;
@@ -62,12 +54,4 @@ void main()
     //Gamma correction
     result = pow(result, vec3(1.0f / gammaCorrection));
     FragColour = vec4(result, 1.0f);
-    // if(gl_FragCoord.x < 680.0f)
-    // {
-    //     FragColour = vec4(blurColour, 1.0f);
-    // }
-    // else
-    // {
-    //     FragColour = vec4(hdrColour, 1.0f);
-    // }
 }

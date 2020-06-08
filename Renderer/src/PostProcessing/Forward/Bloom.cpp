@@ -114,6 +114,7 @@ void Bloom::Draw(const Texture & depth)
 	bloom.Use();
 	bloom.SetFloat("focalDistance", parameters.FocalDistance);
 	bloom.SetFloat("focalRange", parameters.FocalRange);
+	bloom.SetFloat("rangeCutoff", parameters.RangeCutoff);
 	bloom.SetFloat("exposure", parameters.Exposure);
 	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
 

@@ -17,6 +17,7 @@ public:
 		float Exposure = 1.0f;
 		float FocalDistance = .25f;
 		float FocalRange = .05f;
+		float RangeCutoff = 0.2f;
 		int MaxLOD = 1;
 		int BlurLoops = 1 ;
 	};

@@ -263,6 +263,7 @@ void GUIHelper::RenderPostProcessingParameters(const PostProcessing::Parameters 
 	RenderFloat("Exposure", (float&)postProcessingParameters.Exposure, 0.1f, 10.0f);
 	RenderFloat("Focal Distance", (float&)postProcessingParameters.FocalDistance, 1.0f, 100.0f);
 	RenderFloat("Focal Range", (float&)postProcessingParameters.FocalRange, 2.0f, 100.0f);
+	RenderFloat("Range Cutoff", (float&)postProcessingParameters.RangeCutoff, 0.0f, 1.0f);
 	RenderInt("Max LOD", (int&)postProcessingParameters.MaxLOD, 0, 7);
 	RenderInt("Blur loops", (int&)postProcessingParameters.BlurLoops, 0, 10);
 }
