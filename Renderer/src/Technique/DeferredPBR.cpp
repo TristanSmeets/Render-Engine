@@ -45,7 +45,9 @@ void DeferredPBR::Initialize(Scene & scene)
 	fxaaParameters.Resolution = glm::ivec2(parameters.Width, parameters.Height);
 	fxaa.Initialize(fxaaParameters);
 
-	postProcessing = &depthOfField;
+	//bloom.Initialize(parameters);
+	depthOfField.Initialize(parameters);
+	postProcessing = &bloom;
 	postProcessing->Initialize(parameters);
 }
 
@@ -69,6 +71,7 @@ void DeferredPBR::Render(Scene & scene)
 
 	Framebuffer::BlitParameters blitParameters;
 	blitParameters.Destination = &postProcessing->GetFramebuffer();
+	//blitParameters.Destination = &depthOfField.GetFramebuffer();
 	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
 	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
 	blitParameters.Filter = GL_NEAREST;
@@ -86,8 +89,14 @@ void DeferredPBR::Render(Scene & scene)
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
 	postProcessing->Apply();
+	//bloom.Bind();
+	depthOfField.Bind();
+	postProcessing->Draw();
+
+	depthOfField.Apply();
+	//bloom.Apply();
 	fxaa.Bind();
-	//postProcessing->Draw();
+	//bloom.Draw();
 	depthOfField.Draw(gBufferTextures[3]);
 	fxaa.Unbind();
 	fxaa.Apply(deferredParameters.FxaaParameters);
