@@ -6,6 +6,13 @@
 class Bloom : public PostProcessing
 {
 public:
+	struct Parameters
+	{
+		int Lod = 1;
+		float Exposure = 1.0f;
+		float GammaCorrection = 2.2f;
+	};
+public:
 	Bloom();
 	~Bloom();
 	void Initialize(const Window::Parameters& parameters);
@@ -13,7 +20,6 @@ public:
 	void Unbind();
 	void Draw();
 	void Apply();
-	void Draw(const Texture& depth);
 	const Framebuffer& GetFramebuffer() const;
 	const Texture& GetTexture() const;
 	
@@ -27,9 +33,9 @@ private:
 	Renderbuffer depthRenderbuffer;
 	Texture colourBuffers[2];
 	GaussianBlur gaussian;
+	Texture bloomTexture;	
+	Parameters parameters;
 
-	Texture bloomTexture;
-	Texture blurredScene;
 
 	NDCQuad quad;
 };

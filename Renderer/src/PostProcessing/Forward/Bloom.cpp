@@ -20,11 +20,6 @@ void Bloom::Initialize(const Window::Parameters & parameters)
 	bloomTexture = Texture::CreateEmpty("Bloom", parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	blurredScene = Texture::CreateEmpty("BlurredScene", parameters.Width, parameters.Height, GL_RGB16F, GL_RGB, GL_FLOAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
 }
 
 void Bloom::SetupShaders()
@@ -32,8 +27,6 @@ void Bloom::SetupShaders()
 	bloom.Use();
 	bloom.SetInt("scene", 0);
 	bloom.SetInt("bloomBlur", 1);
-	bloom.SetInt("depthTexture", 2);
-	bloom.SetInt("blurredScene", 3);
 }
 
 void Bloom::SetupHDRFramebuffer(const Window::Parameters & parameters)
@@ -78,8 +71,7 @@ void Bloom::Unbind()
 
 void Bloom::BlurTextureBuffers()
 {
-	gaussian.BlurTexture(colourBuffers[1], bloomTexture, parameters.MaxLOD, parameters.BlurLoops);
-	gaussian.BlurTexture(colourBuffers[0], blurredScene, parameters.MaxLOD, parameters.BlurLoops);
+	gaussian.BlurTexture(colourBuffers[1], bloomTexture, parameters.Lod, 1);
 }
 
 void Bloom::Draw()
@@ -99,26 +91,6 @@ void Bloom::Draw()
 void Bloom::Apply()
 {
 	BlurTextureBuffers();
-}
-
-void Bloom::Draw(const Texture & depth)
-{
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	bloom.Use();
-	bloom.SetFloat("focalDistance", parameters.FocalDistance);
-	bloom.SetFloat("focalRange", parameters.FocalRange);
-	bloom.SetFloat("rangeCutoff", parameters.RangeCutoff);
-	bloom.SetFloat("exposure", parameters.Exposure);
-	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
-
-	colourBuffers[0].Bind(bloom, Texture::Albedo);
-	bloomTexture.Bind(bloom, Texture::Normal);
-	depth.Bind(bloom, Texture::Metallic);
-	blurredScene.Bind(bloom, Texture::Roughness);
-	glDisable(GL_DEPTH_TEST);
-	quad.Render();
-	glEnable(GL_DEPTH_TEST);
 }
 
 const Framebuffer & Bloom::GetFramebuffer() const

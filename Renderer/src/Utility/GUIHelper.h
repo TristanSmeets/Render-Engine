@@ -44,7 +44,6 @@ private:
 	void RenderADSParameters(RenderComponent::ADSParameters& adsParameters);
 	void RenderPBRParameters(RenderComponent::PBRParameters& pbrParameters);
 	void RenderDeferredParameters(RenderTechnique::DeferredParameters& deferredParameters);
-	void RenderPostProcessingParameters(const PostProcessing::Parameters& postProcessingParameters);
 
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;

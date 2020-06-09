@@ -61,7 +61,7 @@ void GUIHelper::Render(RenderTechnique & technique)
 	ImGui::Separator();
 	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::Separator();
-	RenderPostProcessingParameters(technique.GetPostProcessing().GetParameters());
+	//RenderPostProcessingParameters(technique.GetPostProcessing().GetParameters());
 	ImGui::End();
 }
 
@@ -255,17 +255,6 @@ void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & d
 	ImGui::Separator();
 	RenderADSParameters(deferredParameters.AdsParameters);
 	RenderPBRParameters(deferredParameters.PbrParameters);
-}
-
-void GUIHelper::RenderPostProcessingParameters(const PostProcessing::Parameters & postProcessingParameters)
-{
-	RenderFloat("Gamma Correction", (float&)postProcessingParameters.GammaCorrection, 1.0f, 3.0f);
-	RenderFloat("Exposure", (float&)postProcessingParameters.Exposure, 0.1f, 10.0f);
-	RenderFloat("Focal Distance", (float&)postProcessingParameters.FocalDistance, 1.0f, 100.0f);
-	RenderFloat("Focal Range", (float&)postProcessingParameters.FocalRange, 2.0f, 100.0f);
-	RenderFloat("Range Cutoff", (float&)postProcessingParameters.RangeCutoff, 0.0f, 1.0f);
-	RenderInt("Max LOD", (int&)postProcessingParameters.MaxLOD, 0, 7);
-	RenderInt("Blur loops", (int&)postProcessingParameters.BlurLoops, 0, 10);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

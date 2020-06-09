@@ -50,7 +50,7 @@ void DepthOfField::Draw()
 
 void DepthOfField::Apply()
 {
-	gaussian.BlurTexture(colourBuffer, blurredScene, parameters.MaxLOD, parameters.BlurLoops);
+	gaussian.BlurTexture(colourBuffer, blurredScene, parameters.Lod, 1);
 }
 
 void DepthOfField::Draw(const Texture & depthTexture)
@@ -92,7 +92,6 @@ void DepthOfField::SetupFramebuffer(const Window::Parameters& parameters)
 	{
 		printf("ERROR: Depth of field framebuffer not complete\n");
 	}
-
 	framebuffer.Unbind();
 }
 

@@ -5,6 +5,15 @@
 class DepthOfField : public PostProcessing
 {
 public:
+	struct Parameters
+	{
+		float FocalDistance = .25f;
+		float FocalRange = 0.25f;
+		float RangeCutoff = 0.05f;
+		int Lod = 1;
+	};
+
+public:
 	DepthOfField();
 	~DepthOfField();
 	virtual void Initialize(const Window::Parameters& parameters);
@@ -27,5 +36,5 @@ private:
 	Texture colourBuffer;
 	Texture blurredScene;
 	NDCQuad quad;
-
+	Parameters parameters;
 };

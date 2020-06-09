@@ -11,17 +11,6 @@
 class PostProcessing
 {
 public:
-	struct Parameters
-	{
-		float GammaCorrection = 2.2f;
-		float Exposure = 1.0f;
-		float FocalDistance = .25f;
-		float FocalRange = .05f;
-		float RangeCutoff = 0.2f;
-		int MaxLOD = 1;
-		int BlurLoops = 1 ;
-	};
-public:
 	PostProcessing();
 	virtual ~PostProcessing();
 	virtual void Initialize(const Window::Parameters& parameters) = 0;
@@ -30,9 +19,9 @@ public:
 	virtual void Draw() = 0;
 	virtual void Apply() = 0;
 	virtual const Framebuffer& GetFramebuffer() const = 0;
-	virtual const Parameters& GetParameters() const;
+	//virtual const Parameters& GetParameters() const;
 	virtual const Texture& GetTexture() const = 0;
-	virtual void SetParameters(const Parameters& parameters);
+	//virtual void SetParameters(const Parameters& parameters);
 protected:
-	Parameters parameters;
+	//Parameters parameters;
 };

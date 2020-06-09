@@ -5,6 +5,12 @@
 class Basic : public PostProcessing
 {
 public:
+	struct Parameters
+	{
+		float GammaCorrection = 2.2f;
+		float Exposure = 1.0f;
+	};
+public:
 	Basic();
 	virtual ~Basic();
 	void Initialize(const Window::Parameters& parameters);
@@ -21,4 +27,6 @@ private:
 	Texture empty;
 	NDCQuad quad;
 	Shader shader;
+	Parameters parameters;
+
 };
