@@ -35,14 +35,7 @@ void DepthOfField::Draw()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	depthOfField.Use();
-	depthOfField.SetFloat("focalDistance", parameters.FocalDistance);
-	depthOfField.SetFloat("focalRange", parameters.FocalRange);
-	depthOfField.SetFloat("rangeCutoff", parameters.RangeCutoff);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, colourBuffer.GetID());
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, blurredScene.GetID());
+
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
@@ -50,7 +43,21 @@ void DepthOfField::Draw()
 
 void DepthOfField::Apply()
 {
+	depthOfField.Use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, colourBuffer.GetID());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, blurredScene.GetID());
+}
+
+void DepthOfField::Apply(const DepthOfField::Parameters& parameters)
+{
 	gaussian.BlurTexture(colourBuffer, blurredScene, parameters.Lod, 1);
+	depthOfField.Use();
+	depthOfField.SetFloat("focalDistance", parameters.FocalDistance);
+	depthOfField.SetFloat("focalRange", parameters.FocalRange);
+	depthOfField.SetFloat("rangeCutoff", parameters.RangeCutoff);
+	Apply();
 }
 
 void DepthOfField::Draw(const Texture & depthTexture)

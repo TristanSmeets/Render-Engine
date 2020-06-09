@@ -253,8 +253,36 @@ void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & d
 	RenderFloat("SSAO Radius", (float&)deferredParameters.Radius, 0.0f, 5.0f);
 	RenderFloat("SSAO Bias", (float&)deferredParameters.Bias, 0.0f, 2.0f);
 	ImGui::Separator();
-	RenderADSParameters(deferredParameters.AdsParameters);
+	//RenderADSParameters(deferredParameters.AdsParameters);
 	RenderPBRParameters(deferredParameters.PbrParameters);
+	ImGui::Separator();
+	RenderFXAAParameters(deferredParameters.FxaaParameters);
+	ImGui::Separator();
+	RenderBloomParameters(deferredParameters.BloomParameters);
+	ImGui::Separator();
+	RenderDOFParameters(deferredParameters.DofParamaters);
+}
+
+void GUIHelper::RenderFXAAParameters(FXAA::Parameters & fxaaParameters)
+{
+	RenderFloat("Span Max", (float&)fxaaParameters.SpanMax, 0.0f, 16.0f);
+	RenderFloat("Reduce Minimum", (float&)fxaaParameters.ReduceMinumum, 0.0f, 1.0f);
+	RenderFloat("Reduce Multiplier", (float&)fxaaParameters.ReduceMultiplier, .01f, 1.0f);
+}
+
+void GUIHelper::RenderBloomParameters(Bloom::Parameters & bloomParameters)
+{
+	RenderInt("Bloom LOD", (int&)bloomParameters.Lod, 0, 7);
+	RenderFloat("Gamma Correction", (float&)bloomParameters.GammaCorrection, 0.1f, 3.0f);
+	RenderFloat("Exposure", (float&)bloomParameters.Exposure, 0.1f, 2.0f);
+}
+
+void GUIHelper::RenderDOFParameters(DepthOfField::Parameters & dofParameters)
+{
+	RenderFloat("Focal Distance", (float&)dofParameters.FocalDistance, 0.0f, 2.0f);
+	RenderFloat("Focal Range", (float&)dofParameters.FocalRange, 0.0f, 1.0f);
+	RenderFloat("Range Cutoff", (float&)dofParameters.RangeCutoff, 0.0f, 1.0f);
+	RenderInt("DoF Lod", (int&)dofParameters.Lod, 0, 7);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

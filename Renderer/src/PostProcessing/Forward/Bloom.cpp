@@ -69,20 +69,16 @@ void Bloom::Unbind()
 	hdrFBO.Unbind();
 }
 
-void Bloom::BlurTextureBuffers()
+void Bloom::BlurTextureBuffers(int lod)
 {
-	gaussian.BlurTexture(colourBuffers[1], bloomTexture, parameters.Lod, 1);
+	gaussian.BlurTexture(colourBuffers[1], bloomTexture, lod, 1);
 }
 
 void Bloom::Draw()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	bloom.Use();
-	colourBuffers[0].Bind(bloom, Texture::Albedo);
-	bloomTexture.Bind(bloom, Texture::Normal);
-	bloom.SetFloat("exposure", parameters.Exposure);
-	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
+
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
@@ -90,7 +86,17 @@ void Bloom::Draw()
 
 void Bloom::Apply()
 {
-	BlurTextureBuffers();
+	colourBuffers[0].Bind(bloom, Texture::Albedo);
+	bloomTexture.Bind(bloom, Texture::Normal);
+}
+
+void Bloom::Apply(const Bloom::Parameters& parameters)
+{
+	BlurTextureBuffers(parameters.Lod);
+	bloom.Use();
+	bloom.SetFloat("exposure", parameters.Exposure);
+	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
+	Apply();
 }
 
 const Framebuffer & Bloom::GetFramebuffer() const

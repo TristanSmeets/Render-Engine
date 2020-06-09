@@ -20,11 +20,12 @@ public:
 	void Unbind();
 	void Draw();
 	void Apply();
+	void Apply(const Parameters& parameters);
 	const Framebuffer& GetFramebuffer() const;
 	const Texture& GetTexture() const;
 	
 private:
-	void BlurTextureBuffers();
+	void BlurTextureBuffers(int lod);
 	void SetupHDRFramebuffer(const Window::Parameters & parameters);
 	void SetupShaders();
 	

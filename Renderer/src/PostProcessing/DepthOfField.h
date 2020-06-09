@@ -16,14 +16,15 @@ public:
 public:
 	DepthOfField();
 	~DepthOfField();
-	virtual void Initialize(const Window::Parameters& parameters);
-	virtual void Bind();
-	virtual void Unbind();
-	virtual void Draw();
-	virtual void Apply();
-	virtual void Draw(const Texture& depthTexture);
-	virtual const Framebuffer& GetFramebuffer() const;
-	virtual const Texture& GetTexture() const;
+	void Initialize(const Window::Parameters& parameters);
+	void Bind();
+	void Unbind();
+	void Draw();
+	void Apply();
+	void Apply(const Parameters& parameters);
+	void Draw(const Texture& depthTexture);
+	const Framebuffer& GetFramebuffer() const;
+	const Texture& GetTexture() const;
 
 private:
 	void SetupFramebuffer(const Window::Parameters& parameters);
