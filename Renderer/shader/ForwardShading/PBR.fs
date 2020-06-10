@@ -47,6 +47,20 @@ uniform int NumberOfLights = 10;
 //Camera position
 uniform vec3 cameraPos;
 
+uniform float inputRoughness;
+subroutine float RoughnessType(in float roughness);
+subroutine uniform RoughnessType roughnessType;
+
+subroutine(RoughnessType) float UsingRoughness(in float roughness)
+{
+    return clamp(roughness, 0.0f, 1.0f);
+}
+
+subroutine(RoughnessType) float UsingSmoothness(in float roughness)
+{
+    return 1.0f - clamp(roughness, 0.0f, 1.0f);
+}
+
 const float PI = 3.14159265359;
 
 vec3 gridSamplingDisk[20] = vec3[](
@@ -66,6 +80,8 @@ vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 //float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap);
 float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition);
 
+
+
 void main()
 {
     vec4 albedo     = texture(material.Albedo, TexCoords);
@@ -75,7 +91,9 @@ void main()
     }
 
     float metallic  = texture(material.Metallic, TexCoords).r;
-    float roughness = texture(material.Roughness, TexCoords).r;
+    float totalRoughness = inputRoughness + texture(matierl.Roughness, TexCoords).r;
+    float roughness = roughnessType(totalRoughness);
+
     float ao        = texture(material.AO, TexCoords).r;
 
     vec3 normal = GetNormalFromMap();
