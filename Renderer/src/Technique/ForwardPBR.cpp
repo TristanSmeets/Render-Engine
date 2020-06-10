@@ -178,9 +178,11 @@ void ForwardPBR::SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, cons
 		lights[i].GetRenderComponent().GetMesh().Draw();
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
+		std::string lightRadius = std::string("lights[") + std::to_string(i) + std::string("].Radius");
 		pbr.Use();
 		pbr.SetVec3(lightPosition, lights[i].GetWorldPosition());
 		pbr.SetVec3(lightColour, lights[i].GetColour());
 		const Light::Parameters& parameters = lights[i].GetParameters();
+		pbr.SetFloat(lightRadius, parameters.Radius);
 	}
 }

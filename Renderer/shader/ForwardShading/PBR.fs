@@ -24,6 +24,7 @@ struct Light
     float Constant;
     float Linear;
     float Quadratic;
+    float Radius;
 };
 
 //IBL
@@ -94,7 +95,8 @@ void main()
         vec3 lightDirection = normalize(lights[i].Position - WorldPos);
         vec3 H = normalize(viewDirection + lightDirection);
         float distance = length(lights[i].Position - WorldPos);
-        float attenuation = 1.0f / (lights[i].Constant + lights[i].Linear * distance + lights[i].Quadratic * (distance * distance));
+        float attenuationNominator = clamp(1.0f - pow((distance/lights[i].Radius), 4), 0.0f, 1.0f);
+        float attenuation = (attenuationNominator * attenuationNominator) / (distance * distance + 1);
         vec3 radiance = lights[i].Colour * attenuation;
 
         //Cook-Torrance BRDF

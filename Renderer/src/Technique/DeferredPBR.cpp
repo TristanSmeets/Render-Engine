@@ -458,7 +458,9 @@ void DeferredPBR::SetPBRShaderUniforms(const Camera & camera, const Skybox & sky
 	{
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
+		std::string lightRadius = std::string("lights[") + std::to_string(i) + std::string("].Radius");
 		forwardLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
 		forwardLighting.SetVec3(lightColour, lights[i].GetColour());
+		forwardLighting.SetFloat(lightRadius, lights[i].GetParameters().Radius);
 	}
 }
