@@ -8,11 +8,8 @@ public:
 	struct Parameters
 	{
 		glm::vec3 Colour;
-		float Constant;
-		float Linear;
-		float Quadratic;
 		float Radius;
-		Parameters(glm::vec3 colour = glm::vec3(1.0f), float constant = 1.0f, float linear = 0.14f, float quadratic = 0.07f, float radius = 50.0f);
+		Parameters(glm::vec3 colour = glm::vec3(1.0f), float radius = 50.0f);
 		Parameters& operator=(const Parameters& rhs);
 	};
 

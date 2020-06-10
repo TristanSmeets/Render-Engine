@@ -365,17 +365,11 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	{
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
-		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
-		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
-		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
 		std::string lightRadius = std::string("lights[") + std::to_string(i) + std::string("].Radius");
 
 		const Light::Parameters& parameters = lights[i].GetParameters();
 		pbrLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
 		pbrLighting.SetVec3(lightColour, parameters.Colour);
-		pbrLighting.SetFloat(lightConstant, parameters.Constant);
-		pbrLighting.SetFloat(lightLinear, parameters.Linear);
-		pbrLighting.SetFloat(lightQuadratic, parameters.Quadratic);
 		pbrLighting.SetFloat(lightRadius, parameters.Radius);
 
 		//Attach shadow map
@@ -464,14 +458,7 @@ void DeferredPBR::SetPBRShaderUniforms(const Camera & camera, const Skybox & sky
 	{
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
-		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
-		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
-		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
 		forwardLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
 		forwardLighting.SetVec3(lightColour, lights[i].GetColour());
-		const Light::Parameters& parameters = lights[i].GetParameters();
-		forwardLighting.SetFloat(lightConstant, parameters.Constant);
-		forwardLighting.SetFloat(lightLinear, parameters.Linear);
-		forwardLighting.SetFloat(lightQuadratic, parameters.Quadratic);
 	}
 }

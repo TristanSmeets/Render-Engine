@@ -151,15 +151,9 @@ void ForwardADS::SetADSLightingUniforms(Scene & scene, const std::vector<Light>&
 
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
-		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
-		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
-		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
 		adsLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
 		adsLighting.SetVec3(lightColour, lights[i].GetColour());
 		const Light::Parameters& parameters = lights[i].GetParameters();
-		adsLighting.SetFloat(lightConstant, parameters.Constant);
-		adsLighting.SetFloat(lightLinear, parameters.Linear);
-		adsLighting.SetFloat(lightQuadratic, parameters.Quadratic);
 		
 		lamp.Use();
 		lamp.SetMat4("model", lights[i].GetWorldMatrix());

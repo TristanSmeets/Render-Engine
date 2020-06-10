@@ -318,15 +318,9 @@ void DeferredADS::SetADSLightingUniforms(const glm::mat4& view, const glm::vec3&
 
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
-		std::string lightConstant = std::string("lights[") + std::to_string(i) + std::string("].Constant");
-		std::string lightLinear = std::string("lights[") + std::to_string(i) + std::string("].Linear");
-		std::string lightQuadratic = std::string("lights[") + std::to_string(i) + std::string("].Quadratic");
 		adsLighting.SetVec3(lightPosition, lights[i].GetWorldPosition());
 		adsLighting.SetVec3(lightColour, lights[i].GetColour());
 		const Light::Parameters& parameters = lights[i].GetParameters();
-		adsLighting.SetFloat(lightConstant, parameters.Constant);
-		adsLighting.SetFloat(lightLinear, parameters.Linear);
-		adsLighting.SetFloat(lightQuadratic, parameters.Quadratic);
 	}
 	glActiveTexture(GL_TEXTURE0);
 }
@@ -347,10 +341,6 @@ void DeferredADS::LightingPass(const std::vector<Light> & lights, Scene & scene)
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Position", lights[i].GetWorldPosition());
 		ssaoLighting.SetVec3("lights[" + std::to_string(i) + "].Color", lights[i].GetColour());
 
-		const Light::Parameters& parameters = lights[i].GetParameters();
-		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Constant", parameters.Constant);
-		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Linear", parameters.Linear);
-		ssaoLighting.SetFloat("lights[" + std::to_string(i) + "].Quadratic", parameters.Quadratic);
 		for (unsigned int j = 0; j < 3; ++j)
 		{
 			glActiveTexture(GL_TEXTURE0 + j);

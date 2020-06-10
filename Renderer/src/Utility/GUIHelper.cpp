@@ -48,7 +48,7 @@ void GUIHelper::EndFrame()
 
 void GUIHelper::Render(Scene & scene)
 {
-	//ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 
 	ImGui::Begin("Scene");
 	RenderLayout(scene);
@@ -146,8 +146,6 @@ void GUIHelper::RenderFrustum(const Camera::Frustum & frustum)
 {
 	RenderFloat("Near plane", (float&)frustum.NearPlaneCutoff, 0.0f, 5.0f);
 	RenderFloat("Far plane", (float&)frustum.FarPlaneCutoff, 5.0f, 1000000.0f);
-	ImGui::Combo("Aspect ratio", &aspectRatio, " 1:1\0 4:3\0 16:9\0");
-	RenderFloat("Field of View", fieldOfViewDegrees, 60.0f, 120.0f);
 }
 
 void GUIHelper::RenderTexture(const Texture & texture)
@@ -202,11 +200,11 @@ void GUIHelper::RenderCamera(const Camera & camera)
 	}
 	RenderFloat("Movement Speed", (float&)camera.GetMoveSpeed(), 0.0f, 100.0f);
 	RenderFloat("Rotation Speed", (float&)camera.GetRotationSpeed(), 0.0f, 100.0f);
-	if (ImGui::TreeNode("Frustum"))
+	/*if (ImGui::TreeNode("Frustum"))
 	{
 		RenderFrustum(camera.GetFrustum());
 		ImGui::TreePop();
-	}
+	}*/
 }
 
 void GUIHelper::RenderLight(const Light & light)
@@ -218,9 +216,6 @@ void GUIHelper::RenderLight(const Light & light)
 	}
 	const Light::Parameters& parameters = light.GetParameters();
 	RenderColour(parameters.Colour);
-	RenderFloat("Constant", (float&)parameters.Constant, 0.1f, 2.0f);
-	RenderFloat("Linear", (float&)parameters.Linear, 0.0f, 1.0f);
-	RenderFloat("Quadratic", (float&)parameters.Quadratic, 0.0f, 2.0f);
 	RenderFloat("Radius", (float&)parameters.Radius, 0.0f, 100.0f);
 }
 
@@ -252,11 +247,11 @@ void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & d
 	RenderInt("SSAO Kernel Size", (int&)deferredParameters.KernelSize, 1, 64);
 	RenderFloat("SSAO Radius", (float&)deferredParameters.Radius, 0.0f, 5.0f);
 	RenderFloat("SSAO Bias", (float&)deferredParameters.Bias, 0.0f, 2.0f);
-	ImGui::Separator();
+	//ImGui::Separator();
 	//RenderADSParameters(deferredParameters.AdsParameters);
-	RenderPBRParameters(deferredParameters.PbrParameters);
-	ImGui::Separator();
-	RenderFXAAParameters(deferredParameters.FxaaParameters);
+	//RenderPBRParameters(deferredParameters.PbrParameters);
+	//ImGui::Separator();
+	//RenderFXAAParameters(deferredParameters.FxaaParameters);
 	ImGui::Separator();
 	RenderBloomParameters(deferredParameters.BloomParameters);
 	ImGui::Separator();
@@ -281,7 +276,7 @@ void GUIHelper::RenderDOFParameters(DepthOfField::Parameters & dofParameters)
 {
 	RenderFloat("Focal Distance", (float&)dofParameters.FocalDistance, 0.0f, 2.0f);
 	RenderFloat("Focal Range", (float&)dofParameters.FocalRange, 0.0f, 1.0f);
-	RenderFloat("Range Cutoff", (float&)dofParameters.RangeCutoff, 0.0f, 1.0f);
+	RenderFloat("Focal Range Cutoff", (float&)dofParameters.RangeCutoff, 0.0f, 1.0f);
 	RenderInt("DoF Lod", (int&)dofParameters.Lod, 0, 7);
 }
 

@@ -33,17 +33,14 @@ const Light::Parameters & Light::GetParameters() const
 	return parameters;
 }
 
-Light::Parameters::Parameters(glm::vec3 colour, float constant, float linear, float quadratic, float radius) :
-	Colour(colour), Constant(constant), Linear(linear), Quadratic(quadratic), Radius(radius)
+Light::Parameters::Parameters(glm::vec3 colour, float radius) :
+	Colour(colour), Radius(radius)
 {
 }
 
 Light::Parameters & Light::Parameters::operator=(const Parameters & rhs)
 {
 	Colour = rhs.Colour;
-	Constant = rhs.Constant;
-	Linear = rhs.Linear;
-	Quadratic = rhs.Quadratic;
 	Radius = rhs.Radius;
 	return *this;
 }

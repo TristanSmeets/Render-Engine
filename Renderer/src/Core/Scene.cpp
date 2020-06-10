@@ -174,7 +174,7 @@ void Scene::InitializeActors()
 		float g = ((rand() % 100) / 200.0f) + 0.5f;
 		float b = ((rand() % 100) / 200.0f) + 0.5f;
 
-		Light::Parameters parameters(glm::vec3(r, g, b), 1.0f, 0.14f, 0.07f);
+		Light::Parameters parameters(glm::vec3(r, g, b));
 
 		Light light = Light("Light#" + std::to_string(i), glm::vec3(x, y, z), parameters);
 		light.GetRenderComponent().SetMesh(meshes[0]);
