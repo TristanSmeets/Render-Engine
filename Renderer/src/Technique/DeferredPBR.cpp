@@ -91,11 +91,8 @@ void DeferredPBR::Render(Scene & scene)
 	bloom.Apply(deferredParameters.BloomParameters);
 	depthOfField.Bind();
 	bloom.Draw();
-
 	depthOfField.Apply(deferredParameters.DofParamaters);
-	//bloom.Apply();
 	fxaa.Bind();
-	//bloom.Draw();
 	depthOfField.Draw(gBufferTextures[3]);
 	fxaa.Unbind();
 	fxaa.Apply(deferredParameters.FxaaParameters);
@@ -278,7 +275,7 @@ void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
 			glActiveTexture(GL_TEXTURE0 + j);
 			glBindTexture(GL_TEXTURE_2D, material.GetTexture((Texture::Type)j).GetID());
 		}
-		const RenderComponent::PBRParameters pbrParameters = actors[i].GetRenderComponent().GetPBRParameters();
+		const RenderComponent::PBRParameters& pbrParameters = actors[i].GetRenderComponent().GetPBRParameters();
 		geometry.SetFloat("roughness", pbrParameters.Roughness);
 		Shader::SubroutineParameters subroutineParameters;
 		subroutineParameters.Shader = GL_FRAGMENT_SHADER;
@@ -421,7 +418,22 @@ void DeferredPBR::RenderTransparentActors(Scene & scene)
 	{
 		const Actor* actor = it->second;
 		forwardLighting.SetMat4("model", actor->GetWorldMatrix());
-		forwardLighting.SetVec3("NonMetallicReflectionColour", actor->GetRenderComponent().GetPBRParameters().NonMetallicReflectionColour);
+		const RenderComponent::PBRParameters& pbrParameters = actor->GetRenderComponent().GetPBRParameters();
+		forwardLighting.SetVec3("NonMetallicReflectionColour", pbrParameters.NonMetallicReflectionColour);
+		forwardLighting.SetFloat("inputRoughness", pbrParameters.Roughness);
+		Shader::SubroutineParameters subroutineParameters;
+		subroutineParameters.Shader = GL_FRAGMENT_SHADER;
+
+		if (pbrParameters.UsingSmoothness)
+		{
+			subroutineParameters.Name = "UsingSmoothness";
+		}
+		else
+		{
+			subroutineParameters.Name = "UsingRoughness";
+		}
+
+		forwardLighting.SetSubroutine(subroutineParameters);
 
 		const Material& material = actor->GetRenderComponent().GetMaterial();
 		material.GetTexture(Texture::Albedo).Bind(forwardLighting, Texture::Albedo);

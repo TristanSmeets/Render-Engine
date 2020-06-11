@@ -1,4 +1,4 @@
-#version 330 core
+#version 460 core
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
 
@@ -48,6 +48,7 @@ uniform int NumberOfLights = 10;
 uniform vec3 cameraPos;
 
 uniform float inputRoughness;
+
 subroutine float RoughnessType(in float roughness);
 subroutine uniform RoughnessType roughnessType;
 
@@ -80,8 +81,6 @@ vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 //float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, sampler2D shadowMap);
 float ShadowCalculation(vec3 fragPos, samplerCube shadowCubeMap, vec3 lightPosition);
 
-
-
 void main()
 {
     vec4 albedo     = texture(material.Albedo, TexCoords);
@@ -91,7 +90,7 @@ void main()
     }
 
     float metallic  = texture(material.Metallic, TexCoords).r;
-    float totalRoughness = inputRoughness + texture(matierl.Roughness, TexCoords).r;
+    float totalRoughness = inputRoughness + texture(material.Roughness, TexCoords).r;
     float roughness = roughnessType(totalRoughness);
 
     float ao        = texture(material.AO, TexCoords).r;
@@ -177,7 +176,8 @@ void main()
     {
         BrightColor = vec4(vec3(0.0f), 1.0f);
     }
-    FragColor = vec4(color, albedo.a);
+    // FragColor = vec4(color, albedo.a);
+    FragColor = vec4(color, 1.0f);
 }
 
 vec3 GetNormalFromMap()

@@ -48,8 +48,7 @@ void GUIHelper::EndFrame()
 
 void GUIHelper::Render(Scene & scene)
 {
-	ImGui::ShowDemoWindow();
-
+	//ImGui::ShowDemoWindow();
 	ImGui::Begin("Scene");
 	RenderLayout(scene);
 	ImGui::End();
@@ -57,7 +56,7 @@ void GUIHelper::Render(Scene & scene)
 
 void GUIHelper::Render(RenderTechnique & technique)
 {
-	ImGui::Begin("Deferred Parameters");
+	ImGui::Begin("Post Processing");
 	ImGui::Separator();
 	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::Separator();
@@ -222,7 +221,7 @@ void GUIHelper::RenderLight(const Light & light)
 void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
 {
 	RenderLight(light);
-	RenderVec3("Direction",light.GetFront());
+	RenderVec3("Direction", light.GetFront());
 }
 
 void GUIHelper::RenderADSParameters(RenderComponent::ADSParameters & adsParameters)
@@ -234,8 +233,8 @@ void GUIHelper::RenderADSParameters(RenderComponent::ADSParameters & adsParamete
 
 void GUIHelper::RenderPBRParameters(RenderComponent::PBRParameters & pbrParameters)
 {
-	RenderText("Non Metallic Reflection Colour");
-	RenderColour(pbrParameters.NonMetallicReflectionColour);
+	//RenderText("Non Metallic Reflection Colour");
+	//RenderColour(pbrParameters.NonMetallicReflectionColour);
 	RenderFloat("Roughness", (float&)pbrParameters.Roughness, 0.0f, 1.0f);
 	ImGui::Checkbox("Is Transparent", &pbrParameters.IsTransparent);
 	ImGui::Checkbox("Using Smoothness", &pbrParameters.UsingSmoothness);
