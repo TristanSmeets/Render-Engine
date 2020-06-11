@@ -20,7 +20,7 @@ public:
 	ShadowMapping();
 	virtual ~ShadowMapping();
 	void Initialize(const Parameters& parameters);
-	void MapPointLights(const std::vector<Light>& lights, const std::vector<Actor>& actors);
+	void MapPointLights(const std::vector<Light>& lights, const std::vector<Actor>& actors, int lightsToRender = 3);
 	void SetParameters(const Parameters& parameters);
 	const Parameters& GetParameters() const;
 	const int GetMaximumNumberOfLights() const;

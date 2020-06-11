@@ -59,8 +59,6 @@ void GUIHelper::Render(RenderTechnique & technique)
 	ImGui::Begin("Post Processing");
 	ImGui::Separator();
 	RenderDeferredParameters(technique.GetDeferredParameters());
-	ImGui::Separator();
-	//RenderPostProcessingParameters(technique.GetPostProcessing().GetParameters());
 	ImGui::End();
 }
 
@@ -71,6 +69,7 @@ void GUIHelper::RenderLayout(Scene & scene)
 	ImGui::NextColumn();
 	RenderFPS();
 	ImGui::NextColumn();
+	RenderInt("Number of Lights", (int&)scene.GetNumberOfLights(), 0, 10);
 	ImGui::Separator();
 	if (ImGui::TreeNode("Camera"))
 	{
@@ -84,7 +83,7 @@ void GUIHelper::RenderLayout(Scene & scene)
 	{
 		const std::vector<Light>& lights = scene.GetLights();
 		static int selectedLight = -1;
-		for (int i = 0; i < lights.size(); ++i)
+		for (unsigned int i = 0; i < scene.GetNumberOfLights(); ++i)
 		{
 			if (ImGui::Selectable(lights[i].GetName().c_str(), selectedLight == i))
 			{
@@ -266,7 +265,7 @@ void GUIHelper::RenderFXAAParameters(FXAA::Parameters & fxaaParameters)
 
 void GUIHelper::RenderBloomParameters(Bloom::Parameters & bloomParameters)
 {
-	RenderInt("Bloom LOD", (int&)bloomParameters.Lod, 0, 7);
+	//RenderInt("Bloom LOD", (int&)bloomParameters.Lod, 0, 7);
 	RenderFloat("Gamma Correction", (float&)bloomParameters.GammaCorrection, 0.1f, 3.0f);
 	RenderFloat("Exposure", (float&)bloomParameters.Exposure, 0.1f, 2.0f);
 }

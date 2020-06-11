@@ -24,6 +24,7 @@ public:
 	Camera& GetCamera();
 	const Skybox& GetSkybox() const;
 	void Initialize();
+	const unsigned int& GetNumberOfLights() const;
 	Scene& operator=(const Scene& rhs);
 
 private:
@@ -32,6 +33,7 @@ private:
 	void InitializeActors();
 
 	const unsigned int MaximumNumberOfLights = 10;
+	unsigned int NumberOfLights = 3;
 	std::vector<Actor> actors;
 	std::vector<Light> lights;
 	std::vector<Material> materials;

@@ -27,9 +27,9 @@ private:
 	void SSAOTexturePass();
 	void BlurPass();
 	void LightingPass(const std::vector<Light> & lights, Scene & scene);
-	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights);
+	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights, int numberOfLights);
 	void RenderTransparentActors(Scene& scene);
-	void SetPBRShaderUniforms(const Camera& camera, const Skybox& skybox, const std::vector<Light>& lights);
+	void SetPBRShaderUniforms(const Scene& scene);
 
 	const Window& window;
 	Basic basic;

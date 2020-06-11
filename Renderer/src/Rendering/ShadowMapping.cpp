@@ -18,7 +18,7 @@ void ShadowMapping::Initialize(const ShadowMapping::Parameters& parameters)
 	SetupPointLightBuffer();
 }
 
-void ShadowMapping::MapPointLights(const std::vector<Light>& lights, const std::vector<Actor>& actors)
+void ShadowMapping::MapPointLights(const std::vector<Light>& lights, const std::vector<Actor>& actors, int lightsToRender)
 {
 	glViewport(0, 0, parameters.Resolution.x, parameters.Resolution.y);
 	depthBuffer.Bind();
@@ -28,7 +28,7 @@ void ShadowMapping::MapPointLights(const std::vector<Light>& lights, const std::
 	glm::mat4 shadowProjection = glm::perspective(glm::radians(90.0f), parameters.AspectRatio, parameters.NearPlane, parameters.FarPlane);
 
 	glCullFace(GL_FRONT);
-	for (int i = 0; i < lights.size(); ++i)
+	for (int i = 0; i < lightsToRender; ++i)
 	{
 		const Cubemap& shadowCubeMap = cubeMaps[i];
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowCubeMap.GetID(), 0);

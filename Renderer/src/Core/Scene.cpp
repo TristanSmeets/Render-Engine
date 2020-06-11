@@ -70,6 +70,11 @@ void Scene::Initialize()
 	printf("Initializing complete\n\n");
 }
 
+const unsigned int& Scene::GetNumberOfLights() const
+{
+	return NumberOfLights;
+}
+
 Scene & Scene::operator=(const Scene & rhs)
 {
 	this->actors = rhs.actors;
@@ -155,7 +160,7 @@ void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
 
-	unsigned int NumberOfLights = 3;
+	//unsigned int NumberOfLights = 3;
 
 	srand(NumberOfLights);
 
@@ -164,7 +169,7 @@ void Scene::InitializeActors()
 		NumberOfLights = MaximumNumberOfLights;
 	}
 
-	for (unsigned int i = 0; i < NumberOfLights; ++i)
+	for (unsigned int i = 0; i < MaximumNumberOfLights; ++i)
 	{
 		float x = ((rand() % 100) / 100.0f) * 30.0f - 10.0f;
 		float y = ((rand() % 100) / 100.0f) * 5.0f + 12.0f;

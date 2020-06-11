@@ -56,7 +56,7 @@ void DeferredPBR::Render(Scene & scene)
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	shadowMapping.MapPointLights(scene.GetLights(), scene.GetActors());
+	shadowMapping.MapPointLights(scene.GetLights(), scene.GetActors(), scene.GetNumberOfLights());
 
 	glViewport(0, 0, window.GetWindowParameters().Width, window.GetWindowParameters().Height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -70,7 +70,6 @@ void DeferredPBR::Render(Scene & scene)
 	BlurPass();
 
 	Framebuffer::BlitParameters blitParameters;
-	//blitParameters.Destination = &postProcessing->GetFramebuffer();
 	blitParameters.Destination = &bloom.GetFramebuffer();
 	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
 	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
@@ -80,7 +79,7 @@ void DeferredPBR::Render(Scene & scene)
 	//Lighting pass
 	const std::vector<Light>& lights = scene.GetLights();
 	LightingPass(lights, scene);
-	RenderLights(view, lights);
+	RenderLights(view, lights, scene.GetNumberOfLights());
 	RenderTransparentActors(scene);
 
 	glDepthFunc(GL_LEQUAL);
@@ -336,7 +335,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	pbrLighting.Use();
-	pbrLighting.SetInt("NumberOfLights", (int)lights.size());
+	pbrLighting.SetInt("NumberOfLights", scene.GetNumberOfLights());
 	pbrLighting.SetVec3("cameraPosition", scene.GetCamera().GetWorldPosition());
 	pbrLighting.SetVec3("nonMetallicReflectionColour", deferredParameters.PbrParameters.NonMetallicReflectionColour);
 	pbrLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
@@ -358,7 +357,7 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, aoTextures[1].GetID());
 
-	for (unsigned int i = 0; i < lights.size(); ++i)
+	for (unsigned int i = 0; i < scene.GetNumberOfLights(); ++i)
 	{
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
@@ -380,12 +379,12 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 }
 
-void DeferredPBR::RenderLights(const glm::mat4 & view, const std::vector<Light>& lights)
+void DeferredPBR::RenderLights(const glm::mat4 & view, const std::vector<Light>& lights, int numberOfLights)
 {
 	lamp.Use();
 	lamp.SetMat4("view", view);
 
-	for (unsigned int i = 0; i < lights.size(); ++i)
+	for (unsigned int i = 0; i < numberOfLights; ++i)
 	{
 		lamp.SetMat4("model", lights[i].GetWorldMatrix());
 		lamp.SetVec3("lightColour", lights[i].GetColour());
@@ -412,7 +411,7 @@ void DeferredPBR::RenderTransparentActors(Scene & scene)
 		distanceSortedActors[distance] = &actors[i];
 	}
 
-	SetPBRShaderUniforms(scene.GetCamera(), scene.GetSkybox(), scene.GetLights());
+	SetPBRShaderUniforms(scene);
 
 	for (std::map<float, const Actor*>::reverse_iterator it = distanceSortedActors.rbegin(); it != distanceSortedActors.rend(); ++it)
 	{
@@ -446,14 +445,15 @@ void DeferredPBR::RenderTransparentActors(Scene & scene)
 	glDisable(GL_BLEND);
 }
 
-void DeferredPBR::SetPBRShaderUniforms(const Camera & camera, const Skybox & skybox, const std::vector<Light>& lights)
+void DeferredPBR::SetPBRShaderUniforms(const Scene& scene)
 {
 	forwardLighting.Use();
-	forwardLighting.SetMat4("view", camera.GetViewMatrix());
-	forwardLighting.SetVec3("cameraPos", camera.GetWorldPosition());
+	forwardLighting.SetMat4("view", scene.GetCamera().GetViewMatrix());
+	forwardLighting.SetVec3("cameraPos", scene.GetCamera().GetWorldPosition());
 	forwardLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
-	forwardLighting.SetInt("NumberOfLights", (int)lights.size());
-
+	forwardLighting.SetInt("NumberOfLights", scene.GetNumberOfLights());
+	
+	const Skybox& skybox = scene.GetSkybox();
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetIrradiance().Bind();
 	glActiveTexture(GL_TEXTURE6);
@@ -466,7 +466,9 @@ void DeferredPBR::SetPBRShaderUniforms(const Camera & camera, const Skybox & sky
 	}
 	glActiveTexture(GL_TEXTURE0);
 
-	for (int i = 0; i < lights.size(); ++i)
+	const std::vector<Light>& lights = scene.GetLights();
+
+	for (int i = 0; i < scene.GetNumberOfLights(); ++i)
 	{
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
