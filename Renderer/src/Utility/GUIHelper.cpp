@@ -48,7 +48,8 @@ void GUIHelper::EndFrame()
 
 void GUIHelper::Render(Scene & scene)
 {
-	//ImGui::ShowDemoWindow();
+	ImGui::Begin("Properties");
+	ImGui::End();
 	ImGui::Begin("Scene");
 	RenderLayout(scene);
 	ImGui::End();
@@ -57,30 +58,42 @@ void GUIHelper::Render(Scene & scene)
 void GUIHelper::Render(RenderTechnique & technique)
 {
 	ImGui::Begin("Post Processing");
-	ImGui::Separator();
 	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::End();
 }
 
 void GUIHelper::RenderLayout(Scene & scene)
 {
+	
 	ImGui::Columns(2);
 	RenderText("Framerate");
 	ImGui::NextColumn();
 	RenderFPS();
 	ImGui::NextColumn();
-	RenderInt("Number of Lights", (int&)scene.GetNumberOfLights(), 0, 10);
 	ImGui::Separator();
-	if (ImGui::TreeNode("Camera"))
+	static bool selectedCamera = false;
+	static bool selectedLights = false;
+	static bool selectedActors = false;
+
+	ImGui::Selectable("Camera", &selectedCamera);
+	if (selectedCamera)
 	{
-		ImGui::NextColumn();
+		selectedLights = false;
+		selectedActors = false;
+		ImGui::Begin("Properties");
 		RenderCamera(scene.GetCamera());
-		ImGui::TreePop();
-		ImGui::NextColumn();
+		ImGui::End();
 	}
+
 	ImGui::Separator();
-	if (ImGui::TreeNode("Light"))
+	
+	ImGui::Selectable("Lights", &selectedLights);
+	if (selectedLights)
 	{
+		selectedCamera = false;
+		selectedActors = false;
+		ImGui::NextColumn();
+		RenderInt("Lights", (int&)scene.GetNumberOfLights(), 0, 10);
 		const std::vector<Light>& lights = scene.GetLights();
 		static int selectedLight = -1;
 		for (unsigned int i = 0; i < scene.GetNumberOfLights(); ++i)
@@ -93,14 +106,18 @@ void GUIHelper::RenderLayout(Scene & scene)
 		ImGui::NextColumn();
 		if (selectedLight != -1)
 		{
+			ImGui::Begin("Properties");
 			RenderLight(lights[selectedLight]);
+			ImGui::End();
 		}
-		ImGui::TreePop();
-		ImGui::NextColumn();
 	}
 	ImGui::Separator();
-	if (ImGui::TreeNode("Actors"))
+	ImGui::Selectable("Actors", &selectedActors);
+	if (selectedActors)
 	{
+		selectedCamera = false;
+		selectedLights = false;
+		ImGui::NextColumn();
 		std::vector<Actor>& actors = scene.GetActors();
 		static int selectedActor = -1;
 		for (int i = 0; i < actors.size(); i++)
@@ -113,9 +130,10 @@ void GUIHelper::RenderLayout(Scene & scene)
 		ImGui::NextColumn();
 		if (selectedActor != -1)
 		{
+			ImGui::Begin("Properties");
 			RenderActor(actors[selectedActor]);
+			ImGui::End();
 		}
-		ImGui::TreePop();
 		ImGui::NextColumn();
 	}
 }
@@ -169,14 +187,12 @@ void GUIHelper::RenderRenderComponent(RenderComponent & renderComponent)
 {
 	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName().c_str());
 	RenderText("Material");
-	//RenderADSParameters(renderComponent.GetADSParameters());
 	RenderPBRParameters(renderComponent.GetPBRParameters());
 	RenderMaterial(renderComponent.GetMaterial());
 }
 
 void GUIHelper::RenderActor(Actor & actor)
 {
-	//RenderText("Name: %s", actor.GetName());
 	if (ImGui::TreeNode("Transform"))
 	{
 		RenderTransform(actor.GetTransform());
@@ -198,11 +214,6 @@ void GUIHelper::RenderCamera(const Camera & camera)
 	}
 	RenderFloat("Movement Speed", (float&)camera.GetMoveSpeed(), 0.0f, 100.0f);
 	RenderFloat("Rotation Speed", (float&)camera.GetRotationSpeed(), 0.0f, 100.0f);
-	/*if (ImGui::TreeNode("Frustum"))
-	{
-		RenderFrustum(camera.GetFrustum());
-		ImGui::TreePop();
-	}*/
 }
 
 void GUIHelper::RenderLight(const Light & light)
@@ -232,8 +243,6 @@ void GUIHelper::RenderADSParameters(RenderComponent::ADSParameters & adsParamete
 
 void GUIHelper::RenderPBRParameters(RenderComponent::PBRParameters & pbrParameters)
 {
-	//RenderText("Non Metallic Reflection Colour");
-	//RenderColour(pbrParameters.NonMetallicReflectionColour);
 	RenderFloat("Roughness", (float&)pbrParameters.Roughness, 0.0f, 1.0f);
 	ImGui::Checkbox("Is Transparent", &pbrParameters.IsTransparent);
 	ImGui::Checkbox("Using Smoothness", &pbrParameters.UsingSmoothness);
@@ -245,11 +254,6 @@ void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & d
 	RenderInt("SSAO Kernel Size", (int&)deferredParameters.KernelSize, 1, 64);
 	RenderFloat("SSAO Radius", (float&)deferredParameters.Radius, 0.0f, 5.0f);
 	RenderFloat("SSAO Bias", (float&)deferredParameters.Bias, 0.0f, 2.0f);
-	//ImGui::Separator();
-	//RenderADSParameters(deferredParameters.AdsParameters);
-	//RenderPBRParameters(deferredParameters.PbrParameters);
-	//ImGui::Separator();
-	//RenderFXAAParameters(deferredParameters.FxaaParameters);
 	ImGui::Separator();
 	RenderBloomParameters(deferredParameters.BloomParameters);
 	ImGui::Separator();
@@ -265,7 +269,6 @@ void GUIHelper::RenderFXAAParameters(FXAA::Parameters & fxaaParameters)
 
 void GUIHelper::RenderBloomParameters(Bloom::Parameters & bloomParameters)
 {
-	//RenderInt("Bloom LOD", (int&)bloomParameters.Lod, 0, 7);
 	RenderFloat("Gamma Correction", (float&)bloomParameters.GammaCorrection, 0.1f, 3.0f);
 	RenderFloat("Exposure", (float&)bloomParameters.Exposure, 0.1f, 2.0f);
 }
