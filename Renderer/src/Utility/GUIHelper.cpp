@@ -250,10 +250,7 @@ void GUIHelper::RenderPBRParameters(RenderComponent::PBRParameters & pbrParamete
 
 void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & deferredParameters)
 {
-	RenderInt("SSAO Occlusion Power", (int&)deferredParameters.OcclusionPower, 1, 200);
-	RenderInt("SSAO Kernel Size", (int&)deferredParameters.KernelSize, 1, 64);
-	RenderFloat("SSAO Radius", (float&)deferredParameters.Radius, 0.0f, 5.0f);
-	RenderFloat("SSAO Bias", (float&)deferredParameters.Bias, 0.0f, 2.0f);
+	RenderSSAOParameters(deferredParameters.SsaoParameters);
 	ImGui::Separator();
 	RenderBloomParameters(deferredParameters.BloomParameters);
 	ImGui::Separator();
@@ -279,6 +276,14 @@ void GUIHelper::RenderDOFParameters(DepthOfField::Parameters & dofParameters)
 	RenderFloat("Focal Range", (float&)dofParameters.FocalRange, 0.0f, 1.0f);
 	RenderFloat("Focal Range Cutoff", (float&)dofParameters.RangeCutoff, 0.0f, 1.0f);
 	RenderInt("DoF Lod", (int&)dofParameters.Lod, 0, 7);
+}
+
+void GUIHelper::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)
+{
+	RenderInt("SSAO Occlusion Power", (int&)ssoaParameters.OcclusionPower, 1, 200);
+	RenderInt("SSAO Kernel Size", (int&)ssoaParameters.KernelSize, 1, 64);
+	RenderFloat("SSAO Radius", (float&)ssoaParameters.Radius, 0.0f, 5.0f);
+	RenderFloat("SSAO Bias", (float&)ssoaParameters.Bias, 0.0f, 2.0f);
 }
 
 void GUIHelper::RenderColour(const glm::vec3& colour)

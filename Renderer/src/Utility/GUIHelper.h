@@ -47,6 +47,7 @@ private:
 	void RenderFXAAParameters(FXAA::Parameters& fxaaParamters);
 	void RenderBloomParameters(Bloom::Parameters& bloomParameters);
 	void RenderDOFParameters(DepthOfField::Parameters& dofParameters);
+	void RenderSSAOParameters(SSAO::Parameters& ssoaParameters);
 
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;

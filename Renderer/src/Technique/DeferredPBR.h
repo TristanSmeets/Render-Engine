@@ -8,6 +8,7 @@
 #include "Utility/FXAA.h"
 #include "PostProcessing/Forward/Bloom.h"
 #include "PostProcessing/DepthOfField.h"
+#include "PostProcessing/SSAO.h"
 
 class DeferredPBR : public RenderTechnique
 {
@@ -19,13 +20,8 @@ public:
 
 private:
 	void SetupGBuffers(const Window::Parameters& parameters);
-	void SetupSSAOBuffers(const Window::Parameters& parameters);
-	void CreateSSAOKernel(std::uniform_real_distribution<GLfloat>& randomFloats, std::default_random_engine& generator);
-	void CreateNoiseTexture(std::uniform_real_distribution<GLfloat>& randomFloats, std::default_random_engine& generator);
 	void SetupShaders(Scene& scene);
 	void GeometryPass(const glm::mat4 &view, Scene & scene);
-	void SSAOTexturePass();
-	void BlurPass();
 	void LightingPass(const std::vector<Light> & lights, Scene & scene);
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights, int numberOfLights);
 	void RenderTransparentActors(Scene& scene);
@@ -36,22 +32,15 @@ private:
 	Bloom bloom;
 	DepthOfField depthOfField;
 	FXAA fxaa;
+	SSAO ssao;
 
 	Framebuffer gBuffer;
-	Framebuffer aoBuffers[2];
 	Renderbuffer renderbuffer;
 	Texture gBufferTextures[5];
-	Texture aoTextures[2];
-	Texture noise;
 	Shader lamp;
 	Shader geometry;
 	Shader pbrLighting;
-	Shader ssao;
-	Shader ssaoBlur;
 	NDCQuad quad;
 	ShadowMapping shadowMapping;
 	Shader forwardLighting;
-
-	glm::vec3 ssaoKernel[64];
-
 };
