@@ -6,12 +6,13 @@
 
 static int counter = 0;
 
-Scene::Scene()
+Scene::Scene() : 
+	camera(Camera(glm::vec3(27.67f, 18.76f, 27.58f)))
 {
 }
 
 Scene::Scene(Window & window) :
-	camera(Camera(window.GetGLFWwindow()))
+	camera(Camera(glm::vec3(27.67f, 18.76f, 27.58f)))
 {
 	printf("Creating Scene\n");
 }

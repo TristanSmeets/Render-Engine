@@ -1,5 +1,7 @@
 #include "Rendererpch.h"
 #include "Window.h"
+#include "Event/EventQueue.h"
+#include "Event/KeyEvent.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -24,6 +26,46 @@ void Window::Initialize(const Parameters& parameters)
 
 void Window::ProcessKeyInput()
 {
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::A, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::S, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::W, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::D, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::Q, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::E, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::R, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::F, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::T, KeyEvent::PRESS));
+	}
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+	{
+		EventQueue<KeyEvent>::QueueEvent(KeyEvent(KeyEvent::G, KeyEvent::PRESS));
+	}
 	//Close window when 'esc' key gets pressed.
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{

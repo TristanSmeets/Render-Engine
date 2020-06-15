@@ -48,10 +48,6 @@ void GUIHelper::EndFrame()
 
 void GUIHelper::Render(Scene & scene)
 {
-<<<<<<< HEAD
-=======
-	//ImGui::ShowDemoWindow();
->>>>>>> develop
 	ImGui::Begin("Properties");
 	ImGui::End();
 	ImGui::Begin("Scene");
@@ -62,10 +58,6 @@ void GUIHelper::Render(Scene & scene)
 void GUIHelper::Render(RenderTechnique & technique)
 {
 	ImGui::Begin("Post Processing");
-<<<<<<< HEAD
-=======
-	//ImGui::Separator();
->>>>>>> develop
 	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::End();
 }

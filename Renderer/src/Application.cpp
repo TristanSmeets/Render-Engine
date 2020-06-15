@@ -69,4 +69,5 @@ bool Application::InitializeGlad()
 void Application::DispatchEvents()
 {
 	//TODO: Call dispatch on all eventqueues in here.
+	EventQueue<KeyEvent>::Dispatch();
 }

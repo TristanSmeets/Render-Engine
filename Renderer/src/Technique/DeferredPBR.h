@@ -35,6 +35,7 @@ private:
 	Basic basic;
 	Bloom bloom;
 	DepthOfField depthOfField;
+	FXAA fxaa;
 
 	Framebuffer gBuffer;
 	Framebuffer aoBuffers[2];
@@ -50,7 +51,6 @@ private:
 	NDCQuad quad;
 	ShadowMapping shadowMapping;
 	Shader forwardLighting;
-	FXAA fxaa;
 
 	glm::vec3 ssaoKernel[64];
 

@@ -3,6 +3,8 @@
 #include "Core/Actor.h"
 #include "glm.hpp"
 #include "GLFW/glfw3.h"
+#include "Event/KeyEvent.h"
+#include "Event/EventQueue.h"
 
 class Camera : public Actor
 {
@@ -20,7 +22,7 @@ public:
 
 public:
 	Camera();
-	Camera(GLFWwindow* window, const glm::vec3& position = glm::vec3(27.67f, 18.76f, 27.58f), const glm::vec3& rotationInEulerAngles = glm::vec3(-39.1f, -137.67f, 0.0f), const Frustum& frustum = Frustum());
+	Camera(const glm::vec3& position = glm::vec3(27.67f, 18.76f, 27.58f), const glm::vec3& rotationInEulerAngles = glm::vec3(-39.1f, -137.67f, 0.0f), const Frustum& frustum = Frustum());
 	virtual ~Camera();
 	const glm::mat4 GetViewMatrix() const;
 	const glm::mat4 GetProjectionMatrix() const;
@@ -34,9 +36,11 @@ public:
 	Camera& operator=(const Camera& rhs);
 
 private:
-	void ProcessKeyBoardInput(float deltaTime);
-	GLFWwindow* window;
+	void MultiplySpeedWithDeltaTime(float deltaTime);
+	void OnKeyEvent(const KeyEvent& keyEvent);
 	Frustum frustum = Frustum();
 	float moveSpeed = 25.0f;
+	float mSpeed = 0.0f;
 	float rotationSpeed = 50.0f;
+	float rSpeed = 0.0f;
 };

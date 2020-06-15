@@ -384,7 +384,7 @@ void DeferredPBR::RenderLights(const glm::mat4 & view, const std::vector<Light>&
 	lamp.Use();
 	lamp.SetMat4("view", view);
 
-	for (unsigned int i = 0; i < numberOfLights; ++i)
+	for (int i = 0; i < numberOfLights; ++i)
 	{
 		lamp.SetMat4("model", lights[i].GetWorldMatrix());
 		lamp.SetVec3("lightColour", lights[i].GetColour());
@@ -468,7 +468,7 @@ void DeferredPBR::SetPBRShaderUniforms(const Scene& scene)
 
 	const std::vector<Light>& lights = scene.GetLights();
 
-	for (int i = 0; i < scene.GetNumberOfLights(); ++i)
+	for (unsigned int i = 0; i < scene.GetNumberOfLights(); ++i)
 	{
 		std::string lightPosition = std::string("lights[") + std::to_string(i) + std::string("].Position");
 		std::string lightColour = std::string("lights[") + std::to_string(i) + std::string("].Colour");
