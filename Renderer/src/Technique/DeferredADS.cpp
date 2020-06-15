@@ -374,11 +374,11 @@ void DeferredADS::SSAOTexturePass()
 {
 	aoBuffers[0].Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
-	ssao.Use();
+	/*ssao.Use();
 	ssao.SetInt("occlusionPower", deferredParameters.OcclusionPower);
 	ssao.SetInt("kernelSize", deferredParameters.KernelSize);
 	ssao.SetFloat("radius", deferredParameters.Radius);
-	ssao.SetFloat("bias", deferredParameters.Bias);
+	ssao.SetFloat("bias", deferredParameters.Bias);*/
 
 	for (unsigned int i = 0; i < 64; ++i)
 	{

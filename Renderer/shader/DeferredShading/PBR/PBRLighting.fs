@@ -193,7 +193,6 @@ void main()
     vec3 colour = ambient + Lo;
 
     FragmentColour = vec4(colour, 1.0f);
-    // FragmentColour = vec4(vec3(ssao), 1.0f);
 
     float brightness = dot(colour, vec3( 0.2126f, 0.7152f, 0.0722f)); //some lumen value. Humans see green as the brightest.
     if(brightness > 1.0f)
