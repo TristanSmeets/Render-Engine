@@ -184,10 +184,10 @@ void Scene::InitializeActors()
 		lights.push_back(light);
 	}
 
-	Actor sphere = Actor("Demo_Material#3");
+	Actor sphere = Actor("Demo_Material#2");
 	sphere.GetTransform().Translate(glm::vec3(0, 6, 0));
 	sphere.GetRenderComponent().SetMesh(meshes[1]);
-	sphere.GetRenderComponent().SetMaterial(materials[3]);
+	sphere.GetRenderComponent().SetMaterial(materials[2]);
 	sphere.GetRenderComponent().GetPBRParameters().UsingSmoothness = true;
 	actors.push_back(sphere);
 	
@@ -213,7 +213,7 @@ void Scene::InitializeActors()
 	Actor terrain = Actor("Terrain");
 	terrain.GetTransform().Translate(glm::vec3(0.0f, -1.0f, 0.0f));
 	terrain.GetRenderComponent().SetMesh(meshes[2]);
-	terrain.GetRenderComponent().SetMaterial(materials[2]);
+	terrain.GetRenderComponent().SetMaterial(materials[1]);
 	actors.push_back(terrain);
 
 	//Actor windowPlane = Actor("Window1");
