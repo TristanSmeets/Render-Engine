@@ -3,12 +3,8 @@
 #include "Utility/Framebuffer.h"
 #include "Utility/Renderbuffer.h"
 #include "Rendering/Texture.h"
-#include "PostProcessing/Forward/Basic.h"
+#include "PostProcessing/Basic.h"
 #include "Rendering/ShadowMapping.h"
-#include "Utility/FXAA.h"
-#include "PostProcessing/Forward/Bloom.h"
-#include "PostProcessing/DepthOfField.h"
-#include "PostProcessing/SSAO.h"
 
 class DeferredPBR : public RenderTechnique
 {

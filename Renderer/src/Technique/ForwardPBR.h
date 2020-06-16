@@ -5,8 +5,8 @@
 #include "Utility/Cubemap.h"
 #include "Utility/Framebuffer.h"
 #include "PostProcessing/PostProcessing.h"
-#include "PostProcessing/Forward/Bloom.h"
-#include "PostProcessing/Forward/Basic.h"
+#include "PostProcessing/Bloom.h"
+#include "PostProcessing/Basic.h"
 #include "Rendering/ShadowMapping.h"
 #include "Utility/MSAA.h"
 
