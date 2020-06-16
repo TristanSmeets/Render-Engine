@@ -121,12 +121,12 @@ void Scene::InitializeMaterials()
 	aluminium.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
 	aluminium.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
 
-	Material rustedIron = Material("Rusted_Iron");
-	rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
-	rustedIron.AddTexture(Texture::Normal, Filepath::Texture + "RustedIron/Normal.png");
-	rustedIron.AddTexture(Texture::Metallic, Filepath::Texture + "RustedIron/Metallic.png");
-	rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
-	rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
+	//Material rustedIron = Material("Rusted_Iron");
+	//rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
+	//rustedIron.AddTexture(Texture::Normal, Filepath::Texture + "RustedIron/Normal.png");
+	//rustedIron.AddTexture(Texture::Metallic, Filepath::Texture + "RustedIron/Metallic.png");
+	//rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
+	//rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
 
 	Material cobblestone = Material("Cobblestone");
 	cobblestone.AddTexture(Texture::Albedo,			Filepath::Texture + "cobblestone/Albedo.png", true);
@@ -145,14 +145,14 @@ void Scene::InitializeMaterials()
 	//demo.AddTexture(Texture::Roughness,			Filepath::Texture + "Auminium/Roughness.png");
 	demo.AddTexture(Texture::AmbientOcclusion,	Filepath::Texture + "Demo/AmbientOcclusion_2.png");
 
-	Material leaf = Material("Window");
-	leaf.AddTexture(Texture::Albedo, Filepath::Texture + "Leaf/blending_transparent_window.png", true);
+	//Material leaf = Material("Window");
+	//leaf.AddTexture(Texture::Albedo, Filepath::Texture + "Leaf/blending_transparent_window.png", true);
 
 	materials.push_back(aluminium);
-	materials.push_back(rustedIron);
+	//materials.push_back(rustedIron);
 	materials.push_back(cobblestone);
 	materials.push_back(demo);
-	materials.push_back(leaf);
+	//materials.push_back(leaf);
 
 	printf("Created %d materials\n", (int)materials.size());
 }
@@ -160,9 +160,6 @@ void Scene::InitializeMaterials()
 void Scene::InitializeActors()
 {
 	printf("Initializing actors\n");
-
-	//unsigned int NumberOfLights = 3;
-
 	srand(NumberOfLights);
 
 	if (NumberOfLights > MaximumNumberOfLights)

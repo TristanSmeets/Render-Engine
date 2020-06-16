@@ -39,7 +39,7 @@ void Cubemap::SetTextureParameter(GLenum name, GLint value)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, name, value);
 }
 
-GLuint Cubemap::GetID() const
+const GLuint& Cubemap::GetID() const
 {
 	return id;
 }

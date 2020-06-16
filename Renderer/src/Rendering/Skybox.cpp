@@ -15,6 +15,9 @@ Skybox::~Skybox()
 {
 	printf("Destroying Skybox\n");
 	//TODO: Implement deletion of things that need to be deleted.
+	glDeleteTextures(1, &lookup.GetID());
+	glDeleteTextures(1, &irradiance.GetID());
+	glDeleteTextures(1, &prefilter.GetID());
 }
 
 void Skybox::Initialize()
