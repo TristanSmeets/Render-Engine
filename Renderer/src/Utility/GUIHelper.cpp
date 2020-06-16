@@ -228,12 +228,6 @@ void GUIHelper::RenderLight(const Light & light)
 	RenderFloat("Radius", (float&)parameters.Radius, 0.0f, 100.0f);
 }
 
-void GUIHelper::RenderDirectionalLight(const DirectionalLight & light)
-{
-	RenderLight(light);
-	RenderVec3("Direction", light.GetFront());
-}
-
 void GUIHelper::RenderADSParameters(RenderComponent::ADSParameters & adsParameters)
 {
 	RenderFloat("Ambient Strength", (float&)adsParameters.AmbientStrength, 0.0f, 1.0f);

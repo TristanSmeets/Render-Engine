@@ -8,7 +8,6 @@
 #include "Core/Light.h"
 #include "Core/Camera.h"
 #include "Core/Window.h"
-#include "Core/DirectionalLight.h"
 
 class Scene
 {
