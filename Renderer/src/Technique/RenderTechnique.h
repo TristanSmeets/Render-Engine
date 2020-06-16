@@ -3,9 +3,9 @@
 #include "Rendering/Shader.h"
 #include "PostProcessing/PostProcessing.h"
 #include "Rendering/RenderComponent.h"
-#include "Utility/FXAA.h"
+#include "PostProcessing/FXAA.h"
 #include "PostProcessing/DepthOfField.h"
-#include "PostProcessing/Forward/Bloom.h"
+#include "PostProcessing/Bloom.h"
 #include "PostProcessing/SSAO.h"
 
 class RenderTechnique
@@ -13,11 +13,6 @@ class RenderTechnique
 public:
 	struct DeferredParameters
 	{
-		//int OcclusionPower = 2;
-		//int KernelSize = 64;
-		//float Radius = 0.5f;
-		//float Bias = 0.025f;
-
 		RenderComponent::ADSParameters AdsParameters;
 		RenderComponent::PBRParameters PbrParameters;
 		FXAA::Parameters FxaaParameters;

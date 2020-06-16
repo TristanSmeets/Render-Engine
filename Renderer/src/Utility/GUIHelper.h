@@ -40,7 +40,6 @@ private:
 	void RenderActor(Actor& actor);
 	void RenderCamera(const Camera& camera);
 	void RenderLight(const Light& light);
-	void RenderDirectionalLight(const DirectionalLight& light);
 	void RenderADSParameters(RenderComponent::ADSParameters& adsParameters);
 	void RenderPBRParameters(RenderComponent::PBRParameters& pbrParameters);
 	void RenderDeferredParameters(RenderTechnique::DeferredParameters& deferredParameters);
