@@ -4,13 +4,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture() :
-	name("Empty")
+Texture::Texture()
 {
 }
 
-Texture::Texture(const std::string & name, GLuint id) :
-	name(name), id(id)
+Texture::Texture(GLuint id, const Texture::Properties& properties) :
+	id(id), properties(properties)
 {
 }
 
@@ -20,7 +19,7 @@ Texture::Texture(const std::string & filepath, bool usingLinearSpace)
 	Load(filepath, usingLinearSpace);
 
 	size_t position = filepath.find_last_of("/");
-	name = filepath.substr(position + 1);
+	properties.Name = filepath.substr(position + 1);
 }
 
 Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum format, GLenum type)
@@ -28,28 +27,64 @@ Texture::Texture(const std::string & filepath, GLenum internalformat, GLenum for
 	Load(filepath, internalformat, format, type);
 
 	size_t position = filepath.find_last_of("/");
-	name = filepath.substr(position + 1);
+	properties.Name = filepath.substr(position + 1);
 }
 
-Texture::Texture(const Texture & rhs) :
-	id(rhs.id), name(rhs.name)
+Texture::Texture(const Texture & rhs) : 
+	properties(rhs.properties)
 {
+	GenerateTexture();
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexImage2D(GL_TEXTURE_2D, 0, properties.InternalFormat, properties.Resolution.x, properties.Resolution.y, 0, properties.Format, properties.Type, 0);
+
+	glCopyImageSubData(
+		rhs.id, GL_TEXTURE_2D, 0, 0, 0, 0,
+		id, GL_TEXTURE_2D, 0, 0, 0, 0,
+		rhs.properties.Resolution.x, rhs.properties.Resolution.y, 1);
 }
 
 Texture::~Texture()
 {
 	//TODO: Add glDeleteTextures. Need to figure out how to delete a texture without it breaking for all the copies as well.
+	glDeleteTextures(1, &id);
+}
+
+Texture Texture::CreateEmpty(const Properties & properties)
+{
+	Texture texture;
+	texture.properties = properties;
+	texture.GenerateTexture();
+	glBindTexture(GL_TEXTURE_2D, texture.id);
+	glTexImage2D(GL_TEXTURE_2D, 0, properties.InternalFormat, properties.Resolution.x, properties.Resolution.y, 0, properties.Format, properties.Type, 0);
+	return texture;
+}
+
+Texture & Texture::operator=(const Texture & rhs)
+{
+	//this->id = rhs.id;
+
+	this->properties = rhs.properties;
+	GenerateTexture();
+	glBindTexture(GL_TEXTURE_2D, id);
+	glTexImage2D(GL_TEXTURE_2D, 0, properties.InternalFormat, properties.Resolution.x, properties.Resolution.y, 0, properties.Format, properties.Type, 0);
+	
+	glCopyImageSubData(
+		rhs.id, GL_TEXTURE_2D, 0, 0, 0, 0,
+		id, GL_TEXTURE_2D, 0, 0, 0, 0,
+		rhs.properties.Resolution.x, rhs.properties.Resolution.y, 1);
+
+	return *this;
 }
 
 Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLenum internalformat, GLenum format, GLenum type)
 {
-	Texture emptyTexture;
-	emptyTexture.name = name;
-	emptyTexture.GenerateTexture();
-	glBindTexture(GL_TEXTURE_2D, emptyTexture.id);
-	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, 0);
-	emptyTexture.resolution = glm::ivec2(width, height);
-	return emptyTexture;
+	Properties properties;
+	properties.Name = name;
+	properties.Resolution = glm::ivec2(width, height);
+	properties.InternalFormat = internalformat;
+	properties.Format = format;
+	properties.Type = type;
+	return Texture::CreateEmpty(properties);
 }
 
 Texture Texture::CreateMultiSample(const MultiSampleParameters & parameters)
@@ -69,7 +104,7 @@ const GLuint & Texture::GetID() const
 
 const std::string & Texture::GetName() const
 {
-	return name;
+	return properties.Name;
 }
 
 void Texture::Bind(Shader & shader, Type type) const
@@ -83,16 +118,9 @@ void Texture::Bind(Shader & shader, Type type) const
 	glActiveTexture(GL_TEXTURE0);
 }
 
-Texture & Texture::operator=(const Texture & rhs)
-{
-	this->id = rhs.id;
-	this->name = rhs.name;
-	return *this;
-}
-
 const glm::ivec2 & Texture::GetResolution() const
 {
-	return resolution;
+	return properties.Resolution;
 }
 
 const std::string Texture::TypeToString(Type type)
@@ -137,7 +165,7 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 
 	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
 
-	resolution = glm::ivec2(width, height);
+	properties.Resolution = glm::ivec2(width, height);
 
 	if (data)
 	{
@@ -164,10 +192,18 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 		if (usingLinearSpace)
 		{
 			glTexImage2D(GL_TEXTURE_2D, 0, gammaCorrection, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+			properties.InternalFormat = gammaCorrection;
+			properties.Format = format;
+			properties.Type = GL_UNSIGNED_BYTE;
+			properties.Resolution = glm::ivec2(width, height);
 		}
 		else
 		{
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+			properties.InternalFormat = format;
+			properties.Format = format;
+			properties.Type = GL_UNSIGNED_BYTE;
+			properties.Resolution = glm::ivec2(width, height);
 		}
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
@@ -192,13 +228,17 @@ void Texture::Load(const std::string & filepath, GLenum internalformat, GLenum f
 	printf("Trying to load Texture: %s\n", filepath.c_str());
 	float *data = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
 
-	resolution = glm::ivec2(width, height);
+	properties.Resolution = glm::ivec2(width, height);
 
 	if (data)
 	{
 		GenerateTexture();
 		glBindTexture(GL_TEXTURE_2D, id);
 		glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type, data);
+		properties.InternalFormat = internalformat;
+		properties.Format = format;
+		properties.Type = type;
+		properties.Resolution = glm::ivec2(width, height);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
 		printf("SUCCESS: Loaded: %s\n", filepath.c_str());
@@ -225,8 +265,6 @@ const std::string Texture::EnumToString(Type type) const
 		return "material.Roughness";
 	case AmbientOcclusion:
 		return "material.AO";
-	//case LookUp:
-	//	return "brdfLUT";
 	default:
 		return "";
 	}
