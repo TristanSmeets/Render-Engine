@@ -37,7 +37,7 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 	blur.Use();
 	blur.SetInt("MaxLod", maxLOD);
 
-	for (unsigned int i = 0; i < blurLoops * 2; ++i)
+	for (int i = 0; i < blurLoops * 2; ++i)
 	{
 		if (horizontal)
 		{
