@@ -10,6 +10,10 @@ ShadowMapping::ShadowMapping() :
 
 ShadowMapping::~ShadowMapping()
 {
+	for (int i = 0; i < MaximumNumberOfLights; ++i)
+	{
+		glDeleteTextures(1, &cubeMaps[i].GetID());
+	}
 }
 
 void ShadowMapping::Initialize(const ShadowMapping::Parameters& parameters)

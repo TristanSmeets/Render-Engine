@@ -93,7 +93,14 @@ void SSAO::CreateNoiseTexture(std::uniform_real_distribution<GLfloat>& randomFlo
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	noise = Texture("aoNoise", noiseTexture);
+	Texture::Properties properties;
+	properties.Name = "aoNoise";
+	properties.Resolution = glm::ivec2(4, 4);
+	properties.InternalFormat = GL_RGB32F;
+	properties.Format = GL_RGB;
+	properties.Type = GL_FLOAT;
+
+	noise = Texture(noiseTexture, properties);
 }
 
 void SSAO::CreateKernel(std::uniform_real_distribution<GLfloat>& randomFloats, std::default_random_engine & generator)
