@@ -11,12 +11,6 @@ Scene::Scene() :
 {
 }
 
-Scene::Scene(Window & window) :
-	camera(Camera(glm::vec3(27.67f, 18.76f, 27.58f)))
-{
-	printf("Creating Scene\n");
-}
-
 Scene::Scene(const Scene & rhs) :
 	actors(rhs.actors), lights(rhs.lights),
 	materials(rhs.materials), meshes(rhs.meshes),

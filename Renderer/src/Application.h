@@ -17,7 +17,7 @@ public:
 private:
 	bool InitializeGlad();
 	void DispatchEvents();
-	Scene* scene = nullptr;
+	Scene scene;
 	RenderTechnique* renderTechnique = nullptr;
 	Window window = Window();
 	GUIHelper guiHelper = GUIHelper();

@@ -12,7 +12,6 @@ Application::Application()
 Application::~Application()
 {
 	printf("Destroying application\n");
-	delete scene;
 	delete renderTechnique;
 }
 
@@ -21,13 +20,12 @@ void Application::Initialize()
 	printf("Initializing application\n");
 	window.Initialize(Window::Parameters());
 	InitializeGlad();
-	scene = new Scene(window);
-	scene->Initialize();
+	scene.Initialize();
 	//renderTechnique = new ForwardADS(window);
 	//renderTechnique = new ForwardPBR(window);
 	//renderTechnique = new DeferredADS(window);
 	renderTechnique = new DeferredPBR(window);
-	renderTechnique->Initialize(*scene);
+	renderTechnique->Initialize(scene);
 	guiHelper.Initialize(window);
 	printf("Application initialization complete\n");
 }
@@ -41,14 +39,14 @@ void Application::Run()
 		deltaTime = timeCurrentFrame - timeLastFrame;
 		timeLastFrame = timeCurrentFrame;
 
-		scene->GetCamera().Update(deltaTime);
+		scene.GetCamera().Update(deltaTime);
 
 		window.ProcessKeyInput();
 
-		renderTechnique->Render(*scene);
+		renderTechnique->Render(scene);
 
 		guiHelper.StartFrame();
-		guiHelper.Render(*scene);
+		guiHelper.Render(scene);
 		guiHelper.Render(*renderTechnique);
 		guiHelper.EndFrame();
 		DispatchEvents();

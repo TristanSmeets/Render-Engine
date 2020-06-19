@@ -13,7 +13,6 @@ class Scene
 {
 public:
 	Scene();
-	Scene(Window& window);
 	Scene(const Scene& rhs);
 	~Scene();
 	const std::vector<Actor>& GetActors() const;
