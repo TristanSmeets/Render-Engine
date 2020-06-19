@@ -1,23 +1,23 @@
 #include "Rendererpch.h"
-#include "GUIHelper.h"
+#include "UserInterface.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "Utility/Filepath.h"
 #include "Utility/MeshLoader.h"
 
-GUIHelper::GUIHelper()
+UserInterface::UserInterface()
 {
 }
 
-GUIHelper::~GUIHelper()
+UserInterface::~UserInterface()
 {
 	ImGui_ImplGlfw_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
 
-void GUIHelper::Initialize(const Window& window)
+void UserInterface::Initialize(const Window& window)
 {
 	//Setup Dear ImGUI context
 	IMGUI_CHECKVERSION();
@@ -33,20 +33,20 @@ void GUIHelper::Initialize(const Window& window)
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void GUIHelper::StartFrame()
+void UserInterface::StartFrame()
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 }
 
-void GUIHelper::EndFrame()
+void UserInterface::EndFrame()
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void GUIHelper::Render(Scene & scene)
+void UserInterface::Render(Scene & scene)
 {
 	ImGui::Begin("Properties");
 	ImGui::End();
@@ -55,14 +55,14 @@ void GUIHelper::Render(Scene & scene)
 	ImGui::End();
 }
 
-void GUIHelper::Render(RenderTechnique & technique)
+void UserInterface::Render(RenderTechnique & technique)
 {
 	ImGui::Begin("Post Processing");
 	RenderDeferredParameters(technique.GetDeferredParameters());
 	ImGui::End();
 }
 
-void GUIHelper::RenderLayout(Scene & scene)
+void UserInterface::RenderLayout(Scene & scene)
 {
 	
 	ImGui::Columns(2);
@@ -138,12 +138,12 @@ void GUIHelper::RenderLayout(Scene & scene)
 	}
 }
 
-void GUIHelper::RenderFPS()
+void UserInterface::RenderFPS()
 {
 	RenderText("%.1f FPS (%.2f ms/frame)", ImGui::GetIO().Framerate, (1000.0f / ImGui::GetIO().Framerate));
 }
 
-void GUIHelper::RenderText(const char* text, ...)
+void UserInterface::RenderText(const char* text, ...)
 {
 	va_list args;
 	va_start(args, text);
@@ -151,26 +151,26 @@ void GUIHelper::RenderText(const char* text, ...)
 	va_end(args);
 }
 
-void GUIHelper::RenderTransform(const Transform & transform)
+void UserInterface::RenderTransform(const Transform & transform)
 {
 	RenderVec3("Position", transform.GetPosition());
 	RenderVec3("Rotation", transform.GetRotation());
 	RenderVec3("Scale", transform.GetScale());
 }
 
-void GUIHelper::RenderFrustum(const Camera::Frustum & frustum)
+void UserInterface::RenderFrustum(const Camera::Frustum & frustum)
 {
 	RenderFloat("Near plane", (float&)frustum.NearPlaneCutoff, 0.0f, 5.0f);
 	RenderFloat("Far plane", (float&)frustum.FarPlaneCutoff, 5.0f, 1000000.0f);
 }
 
-void GUIHelper::RenderTexture(const Texture & texture)
+void UserInterface::RenderTexture(const Texture & texture)
 {
 	RenderText("Name: %s", texture.GetName().c_str());
 	ImGui::Image((void*)(intptr_t)texture.GetID(), ImVec2(256, 256));
 }
 
-void GUIHelper::RenderMaterial(const Material & material)
+void UserInterface::RenderMaterial(const Material & material)
 {
 	if (ImGui::TreeNode(material.GetName().c_str()))
 	{
@@ -183,7 +183,7 @@ void GUIHelper::RenderMaterial(const Material & material)
 	}
 }
 
-void GUIHelper::RenderRenderComponent(RenderComponent & renderComponent)
+void UserInterface::RenderRenderComponent(RenderComponent & renderComponent)
 {
 	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName().c_str());
 	RenderText("Material");
@@ -191,7 +191,7 @@ void GUIHelper::RenderRenderComponent(RenderComponent & renderComponent)
 	RenderMaterial(renderComponent.GetMaterial());
 }
 
-void GUIHelper::RenderActor(Actor & actor)
+void UserInterface::RenderActor(Actor & actor)
 {
 	if (ImGui::TreeNode("Transform"))
 	{
@@ -205,7 +205,7 @@ void GUIHelper::RenderActor(Actor & actor)
 	}
 }
 
-void GUIHelper::RenderCamera(const Camera & camera)
+void UserInterface::RenderCamera(const Camera & camera)
 {
 	if (ImGui::TreeNode("Transform"))
 	{
@@ -216,7 +216,7 @@ void GUIHelper::RenderCamera(const Camera & camera)
 	RenderFloat("Rotation Speed", (float&)camera.GetRotationSpeed(), 0.0f, 100.0f);
 }
 
-void GUIHelper::RenderLight(const Light & light)
+void UserInterface::RenderLight(const Light & light)
 {
 	if (ImGui::TreeNode("Transform"))
 	{
@@ -228,21 +228,21 @@ void GUIHelper::RenderLight(const Light & light)
 	RenderFloat("Radius", (float&)parameters.Radius, 0.0f, 100.0f);
 }
 
-void GUIHelper::RenderADSParameters(RenderComponent::ADSParameters & adsParameters)
+void UserInterface::RenderADSParameters(RenderComponent::ADSParameters & adsParameters)
 {
 	RenderFloat("Ambient Strength", (float&)adsParameters.AmbientStrength, 0.0f, 1.0f);
 	RenderFloat("Material Shiniess", (float&)adsParameters.Shininess, 2.0f, 256.0f);
 	ImGui::Checkbox("Is Transparent", &adsParameters.IsTransparent);
 }
 
-void GUIHelper::RenderPBRParameters(RenderComponent::PBRParameters & pbrParameters)
+void UserInterface::RenderPBRParameters(RenderComponent::PBRParameters & pbrParameters)
 {
 	RenderFloat("Roughness", (float&)pbrParameters.Roughness, 0.0f, 1.0f);
 	ImGui::Checkbox("Is Transparent", &pbrParameters.IsTransparent);
 	ImGui::Checkbox("Using Smoothness", &pbrParameters.UsingSmoothness);
 }
 
-void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & deferredParameters)
+void UserInterface::RenderDeferredParameters(RenderTechnique::DeferredParameters & deferredParameters)
 {
 	RenderSSAOParameters(deferredParameters.SsaoParameters);
 	ImGui::Separator();
@@ -251,20 +251,20 @@ void GUIHelper::RenderDeferredParameters(RenderTechnique::DeferredParameters & d
 	RenderDOFParameters(deferredParameters.DofParamaters);
 }
 
-void GUIHelper::RenderFXAAParameters(FXAA::Parameters & fxaaParameters)
+void UserInterface::RenderFXAAParameters(FXAA::Parameters & fxaaParameters)
 {
 	RenderFloat("Span Max", (float&)fxaaParameters.SpanMax, 0.0f, 16.0f);
 	RenderFloat("Reduce Minimum", (float&)fxaaParameters.ReduceMinumum, 0.0f, 1.0f);
 	RenderFloat("Reduce Multiplier", (float&)fxaaParameters.ReduceMultiplier, .01f, 1.0f);
 }
 
-void GUIHelper::RenderBloomParameters(Bloom::Parameters & bloomParameters)
+void UserInterface::RenderBloomParameters(Bloom::Parameters & bloomParameters)
 {
 	RenderFloat("Gamma Correction", (float&)bloomParameters.GammaCorrection, 0.1f, 3.0f);
 	RenderFloat("Exposure", (float&)bloomParameters.Exposure, 0.1f, 2.0f);
 }
 
-void GUIHelper::RenderDOFParameters(DepthOfField::Parameters & dofParameters)
+void UserInterface::RenderDOFParameters(DepthOfField::Parameters & dofParameters)
 {
 	RenderFloat("Focal Distance", (float&)dofParameters.FocalDistance, 0.0f, 2.0f);
 	RenderFloat("Focal Range", (float&)dofParameters.FocalRange, 0.0f, 1.0f);
@@ -272,7 +272,7 @@ void GUIHelper::RenderDOFParameters(DepthOfField::Parameters & dofParameters)
 	RenderInt("DoF Lod", (int&)dofParameters.Lod, 0, 7);
 }
 
-void GUIHelper::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)
+void UserInterface::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)
 {
 	RenderInt("SSAO Occlusion Power", (int&)ssoaParameters.OcclusionPower, 1, 200);
 	RenderInt("SSAO Kernel Size", (int&)ssoaParameters.KernelSize, 1, 64);
@@ -280,22 +280,22 @@ void GUIHelper::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)
 	RenderFloat("SSAO Bias", (float&)ssoaParameters.Bias, 0.0f, 2.0f);
 }
 
-void GUIHelper::RenderColour(const glm::vec3& colour)
+void UserInterface::RenderColour(const glm::vec3& colour)
 {
 	ImGui::ColorEdit3("Colour", (float*)&colour, ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
 }
 
-void GUIHelper::RenderVec3(const char * name, const glm::vec3 & vec3)
+void UserInterface::RenderVec3(const char * name, const glm::vec3 & vec3)
 {
 	ImGui::DragFloat3(name, (float*)&vec3, 0.01f, -1000.0f, 1000.0f, "%.2f");
 }
 
-void GUIHelper::RenderInt(const char * name, int & value, int minimum, int maximum)
+void UserInterface::RenderInt(const char * name, int & value, int minimum, int maximum)
 {
 	ImGui::DragInt(name, &value, 1.0f, minimum, maximum);
 }
 
-void GUIHelper::RenderFloat(const char * name, float & value, float minimum, float maximum)
+void UserInterface::RenderFloat(const char * name, float & value, float minimum, float maximum)
 {
 	ImGui::DragFloat(name, &value, 0.1f, minimum, maximum, "%.2f");
 }

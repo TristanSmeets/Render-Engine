@@ -12,11 +12,11 @@
 #include "Technique/RenderTechnique.h"
 #include "PostProcessing/PostProcessing.h"
 
-class GUIHelper
+class UserInterface
 {
 public:
-	GUIHelper();
-	virtual ~GUIHelper();
+	UserInterface();
+	virtual ~UserInterface();
 	void Initialize(const Window& window);
 	void StartFrame();
 	void EndFrame();

@@ -26,7 +26,7 @@ void Application::Initialize()
 	//renderTechnique = new DeferredADS(window);
 	renderTechnique = new DeferredPBR(window);
 	renderTechnique->Initialize(scene);
-	guiHelper.Initialize(window);
+	ui.Initialize(window);
 	printf("Application initialization complete\n");
 }
 
@@ -45,10 +45,10 @@ void Application::Run()
 
 		renderTechnique->Render(scene);
 
-		guiHelper.StartFrame();
-		guiHelper.Render(scene);
-		guiHelper.Render(*renderTechnique);
-		guiHelper.EndFrame();
+		ui.StartFrame();
+		ui.Render(scene);
+		ui.Render(*renderTechnique);
+		ui.EndFrame();
 		DispatchEvents();
 		window.PollEvents();
 		window.SwapBuffers();

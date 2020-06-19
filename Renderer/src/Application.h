@@ -4,7 +4,7 @@
 #include "Core/Scene.h"
 #include "Technique/RenderTechnique.h"
 #include "PostProcessing/PostProcessing.h"
-#include "Utility/GUIHelper.h"
+#include "Utility/UserInterface.h"
 
 class Application
 {
@@ -20,7 +20,7 @@ private:
 	Scene scene;
 	RenderTechnique* renderTechnique = nullptr;
 	Window window = Window();
-	GUIHelper guiHelper = GUIHelper();
+	UserInterface ui = UserInterface();
 
 	float deltaTime = 0.0f;
 	float timeLastFrame = 0.0f;
