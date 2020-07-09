@@ -16,13 +16,13 @@ public:
 		float FieldOfView;
 		float AspectRatio;
 
-		Frustum(float nearPlane = 0.1f, float farPlane = 100.0f, float fieldOfView = glm::radians(45.0f), float aspectRatio = (16.0f / 9.0f));
+		Frustum(float nearPlane = 0.1f, float farPlane = 150.0f, float fieldOfView = glm::radians(45.0f), float aspectRatio = (16.0f / 9.0f));
 		Frustum& operator=(const Frustum& rhs);
 	};
 
 public:
 	Camera();
-	Camera(const glm::vec3& position = glm::vec3(27.67f, 18.76f, 27.58f), const glm::vec3& rotationInEulerAngles = glm::vec3(-39.1f, -137.67f, 0.0f), const Frustum& frustum = Frustum());
+	Camera(const glm::vec3& position = glm::vec3(17.75f, 8.10f, 29.0f), const glm::vec3& rotationInEulerAngles = glm::vec3(-8.25f, -120.9f, 0.0f), const Frustum& frustum = Frustum());
 	virtual ~Camera();
 	const glm::mat4 GetViewMatrix() const;
 	const glm::mat4 GetProjectionMatrix() const;

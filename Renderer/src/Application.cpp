@@ -40,6 +40,11 @@ void Application::Run()
 		timeLastFrame = timeCurrentFrame;
 
 		scene.GetCamera().Update(deltaTime);
+		std::vector<Light>& lights = scene.GetLights();
+		for (unsigned int i = 0; i < scene.GetNumberOfLights(); ++i)
+		{
+			lights[i].Update(deltaTime);
+		}
 
 		window.ProcessKeyInput();
 

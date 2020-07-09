@@ -21,7 +21,7 @@ void Window::Initialize(const Parameters& parameters)
 {
 	InitializeGLFW();
 	InitializeGLFWwindow(parameters);
-	//glfwSwapInterval(0);
+	glfwSwapInterval(1);
 }
 
 void Window::ProcessKeyInput()

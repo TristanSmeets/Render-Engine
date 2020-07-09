@@ -7,9 +7,9 @@ class DepthOfField : public PostProcessing
 public:
 	struct Parameters
 	{
-		float FocalDistance = .25f;
-		float FocalRange = 0.25f;
-		float RangeCutoff = 0.05f;
+		float FocalDistance = .20f;
+		float FocalRange = 0.03f;
+		float RangeCutoff = 0.1f;
 		int Lod = 1;
 	};
 

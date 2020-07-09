@@ -226,6 +226,8 @@ void UserInterface::RenderLight(const Light & light)
 	const Light::Parameters& parameters = light.GetParameters();
 	RenderColour(parameters.Colour);
 	RenderFloat("Radius", (float&)parameters.Radius, 0.0f, 100.0f);
+	RenderFloat("Circle Radius", (float&)parameters.CircleRadius, 0.0f, 100.0f);
+	RenderVec3("Start Position", parameters.StartPosition);
 }
 
 void UserInterface::RenderADSParameters(RenderComponent::ADSParameters & adsParameters)

@@ -18,6 +18,7 @@ public:
 	const std::vector<Actor>& GetActors() const;
 	std::vector<Actor>& GetActors();
 	const std::vector<Light>& GetLights() const;
+	std::vector<Light>& GetLights();
 	const Camera& GetCamera() const;
 	Camera& GetCamera();
 	const Skybox& GetSkybox() const;
@@ -31,7 +32,7 @@ private:
 	void InitializeActors();
 
 	const unsigned int MaximumNumberOfLights = 10;
-	unsigned int NumberOfLights = 3;
+	unsigned int NumberOfLights = 10;
 	std::vector<Actor> actors;
 	std::vector<Light> lights;
 	std::vector<Material> materials;
