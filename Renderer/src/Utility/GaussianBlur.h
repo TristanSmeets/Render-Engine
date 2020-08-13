@@ -14,6 +14,7 @@ public:
 
 private:
 	void SetupShader();
+	float Gauss(float x, float sigma2);
 
 	Shader blur;
 	Framebuffer framebuffers[2];

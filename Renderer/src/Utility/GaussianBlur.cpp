@@ -1,6 +1,7 @@
 #include "Rendererpch.h"
 #include "GaussianBlur.h"
 #include "Utility/Filepath.h"
+#include <gtc/matrix_transform.hpp>
 
 GaussianBlur::GaussianBlur() :
 	blur(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs"))
@@ -67,7 +68,33 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 void GaussianBlur::SetupShader()
 {
 	blur.Use();
+
+	float weights[5];
+	float sum;
+	float sigma2 = 4.0f;
+	//Compute and sum blur weights
+	weights[0] = Gauss(0, sigma2);
+	sum = weights[0];
+	for (int i = 1; i < 5; i++)
+	{
+		weights[i] = Gauss(i, sigma2);
+		sum += 2 * weights[i];
+	}
+
+	//Normalize the weights and set the uniform
+	for (int i = 0; i < 5; i++)
+	{
+		blur.SetFloat("weight[" + std::to_string(i) + "]", weights[i] / sum);
+	}
+
 	blur.SetInt("image", 0);
+}
+
+float GaussianBlur::Gauss(float x, float sigma2)
+{
+	double coefficient = 1.0 / (glm::two_pi<double>() * sigma2);
+	double exponant = -(x * x) / (2.0 * sigma2);
+	return (float)(coefficient * exp(exponant));
 }
 
 void GaussianBlur::SetupFramebuffers(const glm::ivec2& resolution)
