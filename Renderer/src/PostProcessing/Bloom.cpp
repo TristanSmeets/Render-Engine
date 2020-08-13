@@ -69,9 +69,9 @@ void Bloom::Unbind()
 	hdrFBO.Unbind();
 }
 
-void Bloom::BlurTextureBuffers(int lod)
+void Bloom::BlurTextureBuffers()
 {
-	gaussian.BlurTexture(colourBuffers[1], bloomTexture, lod, 1);
+	gaussian.BlurTexture(colourBuffers[1], bloomTexture, parameters.BlurParameters);
 }
 
 void Bloom::Draw()
@@ -92,7 +92,7 @@ void Bloom::Apply()
 
 void Bloom::Apply(const Bloom::Parameters& parameters)
 {
-	BlurTextureBuffers(parameters.Lod);
+	BlurTextureBuffers();
 	bloom.Use();
 	bloom.SetFloat("exposure", parameters.Exposure);
 	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);

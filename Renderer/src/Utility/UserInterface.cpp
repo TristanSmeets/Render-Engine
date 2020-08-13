@@ -246,11 +246,23 @@ void UserInterface::RenderPBRParameters(RenderComponent::PBRParameters & pbrPara
 
 void UserInterface::RenderDeferredParameters(RenderTechnique::DeferredParameters & deferredParameters)
 {
-	RenderSSAOParameters(deferredParameters.SsaoParameters);
+	if (ImGui::TreeNode("Screen Space Ambient Occlusion"))
+	{
+		RenderSSAOParameters(deferredParameters.SsaoParameters);
+		ImGui::TreePop();
+	}
 	ImGui::Separator();
-	RenderBloomParameters(deferredParameters.BloomParameters);
+	if (ImGui::TreeNode("Bloom"))
+	{
+		RenderBloomParameters(deferredParameters.BloomParameters);
+		ImGui::TreePop();
+	}
 	ImGui::Separator();
-	RenderDOFParameters(deferredParameters.DofParamaters);
+	if (ImGui::TreeNode("Depth Of Field"))
+	{
+		RenderDOFParameters(deferredParameters.DofParamaters);
+		ImGui::TreePop();
+	}
 }
 
 void UserInterface::RenderFXAAParameters(FXAA::Parameters & fxaaParameters)
@@ -264,6 +276,7 @@ void UserInterface::RenderBloomParameters(Bloom::Parameters & bloomParameters)
 {
 	RenderFloat("Gamma Correction", (float&)bloomParameters.GammaCorrection, 0.1f, 3.0f);
 	RenderFloat("Exposure", (float&)bloomParameters.Exposure, 0.1f, 2.0f);
+	RenderGaussianBlurParameters(bloomParameters.BlurParameters);
 }
 
 void UserInterface::RenderDOFParameters(DepthOfField::Parameters & dofParameters)
@@ -271,7 +284,7 @@ void UserInterface::RenderDOFParameters(DepthOfField::Parameters & dofParameters
 	RenderFloat("Focal Distance", (float&)dofParameters.FocalDistance, 0.0f, 2.0f);
 	RenderFloat("Focal Range", (float&)dofParameters.FocalRange, 0.0f, 1.0f);
 	RenderFloat("Focal Range Cutoff", (float&)dofParameters.RangeCutoff, 0.0f, 1.0f);
-	RenderInt("DoF Lod", (int&)dofParameters.Lod, 0, 7);
+	RenderGaussianBlurParameters(dofParameters.BlurParameters);
 }
 
 void UserInterface::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)
@@ -280,6 +293,12 @@ void UserInterface::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)
 	RenderInt("SSAO Kernel Size", (int&)ssoaParameters.KernelSize, 1, 64);
 	RenderFloat("SSAO Radius", (float&)ssoaParameters.Radius, 0.0f, 5.0f);
 	RenderFloat("SSAO Bias", (float&)ssoaParameters.Bias, 0.0f, 2.0f);
+}
+
+void UserInterface::RenderGaussianBlurParameters(GaussianBlur::Parameters & blurParameters)
+{
+	RenderInt("Gaussian Weights Used", (int&)blurParameters.AmountOfWeightsToUse, 1, 13);
+	RenderFloat("Gaussian Sigma2", (float&)blurParameters.Sigma2, 1.0f, 16.0f);
 }
 
 void UserInterface::RenderColour(const glm::vec3& colour)

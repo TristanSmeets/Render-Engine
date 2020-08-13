@@ -52,7 +52,7 @@ void DepthOfField::Apply()
 
 void DepthOfField::Apply(const DepthOfField::Parameters& parameters)
 {
-	gaussian.BlurTexture(colourBuffer, blurredScene, parameters.Lod, 1);
+	gaussian.BlurTexture(colourBuffer, blurredScene, parameters.BlurParameters);
 	depthOfField.Use();
 	depthOfField.SetFloat("focalDistance", parameters.FocalDistance);
 	depthOfField.SetFloat("focalRange", parameters.FocalRange);
