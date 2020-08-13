@@ -10,7 +10,8 @@ public:
 		float FocalDistance = .20f;
 		float FocalRange = 0.03f;
 		float RangeCutoff = 0.1f;
-		int Lod = 1;
+		int WeightsUsed = 5;
+		GaussianBlur::Parameters GaussianParameters;
 	};
 
 public:

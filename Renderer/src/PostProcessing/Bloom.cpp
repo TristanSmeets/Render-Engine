@@ -71,7 +71,8 @@ void Bloom::Unbind()
 
 void Bloom::BlurTextureBuffers(int lod)
 {
-	gaussian.BlurTexture(colourBuffers[1], bloomTexture, lod, 1);
+	GaussianBlur::Parameters gaussianParameters;
+	gaussian.BlurTexture(colourBuffers[1], bloomTexture, gaussianParameters);
 }
 
 void Bloom::Draw()

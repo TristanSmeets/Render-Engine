@@ -15,8 +15,78 @@ GaussianBlur::~GaussianBlur()
 	glDeleteTextures(1, &textures[1].GetID());
 }
 
-void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, unsigned int maxLOD, int blurLoops)
+//void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, unsigned int maxLOD, int blurLoops)
+//{
+//	for (int i = 0; i < 2; ++i)
+//	{
+//		framebuffers[i].Bind();
+//		glClear(GL_COLOR_BUFFER_BIT);
+//		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+//		glClearTexImage(textures[i].GetID(), 0, GL_RGB16F, GL_RGB, 0);
+//	}
+//
+//	bool horizontal = true;
+//	bool firstIteration = true;
+//
+//	glm::ivec2 copyResolution = source.GetResolution();
+//
+//	glCopyImageSubData(
+//		source.GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
+//		textures[0].GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
+//		copyResolution.x, copyResolution.y, 1);
+//
+//	blur.Use();
+//	const unsigned int maxAmountOfWeights = 13;
+//	float weights[maxAmountOfWeights];
+//	float sum;
+//	float sigma2 = 4.0f;
+//	//Compute and sum blur weights
+//	weights[0] = Gauss(0, sigma2);
+//	sum = weights[0];
+//	for (int i = 1; i < maxLOD; i++)
+//	{
+//		weights[i] = Gauss(i, sigma2);
+//		sum += 2 * weights[i];
+//	}
+//
+//	//Normalize the weights and set the uniform
+//	for (int i = 0; i < maxLOD; i++)
+//	{
+//		blur.SetFloat("weight[" + std::to_string(i) + "]", weights[i] / sum);
+//		blur.SetInt("PixelOffset[" + std::to_string(i) + "]", i);
+//	}
+//	blur.SetInt("MaxLod", maxLOD);
+//
+//	for (int i = 0; i < blurLoops * 2; ++i)
+//	{
+//		if (horizontal)
+//		{
+//			blur.SetSubroutine(Shader::SubroutineParameters("Horizontal", GL_FRAGMENT_SHADER));
+//		}
+//		else
+//		{
+//			blur.SetSubroutine(Shader::SubroutineParameters("Vertical", GL_FRAGMENT_SHADER));
+//		}
+//		framebuffers[horizontal].Bind();
+//		glActiveTexture(GL_TEXTURE0);
+//		glBindTexture(GL_TEXTURE_2D, textures[!horizontal].GetID());
+//		quad.Render();
+//		glGenerateMipmap(GL_TEXTURE_2D);
+//
+//		horizontal = !horizontal;
+//	}
+//	glBindTexture(GL_TEXTURE_2D, 0);
+//	framebuffers[0].Unbind();
+//
+//	glCopyImageSubData(
+//		textures[(blurLoops * 2) % 2].GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
+//		destination.GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
+//		copyResolution.x, copyResolution.y, 1);
+//}
+
+void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, const Parameters & parameters)
 {
+	//Clear framebuffers and textures
 	for (int i = 0; i < 2; ++i)
 	{
 		framebuffers[i].Bind();
@@ -25,9 +95,7 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 		glClearTexImage(textures[i].GetID(), 0, GL_RGB16F, GL_RGB, 0);
 	}
 
-	bool horizontal = true;
-	bool firstIteration = true;
-
+	//Copy the source texture.
 	glm::ivec2 copyResolution = source.GetResolution();
 
 	glCopyImageSubData(
@@ -35,10 +103,34 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 		textures[0].GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
 		copyResolution.x, copyResolution.y, 1);
 
-	blur.Use();
-	blur.SetInt("MaxLod", maxLOD);
+	const unsigned int maxAmountOfWeights = 13;
+	float weights[maxAmountOfWeights];
+	float sum;
+	float sigma2 = parameters.Sigma2;
+	unsigned int amountOfWeights = parameters.AmountOfWeightsToUse;
 
-	for (int i = 0; i < blurLoops * 2; ++i)
+	//Compute and the sum of the weights
+
+	weights[0] = Gauss(0, sigma2);
+	sum = weights[0];
+	for (int i = 1; i < amountOfWeights; i++)
+	{
+		weights[i] = Gauss(i, sigma2);
+		sum += 2 * weights[i];
+	}
+
+	blur.Use();
+	blur.SetInt("AmountOfWeights", amountOfWeights);
+	//Normalize the weights and set the uniform
+	for (int i = 0; i < amountOfWeights; i++)
+	{
+		blur.SetFloat("weight[" + std::to_string(i) + "]", weights[i] / sum);
+		//blur.SetInt("PixelOffset[" + std::to_string(i) + "]", i);
+	}
+
+	bool horizontal = true;
+
+	for (int i = 0; i < 2; ++i)
 	{
 		if (horizontal)
 		{
@@ -52,15 +144,15 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textures[!horizontal].GetID());
 		quad.Render();
-		glGenerateMipmap(GL_TEXTURE_2D);
 
 		horizontal = !horizontal;
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	framebuffers[0].Unbind();
 
+	//Copy blurred image to destination
 	glCopyImageSubData(
-		textures[(blurLoops * 2) % 2].GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
+		textures[0].GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
 		destination.GetID(), GL_TEXTURE_2D, 0, 0, 0, 0,
 		copyResolution.x, copyResolution.y, 1);
 }
@@ -68,24 +160,6 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, un
 void GaussianBlur::SetupShader()
 {
 	blur.Use();
-
-	float weights[5];
-	float sum;
-	float sigma2 = 4.0f;
-	//Compute and sum blur weights
-	weights[0] = Gauss(0, sigma2);
-	sum = weights[0];
-	for (int i = 1; i < 5; i++)
-	{
-		weights[i] = Gauss(i, sigma2);
-		sum += 2 * weights[i];
-	}
-
-	//Normalize the weights and set the uniform
-	for (int i = 0; i < 5; i++)
-	{
-		blur.SetFloat("weight[" + std::to_string(i) + "]", weights[i] / sum);
-	}
 
 	blur.SetInt("image", 0);
 }

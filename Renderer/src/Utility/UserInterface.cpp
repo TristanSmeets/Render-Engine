@@ -271,7 +271,8 @@ void UserInterface::RenderDOFParameters(DepthOfField::Parameters & dofParameters
 	RenderFloat("Focal Distance", (float&)dofParameters.FocalDistance, 0.0f, 2.0f);
 	RenderFloat("Focal Range", (float&)dofParameters.FocalRange, 0.0f, 1.0f);
 	RenderFloat("Focal Range Cutoff", (float&)dofParameters.RangeCutoff, 0.0f, 1.0f);
-	RenderInt("DoF Lod", (int&)dofParameters.Lod, 0, 7);
+	RenderInt("DoF Gaussian Weights Used", (int&)dofParameters.GaussianParameters.AmountOfWeightsToUse, 1, 13);
+	RenderFloat("DoF Gaussian Sigma2", (float&)dofParameters.GaussianParameters.Sigma2, 1.0f, 16.0f);
 }
 
 void UserInterface::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)
