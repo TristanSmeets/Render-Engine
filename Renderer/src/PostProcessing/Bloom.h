@@ -8,7 +8,7 @@ class Bloom : public PostProcessing
 public:
 	struct Parameters
 	{
-		int Lod = 1;
+		GaussianBlur::Parameters BlurParameters;
 		float Exposure = 1.0f;
 		float GammaCorrection = 2.2f;
 	};
@@ -25,7 +25,7 @@ public:
 	const Texture& GetTexture() const;
 	
 private:
-	void BlurTextureBuffers(int lod);
+	void BlurTextureBuffers();
 	void SetupHDRFramebuffer(const Window::Parameters & parameters);
 	void SetupShaders();
 	

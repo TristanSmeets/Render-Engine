@@ -11,7 +11,7 @@ public:
 		float FocalRange = 0.03f;
 		float RangeCutoff = 0.1f;
 		int WeightsUsed = 5;
-		GaussianBlur::Parameters GaussianParameters;
+		GaussianBlur::Parameters BlurParameters;
 	};
 
 public:

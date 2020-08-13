@@ -11,6 +11,7 @@
 #include "Rendering/RenderComponent.h"
 #include "Technique/RenderTechnique.h"
 #include "PostProcessing/PostProcessing.h"
+#include "Utility/GaussianBlur.h"
 
 class UserInterface
 {
@@ -47,6 +48,8 @@ private:
 	void RenderBloomParameters(Bloom::Parameters& bloomParameters);
 	void RenderDOFParameters(DepthOfField::Parameters& dofParameters);
 	void RenderSSAOParameters(SSAO::Parameters& ssoaParameters);
+	void RenderGaussianBlurParameters(GaussianBlur::Parameters& blurParameters);
+
 
 	int aspectRatio = 2;
 	float fieldOfViewDegrees = 45.0f;
