@@ -24,6 +24,8 @@ public:
 	void SetFloat(const std::string& name, float value);
 	void SetVec2(const std::string& name, glm::vec2 value);
 	void SetVec3(const std::string& name, glm::vec3 value);
+	void SetVec4(const std::string& name, glm::vec4 value);
+	void SetMat3(const std::string& name, glm::mat3 value);
 	void SetMat4(const std::string& name, glm::mat4 value);
 	void SetSubroutine(const SubroutineParameters& parameters);
 	const GLuint GetID() const;

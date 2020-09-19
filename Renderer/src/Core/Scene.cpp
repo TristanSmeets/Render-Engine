@@ -122,33 +122,30 @@ void Scene::InitializeMaterials()
 	Material aluminium = Material("Aluminium");
 	aluminium.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
 	aluminium.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
-	aluminium.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/Metallic.png");
-	aluminium.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
-	aluminium.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
+	aluminium.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/MRAO.png");
+	//aluminium.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
+	//aluminium.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
 
 	Material rustedIron = Material("Rusted_Iron");
 	rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
 	rustedIron.AddTexture(Texture::Normal, Filepath::Texture + "RustedIron/Normal.png");
-	rustedIron.AddTexture(Texture::Metallic, Filepath::Texture + "RustedIron/Metallic.png");
-	rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
-	rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
+	rustedIron.AddTexture(Texture::Metallic, Filepath::Texture + "RustedIron/MRAO.png");
+	//rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
+	//rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
 
 	Material cobblestone = Material("Cobblestone");
 	cobblestone.AddTexture(Texture::Albedo, Filepath::Texture + "cobblestone/Albedo.png", true);
 	cobblestone.AddTexture(Texture::Normal, Filepath::Texture + "cobblestone/Normal.png");
-	cobblestone.AddTexture(Texture::Metallic, Filepath::Texture + "cobblestone/Metallic.png");
-	cobblestone.AddTexture(Texture::Roughness, Filepath::Texture + "cobblestone/Roughness.png");
-	cobblestone.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "cobblestone/AmbientOcclusion.png");
+	cobblestone.AddTexture(Texture::Metallic, Filepath::Texture + "cobblestone/MRAO.png");
+	//cobblestone.AddTexture(Texture::Roughness, Filepath::Texture + "cobblestone/Roughness.png");
+	//cobblestone.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "cobblestone/AmbientOcclusion.png");
 
 	Material demo = Material("Demo");
 	demo.AddTexture(Texture::Albedo, Filepath::Texture + "Demo/Albedo.png", true);
-	//demo.AddTexture(Texture::Albedo,			Filepath::Texture + "Aluminium/Albedo.png", true);
 	demo.AddTexture(Texture::Normal, Filepath::Texture + "Demo/Normal.png");
-	demo.AddTexture(Texture::Metallic, Filepath::Texture + "Demo/Metallic.png");
-	//demo.AddTexture(Texture::Metallic,			Filepath::Texture + "Aluminium/Metallic.png");
-	demo.AddTexture(Texture::Roughness, Filepath::Texture + "Demo/Roughness.png");
-	//demo.AddTexture(Texture::Roughness,			Filepath::Texture + "Auminium/Roughness.png");
-	demo.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Demo/AmbientOcclusion_2.png");
+	demo.AddTexture(Texture::Metallic, Filepath::Texture + "Demo/MRAO.png");
+	//demo.AddTexture(Texture::Roughness, Filepath::Texture + "Demo/Roughness.png");
+	//demo.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Demo/AmbientOcclusion_2.png");
 
 	//Material leaf = Material("Window");
 	//leaf.AddTexture(Texture::Albedo, Filepath::Texture + "Leaf/blending_transparent_window.png", true);
@@ -185,7 +182,7 @@ void Scene::InitializeActors()
 		float b = ((rand() % 100) / 200.0f);// + 0.5f;
 
 		Light::Parameters parameters(glm::vec3(r, g, b) * 100.0f);
-		parameters.CircleRadius = rand() % 20;
+		parameters.CircleRadius = (float)(rand() % 20);
 		parameters.StartPosition = glm::vec3(x, y, z);
 		if (i % 2 == 0)
 		{

@@ -84,6 +84,16 @@ void Shader::SetVec3(const std::string & name, glm::vec3 value)
 	glUniform3fv(GetUniformFromCache(name), 1, glm::value_ptr(value));
 }
 
+void Shader::SetVec4(const std::string& name, glm::vec4 value)
+{
+	glUniform4fv(GetUniformFromCache(name), 1, glm::value_ptr(value));
+}
+
+void Shader::SetMat3(const std::string& name, glm::mat3 value)
+{
+	glUniformMatrix3fv(GetUniformFromCache(name), 1, GL_FALSE, glm::value_ptr(value));
+}
+
 void Shader::SetMat4(const std::string & name, glm::mat4 value)
 {
 	glUniformMatrix4fv(GetUniformFromCache(name), 1, GL_FALSE, glm::value_ptr(value));

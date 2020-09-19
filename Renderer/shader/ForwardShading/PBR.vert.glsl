@@ -17,6 +17,7 @@ void main()
 {
     Normal = normalize(NormalMatrix * VertexNormal);
     Position = (ModelViewMatrix * vec4(VertexPosition, 1.0f)).xyz;
+    UV = TextureCoordinate;
 
     gl_Position = MVP * vec4(VertexPosition, 1.0f);
 }

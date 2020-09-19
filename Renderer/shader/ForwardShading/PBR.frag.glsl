@@ -17,7 +17,6 @@ uniform struct MaterialInfo {
 
 uniform struct LightInfo {
     vec4 Position;
-    vec3 Colour;
     vec3 Intensity;
 } Lights[MaximumLights];
 uniform int NumberOfLights = 10;
@@ -54,14 +53,14 @@ vec3 microfacetModel( int lightIndex, vec3 position, vec3 n) {
     }
 
     vec3 v = normalize(-position);
-    vec3 h = normalize  v + l);
+    vec3 h = normalize(v + l);
     vec3 f0 = mix(vec3(0.04), diffuseBRDF, MRAO.r);
 
     float nDotH = dot(n, h);
     float lDotH = dot(l, h);
     float nDotL = max(dot(n, l), 0.0);
     float nDotV = dot(n, v);
-    vec3 specBRDF = 0.25 * ggxDistribution(nDotH, MRAO.g) * schlickFresnel(lDotH, f0) * geomSmith(nDotV);
+    vec3 specBRDF = 0.25 * ggxDistribution(nDotH, MRAO.g) * schlickFresnel(lDotH, f0) * geomSmith(nDotV, MRAO.g);
 
     return (diffuseBRDF + PI * specBRDF) * lightI * nDotL;
 }
