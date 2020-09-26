@@ -27,7 +27,7 @@ private:
 	Shader lamp;
 	Shader pbr;
 	ShadowMapping shadowMapping;
-	//MSAA msaa;
+	MSAA msaa;
 
 	Bloom bloom;
 	Basic basic;

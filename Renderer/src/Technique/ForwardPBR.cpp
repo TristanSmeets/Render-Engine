@@ -28,11 +28,11 @@ void ForwardPBR::Initialize(Scene & scene)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	/*MSAA::Parameters msaaParameters;
-	msaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
-	msaaParameters.Samples = 8;
-	msaaParameters.TextureFormat = GL_RGB16F;
-	msaa.Initialize(msaaParameters);*/
+	//MSAA::Parameters msaaParameters;
+	//msaaParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
+	//msaaParameters.Samples = 8;
+	//msaaParameters.TextureFormat = GL_RGB16F;
+	//msaa.Initialize(msaaParameters);
 
 	postProcessing = &basic;
 	postProcessing->Initialize(window.GetWindowParameters());
@@ -49,17 +49,6 @@ void ForwardPBR::SetupShaders(Scene & scene)
 	pbr.SetInt("Material.Albedo", 0);
 	pbr.SetInt("Material.Normal", 1);
 	pbr.SetInt("Material.MRAO", 2);
-
-	/*pbr.SetMat4("projection", projection);
-	pbr.SetInt("irradianceMap", 5);
-	pbr.SetInt("prefilterMap", 6);
-	pbr.SetInt("brdfLUT", 7);
-	pbr.SetInt("shadowMap", 8);
-
-	for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
-	{
-		pbr.SetInt("shadowCubeMaps[" + std::to_string(i) + "]", i + 9);
-	}*/
 
 	skyboxShader.Use();
 	skyboxShader.SetInt("environmentMap", 0);
@@ -123,37 +112,7 @@ void ForwardPBR::Render(Scene & scene)
 		glActiveTexture(GL_TEXTURE0);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
-	/*for (unsigned int i = 0; i < actors.size(); ++i)
-	{
-		if (actors[i].GetRenderComponent().GetPBRParameters().IsTransparent)
-		{
-			continue;
-		}
-		pbr.SetMat4("model", actors[i].GetWorldMatrix());
-		const Material& material = actors[i].GetRenderComponent().GetMaterial();
-		material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
-		material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
-		material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
-		material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
-		material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
-		actors[i].GetRenderComponent().GetMesh().Draw();
-	}
 	
-	for (std::map<float, const Actor*>::reverse_iterator it = distanceSortedActors.rbegin(); it != distanceSortedActors.rend(); ++it)
-	{
-		const Actor* actor = it->second;
-		pbr.SetMat4("model", actor->GetWorldMatrix());
-		pbr.SetVec3("NonMetallicReflectionColour", actor->GetRenderComponent().GetPBRParameters().NonMetallicReflectionColour);
-
-		const Material& material = actor->GetRenderComponent().GetMaterial();
-		material.GetTexture(Texture::Albedo).Bind(pbr, Texture::Albedo);
-		material.GetTexture(Texture::Normal).Bind(pbr, Texture::Normal);
-		material.GetTexture(Texture::Metallic).Bind(pbr, Texture::Metallic);
-		material.GetTexture(Texture::Roughness).Bind(pbr, Texture::Roughness);
-		material.GetTexture(Texture::AmbientOcclusion).Bind(pbr, Texture::AmbientOcclusion);
-		actor->GetRenderComponent().GetMesh().Draw();
-	}
-	*/
 	//Render skybox
 	glDepthFunc(GL_LEQUAL);
 	skyboxShader.Use();
@@ -176,21 +135,7 @@ void ForwardPBR::SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, cons
 {
 	pbr.Use();
 	pbr.SetInt("NumberOfLights", scene.GetNumberOfLights());
-	/*pbr.SetMat4("view", scene.GetCamera().GetViewMatrix());
-	pbr.SetVec3("cameraPos", scene.GetCamera().GetWorldPosition());
-	pbr.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
-
-	glActiveTexture(GL_TEXTURE5);
-	skybox.GetIrradiance().Bind();
-	glActiveTexture(GL_TEXTURE6);
-	skybox.GetPrefilter().Bind();
-	skybox.GetLookup().Bind(pbr, (Texture::Type)7);
-	for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
-	{
-		glActiveTexture(GL_TEXTURE9 + i);
-		shadowMapping.BindShadowMap(i);
-	}
-	glActiveTexture(GL_TEXTURE0);*/
+	
 
 	//Set Lights
 	lamp.Use();
@@ -208,7 +153,5 @@ void ForwardPBR::SetPBRShaderUniforms(Scene & scene, const Skybox & skybox, cons
 		pbr.Use();
 		pbr.SetVec4(lightPosition, view * glm::vec4(lights[i].GetWorldPosition(), 1.0f));
 		pbr.SetVec3(lightIntensity, lights[i].GetColour());
-		//const Light::Parameters& parameters = lights[i].GetParameters();
-		//pbr.SetFloat(lightIntensity, parameters.Radius);
 	}
 }
