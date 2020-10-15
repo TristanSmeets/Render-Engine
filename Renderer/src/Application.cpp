@@ -20,11 +20,29 @@ void Application::Initialize()
 	printf("Initializing application\n");
 	window.Initialize(Window::Parameters());
 	InitializeGlad();
+	const GLubyte* renderer = glGetString(GL_RENDERER);
+	const GLubyte* vendor = glGetString(GL_VENDOR);
+	const GLubyte* version = glGetString(GL_VERSION);
+	const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
+	GLint major, minor;
+	glGetIntegerv(GL_MAJOR_VERSION, &major);
+	glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+	GLint nExtensions;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &nExtensions);
+
+	printf("GL Vendor\t\t\t: %s\n", vendor);
+	printf("GL Renderer\t\t\t: %s\n", renderer);
+	printf("GL Version (string)\t\t: %s\n", version);
+	printf("GL Version (int)\t\t: %d.%d\n", major, minor);
+	printf("GLSL Version\t\t\t: %s\n", glslVersion);
+
 	scene.Initialize();
 	//renderTechnique = new ForwardADS(window);
-	//renderTechnique = new ForwardPBR(window);
+	renderTechnique = new ForwardPBR(window);
 	//renderTechnique = new DeferredADS(window);
-	renderTechnique = new DeferredPBR(window);
+	//renderTechnique = new DeferredPBR(window);
 	renderTechnique->Initialize(scene);
 	ui.Initialize(window);
 	printf("Application initialization complete\n");
