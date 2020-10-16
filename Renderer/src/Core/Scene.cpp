@@ -122,28 +122,28 @@ void Scene::InitializeMaterials()
 	Material aluminium = Material("Aluminium");
 	aluminium.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
 	aluminium.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
-	aluminium.AddTexture(Texture::Metallic, Filepath::Texture + "Aluminium/MRAO.png");
+	aluminium.AddTexture(Texture::MRAO, Filepath::Texture + "Aluminium/MRAO.png");
 	//aluminium.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
 	//aluminium.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
 
 	Material rustedIron = Material("Rusted_Iron");
 	rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
 	rustedIron.AddTexture(Texture::Normal, Filepath::Texture + "RustedIron/Normal.png");
-	rustedIron.AddTexture(Texture::Metallic, Filepath::Texture + "RustedIron/MRAO.png");
+	rustedIron.AddTexture(Texture::MRAO, Filepath::Texture + "RustedIron/MRAO.png");
 	//rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
 	//rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
 
 	Material cobblestone = Material("Cobblestone");
 	cobblestone.AddTexture(Texture::Albedo, Filepath::Texture + "cobblestone/Albedo.png", true);
 	cobblestone.AddTexture(Texture::Normal, Filepath::Texture + "cobblestone/Normal.png");
-	cobblestone.AddTexture(Texture::Metallic, Filepath::Texture + "cobblestone/MRAO.png");
+	cobblestone.AddTexture(Texture::MRAO, Filepath::Texture + "cobblestone/MRAO.png");
 	//cobblestone.AddTexture(Texture::Roughness, Filepath::Texture + "cobblestone/Roughness.png");
 	//cobblestone.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "cobblestone/AmbientOcclusion.png");
 
 	Material demo = Material("Demo");
 	demo.AddTexture(Texture::Albedo, Filepath::Texture + "Demo/Albedo.png", true);
 	demo.AddTexture(Texture::Normal, Filepath::Texture + "Demo/Normal.png");
-	demo.AddTexture(Texture::Metallic, Filepath::Texture + "Demo/MRAO.png");
+	demo.AddTexture(Texture::MRAO, Filepath::Texture + "Demo/MRAO.png");
 	//demo.AddTexture(Texture::Roughness, Filepath::Texture + "Demo/Roughness.png");
 	//demo.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Demo/AmbientOcclusion_2.png");
 

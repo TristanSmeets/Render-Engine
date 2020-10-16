@@ -131,12 +131,8 @@ const std::string Texture::TypeToString(Type type)
 		return "Albedo";
 	case Texture::Normal:
 		return "Normal";
-	case Texture::Metallic:
-		return "Metallic";
-	case Texture::Roughness:
-		return "Roughness";
-	case Texture::AmbientOcclusion:
-		return "AO";
+	case Texture::MRAO:
+		return "MRAO";
 	default:
 		return "Not a texture type";
 	}
@@ -259,12 +255,8 @@ const std::string Texture::EnumToString(Type type) const
 		return "material.Albedo";
 	case Normal:
 		return "material.Normal";
-	case Metallic:
-		return "material.Metallic";
-	case Roughness:
-		return "material.Roughness";
-	case AmbientOcclusion:
-		return "material.AO";
+	case MRAO:
+		return "material.MRAO";
 	default:
 		return "";
 	}

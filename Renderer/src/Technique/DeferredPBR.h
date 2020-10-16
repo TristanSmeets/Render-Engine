@@ -26,16 +26,16 @@ private:
 	const Window& window;
 	Basic basic;
 	Bloom bloom;
-	DepthOfField depthOfField;
+	//DepthOfField depthOfField;
 	FXAA fxaa;
 	SSAO ssao;
 
 	Framebuffer gBuffer;
 	Renderbuffer renderbuffer;
-	Texture gBufferTextures[5];
+	Texture gBufferTextures[4];
 	Shader lamp;
 	Shader geometry;
-	Shader pbrLighting;
+	Shader deferredLighting;
 	NDCQuad quad;
 	ShadowMapping shadowMapping;
 	Shader forwardLighting;

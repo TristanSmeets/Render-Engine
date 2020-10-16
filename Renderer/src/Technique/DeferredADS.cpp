@@ -298,7 +298,7 @@ void DeferredADS::RenderTransparentActors(const glm::mat4 & view, Scene& scene)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
+		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::MRAO).GetID());
 		actor->GetRenderComponent().GetMesh().Draw();
 	}
 	glDisable(GL_BLEND);
@@ -416,7 +416,7 @@ void DeferredADS::GeometryPass(const glm::mat4 &view, Scene & scene)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
+		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::MRAO).GetID());
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 	gBuffer.Unbind();

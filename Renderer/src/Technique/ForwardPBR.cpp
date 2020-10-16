@@ -93,13 +93,14 @@ void ForwardPBR::Render(Scene & scene)
 
 	//Render actors
 	pbr.Use();
+	glm::mat4 p = scene.GetCamera().GetProjectionMatrix();
+	pbr.SetMat4("ProjectionMatrix", p);
+	
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
 		glm::mat4 vm = scene.GetCamera().GetViewMatrix() * actors[i].GetWorldMatrix();
-		glm::mat4 p = scene.GetCamera().GetProjectionMatrix();
 		pbr.SetMat4("ModelViewMatrix", vm);
 		pbr.SetMat3("NormalMatrix", glm::mat3(vm));
-		pbr.SetMat4("ProjectionMatrix", p);
 		pbr.SetMat4("MVP", p * vm);
 
 		const Material& material = actors[i].GetRenderComponent().GetMaterial();
@@ -108,7 +109,7 @@ void ForwardPBR::Render(Scene & scene)
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Normal).GetID());
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
+		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::MRAO).GetID());
 		glActiveTexture(GL_TEXTURE0);
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
