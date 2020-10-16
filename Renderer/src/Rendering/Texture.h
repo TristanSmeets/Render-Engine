@@ -10,9 +10,7 @@ public:
 	{
 		Albedo,
 		Normal,
-		Metallic,
-		Roughness,
-		AmbientOcclusion,
+		MRAO,
 		Count
 	};
 

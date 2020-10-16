@@ -89,7 +89,7 @@ void ForwardADS::Render(Scene & scene)
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Metallic).GetID());
+		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::MRAO).GetID());
 		actor->GetRenderComponent().GetMesh().Draw();
 	}
 
