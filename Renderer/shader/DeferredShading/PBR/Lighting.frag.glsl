@@ -11,8 +11,8 @@ in vec2 TextureCoordinates;
 uniform struct gTextures
 {
     sampler2D gPosition;
-    sampler2D gAlbedo;
     sampler2D gNormal;
+    sampler2D gAlbedo;
     sampler2D gMRAO;
 } GBuffer;
 
@@ -60,15 +60,15 @@ vec3 microfacetModel(int lightIndex, vec3 position, vec3 n)
         lightI /= (dist * dist);
     }
 
-    vec3 = normalize(-position);
-    vec3 h = normalize( v + l);
+    vec3 v = normalize(-position);
+    vec3 h = normalize(v + l);
     vec3 f0 = mix(vec3(0.04), diffuseBRDF, MRAO.r);
 
     float nDotH = dot(n, h);
     float lDotH = dot(l, h);
     float nDotL = max(dot(n, l), 0.0);
     float nDotV = dot(n, v);
-    vec3 specBRDF = 0.25 * ggxDistribution(nDotH, mrao.g) * schlickFresnel(lDotH, f0) * geoSmith(nDotV, MRAO.g);
+    vec3 specBRDF = 0.25 * ggxDistribution(nDotH, MRAO.g) * schlickFresnel(lDotH, f0) * geoSmith(nDotV, MRAO.g);
 
     return (diffuseBRDF + PI * specBRDF) * lightI * nDotL;
 }
@@ -85,13 +85,13 @@ void main()
     }
     FragColour = vec4(sum, 1.0);
     
-    float brightness = dot(colour, vec3( 0.2126f, 0.7152f, 0.0722f)); //some lumen value. Humans see green as the brightest.
+    float brightness = dot(sum, vec3( 0.2126f, 0.7152f, 0.0722f)); //some lumen value. Humans see green as the brightest.
     if(brightness > 1.0f)
     {
-        BrightColour = vec4(sum, 1.0f);
+        BloomColour = vec4(sum, 1.0f);
     }
     else
     {
-        BrightColour = vec4(vec3(0.0f), 1.0f);
+        BloomColour = vec4(vec3(0.0f), 1.0f);
     }
 }

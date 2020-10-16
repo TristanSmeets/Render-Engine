@@ -20,5 +20,5 @@ void main()
     Position = (Matrix.ModelView * vec4(vertexPosition, 1.0)).xyz;
     TextureCoordinates = textureCoordinates;
 
-    gl_Position = Matrix.mvp * vec4(vertexPosition, 1.0f);
+    gl_Position = Matrix.MVP * vec4(vertexPosition, 1.0f);
 }

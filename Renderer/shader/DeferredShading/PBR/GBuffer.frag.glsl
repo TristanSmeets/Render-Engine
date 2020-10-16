@@ -17,7 +17,7 @@ uniform struct MaterialInfo
 
 vec3 CalculateNormal()
 {
-    vec3 tangentNormal = texture(Material.Normal, UV).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(Material.Normal, TextureCoordinates).xyz * 2.0 - 1.0;
 
     vec3 Q1 = dFdx(Position);
     vec3 Q2 = dFdy(Position);
