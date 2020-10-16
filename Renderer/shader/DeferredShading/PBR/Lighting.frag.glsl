@@ -23,6 +23,15 @@ uniform struct LightInfo
 } Lights[MaximumLights];
 uniform int NumberOfLights = 10;
 
+uniform struct LightTextures
+{
+    samplerCube Irradiance;
+    samplerCube Prefilter;
+    sampler2D BrdfLUT;
+} IBL;
+
+uniform mat4 InverseView;
+
 vec3 schlickFresnel(float lDotH, vec3 f0)
 {
     return f0 + ( 1 - f0) * pow(1.0 - lDotH, 5);
@@ -73,6 +82,41 @@ vec3 microfacetModel(int lightIndex, vec3 position, vec3 n)
     return (diffuseBRDF + PI * specBRDF) * lightI * nDotL;
 }
 
+vec3 getEnvironmentLight(in vec3 position, in vec3 normal)
+{
+    vec3 v = normalize(-position);
+    vec3 WSNormal = mat3(InverseView) * normal;
+    vec3 MRAO = texture(GBuffer.gMRAO, TextureCoordinates).rgb;
+    vec3 Albedo = texture(GBuffer.gAlbedo, TextureCoordinates).rgb;
+
+    //schlickFresnel
+    float roughness = MRAO.g;
+    vec3 F0 = mix(vec3(0.04), Albedo, MRAO.r);
+    //vec3 schlick = schlickFresnel(dot(normal, v), F0);
+
+    float cosTheta = max(dot(normal, v), 0.0);
+    vec3 roughnessFresnel = F0 + (max(vec3(1.0f - roughness), F0) - F0) * pow(1.0f - cosTheta, 5.0f);
+
+    vec3 diffuseConstant = 1.0f - roughnessFresnel;
+    diffuseConstant *= 1 - MRAO.r;
+
+    //Irradiance
+    vec3 irradiance = texture(IBL.Irradiance, WSNormal).rgb;
+    vec3 diffuse = irradiance * texture(GBuffer.gAlbedo, TextureCoordinates).rgb;
+
+    //Prefilter
+    vec3 reflectionDir = reflect(-v, normal);
+    reflectionDir = mat3(InverseView) * reflectionDir;
+
+    const float MaxReflectionLod = 4.0;
+    vec3 prefilter = textureLod(IBL.Prefilter, reflectionDir, roughness * MaxReflectionLod).rgb;
+    
+    vec2 brdf = texture(IBL.BrdfLUT, vec2(max(dot(normal, v),0.0), roughness)).rg;
+    vec3 specular = prefilter * (roughnessFresnel * brdf.x + brdf.y);
+
+    return diffuseConstant * diffuse + specular;
+}
+
 void main()
 {
     vec3 sum = vec3(0);
@@ -83,6 +127,8 @@ void main()
     {
         sum += microfacetModel(i, position, normal);
     }
+    sum = sum + getEnvironmentLight(position, normal);
+
     FragColour = vec4(sum, 1.0);
     
     float brightness = dot(sum, vec3( 0.2126f, 0.7152f, 0.0722f)); //some lumen value. Humans see green as the brightest.

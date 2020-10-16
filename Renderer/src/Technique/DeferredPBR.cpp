@@ -153,9 +153,10 @@ void DeferredPBR::SetupShaders(Scene & scene)
 	deferredLighting.SetInt("GBuffer.gNormal", 1);
 	deferredLighting.SetInt("GBuffer.gAlbedo", 2);
 	deferredLighting.SetInt("GBuffer.gMRAO", 3);
-	//deferredLighting.SetInt("irradianceMap", 4);
-	//deferredLighting.SetInt("prefilterMap", 5);
-	//deferredLighting.SetInt("brdfLUT", 6);
+	deferredLighting.SetInt("IBL.Irradiance", 4);
+	deferredLighting.SetInt("IBL.Prefilter", 5);
+	deferredLighting.SetInt("IBL.BrdfLUT", 6);
+
 	//deferredLighting.SetInt("ssao", 7);
 	//for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
 	//{
@@ -237,10 +238,10 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 
 	deferredLighting.Use();
 	deferredLighting.SetInt("NumberOfLights", scene.GetNumberOfLights());
+	deferredLighting.SetMat4("InverseView", glm::inverse(scene.GetCamera().GetViewMatrix()));
 	//deferredLighting.SetVec3("cameraPosition", scene.GetCamera().GetWorldPosition());
 	//deferredLighting.SetVec3("nonMetallicReflectionColour", deferredParameters.PbrParameters.NonMetallicReflectionColour);
 	//deferredLighting.SetFloat("farPlane", shadowMapping.GetParameters().FarPlane);
-	//deferredLighting.SetMat4("inverseView", glm::inverse(scene.GetCamera().GetViewMatrix()));
 	//deferredLighting.SetMat4("view", scene.GetCamera().GetViewMatrix());
 	
 	//Binding GBuffer
@@ -250,12 +251,12 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 		glBindTexture(GL_TEXTURE_2D, gBufferTextures[i].GetID());
 	}
 
-	//const Skybox& skybox = scene.GetSkybox();
-	//glActiveTexture(GL_TEXTURE4);
-	//skybox.GetIrradiance().Bind();
-	//glActiveTexture(GL_TEXTURE5);
-	//skybox.GetPrefilter().Bind();
-	//skybox.GetLookup().Bind(deferredLighting, (Texture::Type)6);
+	const Skybox& skybox = scene.GetSkybox();
+	glActiveTexture(GL_TEXTURE4);
+	skybox.GetIrradiance().Bind();
+	glActiveTexture(GL_TEXTURE5);
+	skybox.GetPrefilter().Bind();
+	skybox.GetLookup().Bind(deferredLighting, (Texture::Type)6);
 	//glActiveTexture(GL_TEXTURE7);
 	//glBindTexture(GL_TEXTURE_2D, ssao.GetTexture().GetID());
 

@@ -177,11 +177,11 @@ void Scene::InitializeActors()
 		float y = ((rand() % 100) / 100.0f) * 5.0f + 5.0f;
 		float z = ((rand() % 100) / 100.0f) * 30.0f - 12.0f;
 
-		float r = ((rand() % 100) / 200.0f);// + 0.5f;
-		float g = ((rand() % 100) / 200.0f);// + 0.5f;
-		float b = ((rand() % 100) / 200.0f);// + 0.5f;
+		float r = ((rand() % 100) / 10.0f);// + 0.5f;
+		float g = ((rand() % 100) / 10.0f);// + 0.5f;
+		float b = ((rand() % 100) / 10.0f);// + 0.5f;
 
-		Light::Parameters parameters(glm::vec3(r, g, b) * 100.0f);
+		Light::Parameters parameters(glm::vec3(r, g, b));
 		parameters.CircleRadius = (float)(rand() % 20);
 		parameters.StartPosition = glm::vec3(x, y, z);
 		if (i % 2 == 0)
