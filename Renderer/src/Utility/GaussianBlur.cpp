@@ -113,7 +113,7 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, co
 
 	weights[0] = Gauss(0, sigma2);
 	sum = weights[0];
-	for (int i = 1; i < amountOfWeights; i++)
+	for (unsigned int i = 1; i < amountOfWeights; i++)
 	{
 		weights[i] = Gauss(i, sigma2);
 		sum += 2 * weights[i];
@@ -122,7 +122,7 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, co
 	blur.Use();
 	blur.SetInt("AmountOfWeights", amountOfWeights);
 	//Normalize the weights and set the uniform
-	for (int i = 0; i < amountOfWeights; i++)
+	for (unsigned int i = 0; i < amountOfWeights; i++)
 	{
 		blur.SetFloat("weight[" + std::to_string(i) + "]", weights[i] / sum);
 		//blur.SetInt("PixelOffset[" + std::to_string(i) + "]", i);

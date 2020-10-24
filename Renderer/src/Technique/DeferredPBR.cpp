@@ -156,8 +156,8 @@ void DeferredPBR::SetupShaders(Scene & scene)
 	deferredLighting.SetInt("IBL.Irradiance", 4);
 	deferredLighting.SetInt("IBL.Prefilter", 5);
 	deferredLighting.SetInt("IBL.BrdfLUT", 6);
+	deferredLighting.SetInt("ssaoTexture", 7);
 
-	//deferredLighting.SetInt("ssao", 7);
 	//for (int i = 0; i < shadowMapping.GetMaximumNumberOfLights(); ++i)
 	//{
 	//	deferredLighting.SetInt("shadowCubeMaps[" + std::to_string(i) + "]", i + 8);
@@ -257,8 +257,8 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	glActiveTexture(GL_TEXTURE5);
 	skybox.GetPrefilter().Bind();
 	skybox.GetLookup().Bind(deferredLighting, (Texture::Type)6);
-	//glActiveTexture(GL_TEXTURE7);
-	//glBindTexture(GL_TEXTURE_2D, ssao.GetTexture().GetID());
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, ssao.GetTexture().GetID());
 
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
 

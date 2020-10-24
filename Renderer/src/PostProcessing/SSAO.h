@@ -27,7 +27,7 @@ public:
 private:
 	void CreateNoiseTexture(std::uniform_real_distribution<GLfloat>& randomFloats, std::default_random_engine& generator);
 	void CreateKernel(std::uniform_real_distribution<GLfloat>& randomFloats, std::default_random_engine& generator);
-	void TexturCreationPass(const Texture& positions, const Texture& normals);
+	void TextureCreationPass(const Texture& positions, const Texture& normals);
 	void TextureBlurPass();
 	void SetupShaders(const glm::mat4& projection);
 

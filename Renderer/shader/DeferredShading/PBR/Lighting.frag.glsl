@@ -30,6 +30,8 @@ uniform struct LightTextures
     sampler2D BrdfLUT;
 } IBL;
 
+uniform sampler2D ssaoTexture;
+
 uniform mat4 InverseView;
 
 vec3 schlickFresnel(float lDotH, vec3 f0)
@@ -122,12 +124,13 @@ void main()
     vec3 sum = vec3(0);
     vec3 position = texture(GBuffer.gPosition, TextureCoordinates).rgb;
     vec3 normal = texture(GBuffer.gNormal, TextureCoordinates).rgb;
+    float ssao = texture(ssaoTexture, TextureCoordinates).r;
 
     for(int i = 0; i < NumberOfLights; ++i)
     {
         sum += microfacetModel(i, position, normal);
     }
-    sum = sum + getEnvironmentLight(position, normal);
+    sum = sum + (getEnvironmentLight(position, normal) * ssao);
 
     FragColour = vec4(sum, 1.0);
     
