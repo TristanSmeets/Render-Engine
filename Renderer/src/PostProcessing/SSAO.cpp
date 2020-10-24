@@ -63,7 +63,7 @@ void SSAO::Apply()
 void SSAO::Apply(const Texture & positions, const Texture & normals, const SSAO::Parameters& parameters)
 {
 	this->parameters = parameters;
-	TexturCreationPass(positions, normals);
+	TextureCreationPass(positions, normals);
 	Apply();
 }
 
@@ -119,7 +119,7 @@ void SSAO::CreateKernel(std::uniform_real_distribution<GLfloat>& randomFloats, s
 	}
 }
 
-void SSAO::TexturCreationPass(const Texture& positions, const Texture& normals)
+void SSAO::TextureCreationPass(const Texture& positions, const Texture& normals)
 {
 	buffers[0].Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
