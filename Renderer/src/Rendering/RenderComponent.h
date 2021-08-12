@@ -10,6 +10,7 @@ public:
 	~RenderComponent();
 	void SetMesh(const Mesh& mesh);
 	void SetMaterial(const Material& material);
+	void BindMaterial() const;
 	const Mesh& GetMesh() const;
 	const Material& GetMaterial() const;
 

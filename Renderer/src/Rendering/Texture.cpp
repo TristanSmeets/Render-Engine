@@ -87,16 +87,6 @@ Texture Texture::CreateEmpty(const std::string& name, int width, int height, GLe
 	return Texture::CreateEmpty(properties);
 }
 
-Texture Texture::CreateMultiSample(const MultiSampleParameters & parameters)
-{
-	GLuint id;
-	glGenTextures(1, &id);
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, id);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, parameters.Samples, parameters.InternalFormat, parameters.Resolution.x, parameters.Resolution.y, parameters.FixedSampleLocations);
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-	return Texture(parameters.Name, id);
-}
-
 const GLuint & Texture::GetID() const
 {
 	return id;

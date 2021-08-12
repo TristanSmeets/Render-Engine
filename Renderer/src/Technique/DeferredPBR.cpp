@@ -158,15 +158,7 @@ void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
 		geometry.SetMat4("Matrix.MVP", projection * vm);
 		geometry.SetMat3("Matrix.Normal", glm::mat3(vm));
 
-		const Material& material = actors[i].GetRenderComponent().GetMaterial();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Albedo).GetID());
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::Normal).GetID());
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, material.GetTexture(Texture::MRAO).GetID());
-		glActiveTexture(GL_TEXTURE0);
-
+		actors[i].GetRenderComponent().BindMaterial();
 		actors[i].GetRenderComponent().GetMesh().Draw();
 	}
 	gBuffer.Unbind();

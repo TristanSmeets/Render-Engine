@@ -43,7 +43,6 @@ public:
 	
 	static Texture CreateEmpty(const Properties& properties);
 	static Texture CreateEmpty(const std::string& name, int width, int height, GLenum internalformat, GLenum format, GLenum type);
-	static Texture CreateMultiSample(const MultiSampleParameters& parameters);
 	static const std::string TypeToString(Type type);
 	const GLuint& GetID() const;
 	const std::string& GetName() const;

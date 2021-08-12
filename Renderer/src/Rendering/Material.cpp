@@ -32,6 +32,20 @@ void Material::AddTexture(Texture::Type type, const Texture & texture)
 	textures[type] = texture;
 }
 
+void Material::BindTextures() const
+{
+	for (int i = 0; i < Texture::Count; ++i)
+	{
+		if(textures[i].GetID() == 0)
+		{
+			continue;
+		}
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textures[i].GetID());
+	}
+	glActiveTexture(GL_TEXTURE0);
+}
+
 const Texture & Material::GetTexture(Texture::Type type) const
 {
 	return textures[type];

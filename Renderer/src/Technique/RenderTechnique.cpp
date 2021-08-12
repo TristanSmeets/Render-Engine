@@ -31,7 +31,7 @@ const PostProcessing & RenderTechnique::GetPostProcessing() const
 	return *postProcessing;
 }
 
-RenderTechnique::DeferredParameters::DeferredParameters(int occlusionPower, int kernelSize, float radius, float bias)
+RenderTechnique::DeferredParameters::DeferredParameters()
 {
 }
 
