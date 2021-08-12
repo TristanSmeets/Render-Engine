@@ -243,12 +243,6 @@ void UserInterface::RenderDeferredParameters(RenderTechnique::DeferredParameters
 		RenderBloomParameters(deferredParameters.BloomParameters);
 		ImGui::TreePop();
 	}
-	ImGui::Separator();
-	if (ImGui::TreeNode("Depth Of Field"))
-	{
-		RenderDOFParameters(deferredParameters.DofParamaters);
-		ImGui::TreePop();
-	}
 }
 
 void UserInterface::RenderFXAAParameters(FXAA::Parameters & fxaaParameters)
@@ -263,14 +257,6 @@ void UserInterface::RenderBloomParameters(Bloom::Parameters & bloomParameters)
 	RenderFloat("Gamma Correction", (float&)bloomParameters.GammaCorrection, 0.1f, 3.0f);
 	RenderFloat("Exposure", (float&)bloomParameters.Exposure, 0.1f, 2.0f);
 	RenderGaussianBlurParameters(bloomParameters.BlurParameters);
-}
-
-void UserInterface::RenderDOFParameters(DepthOfField::Parameters & dofParameters)
-{
-	RenderFloat("Focal Distance", (float&)dofParameters.FocalDistance, 0.0f, 2.0f);
-	RenderFloat("Focal Range", (float&)dofParameters.FocalRange, 0.0f, 1.0f);
-	RenderFloat("Focal Range Cutoff", (float&)dofParameters.RangeCutoff, 0.0f, 1.0f);
-	RenderGaussianBlurParameters(dofParameters.BlurParameters);
 }
 
 void UserInterface::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)

@@ -44,7 +44,6 @@ private:
 	void RenderDeferredParameters(RenderTechnique::DeferredParameters& deferredParameters);
 	void RenderFXAAParameters(FXAA::Parameters& fxaaParamters);
 	void RenderBloomParameters(Bloom::Parameters& bloomParameters);
-	void RenderDOFParameters(DepthOfField::Parameters& dofParameters);
 	void RenderSSAOParameters(SSAO::Parameters& ssoaParameters);
 	void RenderGaussianBlurParameters(GaussianBlur::Parameters& blurParameters);
 

@@ -15,7 +15,7 @@ public:
 	{
 		FXAA::Parameters FxaaParameters;
 		Bloom::Parameters BloomParameters;
-		DepthOfField::Parameters DofParamaters;
+		//DepthOfField::Parameters DofParamaters;
 		SSAO::Parameters SsaoParameters;
 
 		DeferredParameters(int occlusionPower = 2, int kernelSize = 64, float radius = 0.5f, float bias = 0.025f);
