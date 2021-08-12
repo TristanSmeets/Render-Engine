@@ -46,7 +46,7 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, co
 	sum = weights[0];
 	for (unsigned int i = 1; i < amountOfWeights; i++)
 	{
-		weights[i] = Gauss(i, sigma2);
+		weights[i] = Gauss(static_cast<float>(i), sigma2);
 		sum += 2 * weights[i];
 	}
 

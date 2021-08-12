@@ -14,15 +14,6 @@ public:
 		Count
 	};
 
-	struct MultiSampleParameters
-	{
-		std::string Name;
-		GLsizei Samples;
-		GLint InternalFormat;
-		glm::ivec2 Resolution;
-		GLboolean FixedSampleLocations;
-	};
-
 	struct Properties
 	{
 		std::string Name = "Empty";
