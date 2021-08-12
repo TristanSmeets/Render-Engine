@@ -230,12 +230,6 @@ void UserInterface::RenderLight(const Light & light)
 	RenderVec3("Start Position", parameters.StartPosition);
 }
 
-void UserInterface::RenderADSParameters(RenderComponent::ADSParameters & adsParameters)
-{
-	RenderFloat("Ambient Strength", (float&)adsParameters.AmbientStrength, 0.0f, 1.0f);
-	RenderFloat("Material Shiniess", (float&)adsParameters.Shininess, 2.0f, 256.0f);
-	ImGui::Checkbox("Is Transparent", &adsParameters.IsTransparent);
-}
 
 void UserInterface::RenderPBRParameters(RenderComponent::PBRParameters & pbrParameters)
 {

@@ -6,15 +6,6 @@
 class RenderComponent
 {
 public:
-	struct ADSParameters
-	{
-		float AmbientStrength;
-		float Shininess;
-		bool IsTransparent = false;
-
-		ADSParameters(float ambientStrength = 0.01f, float shininess = 256.0f);
-		ADSParameters& operator=(const ADSParameters& rhs);
-	};
 	struct PBRParameters
 	{
 		glm::vec3 NonMetallicReflectionColour;
@@ -32,16 +23,12 @@ public:
 	void SetMaterial(const Material& material);
 	const Mesh& GetMesh() const;
 	const Material& GetMaterial() const;
-	void SetADSParameters(const ADSParameters& adsParameters);
 	void SetPBRParameters(const PBRParameters& pbrParameters);
-	const ADSParameters& GetADSParameters() const;
 	const PBRParameters& GetPBRParameters() const;
-	ADSParameters& GetADSParameters();
 	PBRParameters& GetPBRParameters();
 
 private:
 	const Mesh* mesh = nullptr;
 	const Material* material = nullptr;
-	ADSParameters adsParameters;
 	PBRParameters pbrParameters;
 };

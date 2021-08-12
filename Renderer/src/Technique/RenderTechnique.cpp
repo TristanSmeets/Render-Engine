@@ -31,16 +31,11 @@ const PostProcessing & RenderTechnique::GetPostProcessing() const
 	return *postProcessing;
 }
 
-RenderTechnique::DeferredParameters::DeferredParameters(int occlusionPower, int kernelSize, float radius, float bias)// :
-	/*OcclusionPower(occlusionPower), KernelSize(kernelSize), Radius(radius), Bias(bias)*/
+RenderTechnique::DeferredParameters::DeferredParameters(int occlusionPower, int kernelSize, float radius, float bias)
 {
 }
 
 RenderTechnique::DeferredParameters & RenderTechnique::DeferredParameters::operator=(const DeferredParameters & rhs)
 {
-	//this->OcclusionPower = rhs.OcclusionPower;
-	//this->KernelSize = rhs.KernelSize;
-	//this->Radius = rhs.Radius;
-	//this->Bias = rhs.Bias;
 	return *this;
 }

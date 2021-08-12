@@ -41,7 +41,6 @@ private:
 	void RenderActor(Actor& actor);
 	void RenderCamera(const Camera& camera);
 	void RenderLight(const Light& light);
-	void RenderADSParameters(RenderComponent::ADSParameters& adsParameters);
 	void RenderPBRParameters(RenderComponent::PBRParameters& pbrParameters);
 	void RenderDeferredParameters(RenderTechnique::DeferredParameters& deferredParameters);
 	void RenderFXAAParameters(FXAA::Parameters& fxaaParamters);

@@ -13,7 +13,6 @@ class RenderTechnique
 public:
 	struct DeferredParameters
 	{
-		RenderComponent::ADSParameters AdsParameters;
 		RenderComponent::PBRParameters PbrParameters;
 		FXAA::Parameters FxaaParameters;
 		Bloom::Parameters BloomParameters;
