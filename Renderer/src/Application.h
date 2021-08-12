@@ -6,6 +6,11 @@
 #include "PostProcessing/PostProcessing.h"
 #include "Utility/UserInterface.h"
 
+/// <summary>
+/// Creates the Window, RenderTechnique and UserInterface.
+/// This class contains the main loop.
+/// It creates the Window, RenderTechnique and UserInterface.
+/// </summary>
 class Application
 {
 public:

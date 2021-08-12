@@ -20,13 +20,9 @@ private:
 	void GeometryPass(const glm::mat4 &view, Scene & scene);
 	void LightingPass(const std::vector<Light> & lights, Scene & scene);
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights, int numberOfLights);
-	void RenderTransparentActors(Scene& scene);
-	void SetPBRShaderUniforms(const Scene& scene);
 
 	const Window& window;
-	Basic basic;
 	Bloom bloom;
-	//DepthOfField depthOfField;
 	FXAA fxaa;
 	SSAO ssao;
 
@@ -37,6 +33,4 @@ private:
 	Shader geometry;
 	Shader deferredLighting;
 	NDCQuad quad;
-	ShadowMapping shadowMapping;
-	Shader forwardLighting;
 };
