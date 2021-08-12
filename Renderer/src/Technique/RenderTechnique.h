@@ -13,7 +13,6 @@ class RenderTechnique
 public:
 	struct DeferredParameters
 	{
-		RenderComponent::PBRParameters PbrParameters;
 		FXAA::Parameters FxaaParameters;
 		Bloom::Parameters BloomParameters;
 		DepthOfField::Parameters DofParamaters;

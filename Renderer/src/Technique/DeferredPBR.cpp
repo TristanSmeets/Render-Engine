@@ -153,10 +153,6 @@ void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
 	const std::vector<Actor>& actors = scene.GetActors();
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
-		if (actors[i].GetRenderComponent().GetPBRParameters().IsTransparent)
-		{
-			continue;
-		}
 		glm::mat4 vm = view * actors[i].GetWorldMatrix();
 		geometry.SetMat4("Matrix.ModelView", vm);
 		geometry.SetMat4("Matrix.MVP", projection * vm);

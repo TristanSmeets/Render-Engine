@@ -187,7 +187,7 @@ void UserInterface::RenderRenderComponent(RenderComponent & renderComponent)
 {
 	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName().c_str());
 	RenderText("Material");
-	RenderPBRParameters(renderComponent.GetPBRParameters());
+	//RenderPBRParameters(renderComponent.GetPBRParameters());
 	RenderMaterial(renderComponent.GetMaterial());
 }
 
@@ -228,14 +228,6 @@ void UserInterface::RenderLight(const Light & light)
 	RenderFloat("Radius", (float&)parameters.Radius, 0.0f, 100.0f);
 	RenderFloat("Circle Radius", (float&)parameters.CircleRadius, 0.0f, 100.0f);
 	RenderVec3("Start Position", parameters.StartPosition);
-}
-
-
-void UserInterface::RenderPBRParameters(RenderComponent::PBRParameters & pbrParameters)
-{
-	RenderFloat("Roughness", (float&)pbrParameters.Roughness, 0.0f, 1.0f);
-	ImGui::Checkbox("Is Transparent", &pbrParameters.IsTransparent);
-	ImGui::Checkbox("Using Smoothness", &pbrParameters.UsingSmoothness);
 }
 
 void UserInterface::RenderDeferredParameters(RenderTechnique::DeferredParameters & deferredParameters)

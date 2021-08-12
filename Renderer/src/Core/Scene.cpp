@@ -2,7 +2,6 @@
 #include "Scene.h"
 #include "Utility/MeshLoader.h"
 #include "Utility/Filepath.h"
-#include "Utility/NDCQuad.h"
 
 static int counter = 0;
 
@@ -123,38 +122,26 @@ void Scene::InitializeMaterials()
 	aluminium.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
 	aluminium.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
 	aluminium.AddTexture(Texture::MRAO, Filepath::Texture + "Aluminium/MRAO.png");
-	//aluminium.AddTexture(Texture::Roughness, Filepath::Texture + "Aluminium/Roughness.png");
-	//aluminium.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Aluminium/Mixed_AO.png");
 
 	Material rustedIron = Material("Rusted_Iron");
 	rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
 	rustedIron.AddTexture(Texture::Normal, Filepath::Texture + "RustedIron/Normal.png");
 	rustedIron.AddTexture(Texture::MRAO, Filepath::Texture + "RustedIron/MRAO.png");
-	//rustedIron.AddTexture(Texture::Roughness, Filepath::Texture + "RustedIron/Roughness.png");
-	//rustedIron.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "RustedIron/AmbientOcclusion.png");
 
 	Material cobblestone = Material("Cobblestone");
 	cobblestone.AddTexture(Texture::Albedo, Filepath::Texture + "cobblestone/Albedo.png", true);
 	cobblestone.AddTexture(Texture::Normal, Filepath::Texture + "cobblestone/Normal.png");
 	cobblestone.AddTexture(Texture::MRAO, Filepath::Texture + "cobblestone/MRAO.png");
-	//cobblestone.AddTexture(Texture::Roughness, Filepath::Texture + "cobblestone/Roughness.png");
-	//cobblestone.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "cobblestone/AmbientOcclusion.png");
 
 	Material demo = Material("Demo");
 	demo.AddTexture(Texture::Albedo, Filepath::Texture + "Demo/Albedo.png", true);
 	demo.AddTexture(Texture::Normal, Filepath::Texture + "Demo/Normal.png");
 	demo.AddTexture(Texture::MRAO, Filepath::Texture + "Demo/MRAO.png");
-	//demo.AddTexture(Texture::Roughness, Filepath::Texture + "Demo/Roughness.png");
-	//demo.AddTexture(Texture::AmbientOcclusion, Filepath::Texture + "Demo/AmbientOcclusion_2.png");
-
-	//Material leaf = Material("Window");
-	//leaf.AddTexture(Texture::Albedo, Filepath::Texture + "Leaf/blending_transparent_window.png", true);
 
 	materials.push_back(aluminium);
 	materials.push_back(rustedIron);
 	materials.push_back(cobblestone);
 	materials.push_back(demo);
-	//materials.push_back(leaf);
 
 	printf("Created %d materials\n", (int)materials.size());
 }
@@ -199,7 +186,6 @@ void Scene::InitializeActors()
 	sphere.GetTransform().Translate(glm::vec3(0, 6, 0));
 	sphere.GetRenderComponent().SetMesh(meshes[1]);
 	sphere.GetRenderComponent().SetMaterial(materials[3]);
-	sphere.GetRenderComponent().GetPBRParameters().UsingSmoothness = true;
 	actors.push_back(sphere);
 
 	//sphere.SetName("Aluminium");
@@ -243,20 +229,6 @@ void Scene::InitializeActors()
 	terrain.GetRenderComponent().SetMesh(meshes[2]);
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);
-
-	//Actor windowPlane = Actor("Window1");
-	//windowPlane.GetTransform().Translate(glm::vec3(0.0f, 4.0f, 15.0f));
-	//windowPlane.GetTransform().Rotate(glm::vec3(90.0f, 0.0f, 0.0f));
-	//windowPlane.GetTransform().Scale(glm::vec3(0.1f));
-	//windowPlane.GetRenderComponent().SetMesh(meshes[2]);
-	//windowPlane.GetRenderComponent().SetMaterial(materials[4]);
-	//windowPlane.GetRenderComponent().GetADSParameters().IsTransparent = true;
-	//windowPlane.GetRenderComponent().GetPBRParameters().IsTransparent = true;
-	//
-	//actors.push_back(windowPlane);
-	//windowPlane.GetTransform().Translate(glm::vec3(5.0f, 0.0f, -2.0f));
-	//windowPlane.SetName("Window2");
-	//actors.push_back(windowPlane);
 
 	printf("Created %d actors\n", (int)actors.size());
 }
