@@ -45,7 +45,6 @@ Texture::Texture(const Texture & rhs) :
 
 Texture::~Texture()
 {
-	//TODO: Add glDeleteTextures. Need to figure out how to delete a texture without it breaking for all the copies as well.
 	glDeleteTextures(1, &id);
 }
 

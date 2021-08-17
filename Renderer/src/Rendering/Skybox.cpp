@@ -73,6 +73,15 @@ const Texture & Skybox::GetLookup() const
 	return lookup;
 }
 
+void Skybox::BindTexturesToShader(Shader& shader, GLuint position) const
+{
+	glActiveTexture(GL_TEXTURE0 + position);
+	GetIrradiance().Bind();
+	glActiveTexture(GL_TEXTURE1 + position);
+	GetPrefilter().Bind();
+	GetLookup().Bind(shader, static_cast<Texture::Type>(2 + position));
+}
+
 void Skybox::Draw() const
 {
 	glActiveTexture(GL_TEXTURE0);

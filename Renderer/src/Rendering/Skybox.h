@@ -22,6 +22,7 @@ public:
 	const Cubemap& GetIrradiance() const;
 	const Cubemap& GetPrefilter() const;
 	const Texture& GetLookup() const;
+	void BindTexturesToShader(Shader& shader, GLuint position) const;
 	void Draw() const;
 
 private:

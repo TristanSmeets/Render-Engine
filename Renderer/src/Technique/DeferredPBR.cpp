@@ -158,8 +158,7 @@ void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
 		geometry.SetMat4("Matrix.MVP", projection * vm);
 		geometry.SetMat3("Matrix.Normal", glm::mat3(vm));
 
-		actors[i].GetRenderComponent().BindMaterial();
-		actors[i].GetRenderComponent().GetMesh().Draw();
+		actors[i].GetRenderComponent().Draw();
 	}
 	gBuffer.Unbind();
 }
@@ -180,11 +179,9 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	}
 
 	const Skybox& skybox = scene.GetSkybox();
-	glActiveTexture(GL_TEXTURE4);
-	skybox.GetIrradiance().Bind();
-	glActiveTexture(GL_TEXTURE5);
-	skybox.GetPrefilter().Bind();
-	skybox.GetLookup().Bind(deferredLighting, static_cast<Texture::Type>(6));
+	skybox.BindTexturesToShader(deferredLighting, 4);
+
+	//Bind SSAO texture to shader
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, ssao.GetTexture().GetID());
 

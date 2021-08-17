@@ -19,11 +19,6 @@ void RenderComponent::SetMaterial(const Material & material)
 	this->material = &material;
 }
 
-void RenderComponent::BindMaterial() const
-{
-	material->BindTextures();
-}
-
 const Mesh & RenderComponent::GetMesh() const
 {
 	return *mesh;
@@ -32,4 +27,10 @@ const Mesh & RenderComponent::GetMesh() const
 const Material & RenderComponent::GetMaterial() const
 {
 	return *material;
+}
+
+void RenderComponent::Draw() const
+{
+	GetMaterial().BindTextures();
+	GetMesh().Draw();
 }
