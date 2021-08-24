@@ -2,7 +2,7 @@
 #include "Basic.h"
 
 Basic::Basic() : PostProcessing(),
-shader(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "BasicPostProcessing.fs"))
+shader(GLSLProgram(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "BasicPostProcessing.fs"))
 {
 }
 

@@ -31,7 +31,7 @@ private:
 	void SetupFramebuffer(const Window::Parameters& parameters);
 	void SetupShaders();
 
-	Shader depthOfField;
+	GLSLProgram depthOfField;
 	Framebuffer framebuffer;
 	Renderbuffer renderbuffer;
 	GaussianBlur gaussian;

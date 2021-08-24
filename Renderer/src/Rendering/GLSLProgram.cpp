@@ -1,12 +1,12 @@
 #include "Rendererpch.h"
-#include "Shader.h"
+#include "GLSLProgram.h"
 
 #include <gtc/type_ptr.hpp>
 
 #include <fstream>
 #include <sstream>
 
-Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
+GLSLProgram::GLSLProgram(const std::string& vertexPath, const std::string& fragmentPath)
 {
 	std::string vertexCode = getShaderCode(vertexPath.c_str());
 	const char* vertexShaderCode = vertexCode.c_str();
@@ -25,7 +25,7 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 	linkShaders(vertexShader, fragmentShader);
 }
 
-Shader::Shader(const std::string & vertexPath, const std::string & fragmentPath, const std::string & geometryPath)
+GLSLProgram::GLSLProgram(const std::string & vertexPath, const std::string & fragmentPath, const std::string & geometryPath)
 {
 	std::string vertexCode = getShaderCode(vertexPath.c_str());
 	const char* vertexShaderCode = vertexCode.c_str();
@@ -49,67 +49,67 @@ Shader::Shader(const std::string & vertexPath, const std::string & fragmentPath,
 
 }
 
-Shader::~Shader()
+GLSLProgram::~GLSLProgram()
 {
 	glDeleteProgram(id);
 }
 
-void Shader::Use()
+void GLSLProgram::Use()
 {
 	glUseProgram(id);
 }
 
-void Shader::SetBool(const std::string & name, bool value)
+void GLSLProgram::SetBool(const std::string & name, bool value)
 {
 	glUniform1i(GetUniformFromCache(name), (int)value);
 }
 
-void Shader::SetInt(const std::string & name, int value)
+void GLSLProgram::SetInt(const std::string & name, int value)
 {
 	glUniform1i(GetUniformFromCache(name), value);
 }
 
-void Shader::SetFloat(const std::string & name, float value)
+void GLSLProgram::SetFloat(const std::string & name, float value)
 {
 	glUniform1f(GetUniformFromCache(name), value);
 }
 
-void Shader::SetVec2(const std::string & name, glm::vec2 value)
+void GLSLProgram::SetVec2(const std::string & name, glm::vec2 value)
 {
 	glUniform2fv(GetUniformFromCache(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetVec3(const std::string & name, glm::vec3 value)
+void GLSLProgram::SetVec3(const std::string & name, glm::vec3 value)
 {
 	glUniform3fv(GetUniformFromCache(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetVec4(const std::string& name, glm::vec4 value)
+void GLSLProgram::SetVec4(const std::string& name, glm::vec4 value)
 {
 	glUniform4fv(GetUniformFromCache(name), 1, glm::value_ptr(value));
 }
 
-void Shader::SetMat3(const std::string& name, glm::mat3 value)
+void GLSLProgram::SetMat3(const std::string& name, glm::mat3 value)
 {
 	glUniformMatrix3fv(GetUniformFromCache(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::SetMat4(const std::string & name, glm::mat4 value)
+void GLSLProgram::SetMat4(const std::string & name, glm::mat4 value)
 {
 	glUniformMatrix4fv(GetUniformFromCache(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
-void Shader::SetSubroutine(const SubroutineParameters & parameters)
+void GLSLProgram::SetSubroutine(const SubroutineParameters & parameters)
 {
 	glUniformSubroutinesuiv(parameters.Shader, 1, &GetSubroutineIndexFromCache(parameters));
 }
 
-const GLuint Shader::GetID() const
+const GLuint GLSLProgram::GetID() const
 {
 	return id;
 }
 
-std::string Shader::getShaderCode(const char * filePath)
+std::string GLSLProgram::getShaderCode(const char * filePath)
 {
 	std::string shaderCode;
 	std::ifstream shaderFile;
@@ -132,7 +132,7 @@ std::string Shader::getShaderCode(const char * filePath)
 	return shaderCode;
 }
 
-GLuint Shader::compileShader(const char * shaderCode, GLuint shaderType)
+GLuint GLSLProgram::compileShader(const char * shaderCode, GLuint shaderType)
 {
 	int success;
 	char infoLog[512];
@@ -154,7 +154,7 @@ GLuint Shader::compileShader(const char * shaderCode, GLuint shaderType)
 	return shader;
 }
 
-void Shader::linkShaders(GLuint vertexShader, GLuint fragmentShader)
+void GLSLProgram::linkShaders(GLuint vertexShader, GLuint fragmentShader)
 {
 	id = glCreateProgram();
 	glAttachShader(id, vertexShader);
@@ -181,7 +181,7 @@ void Shader::linkShaders(GLuint vertexShader, GLuint fragmentShader)
 	glDeleteShader(fragmentShader);
 }
 
-void Shader::linkShaders(GLuint vertexShader, GLuint fragmentShader, GLuint geometryShader)
+void GLSLProgram::linkShaders(GLuint vertexShader, GLuint fragmentShader, GLuint geometryShader)
 {
 	id = glCreateProgram();
 	glAttachShader(id, vertexShader);
@@ -210,7 +210,7 @@ void Shader::linkShaders(GLuint vertexShader, GLuint fragmentShader, GLuint geom
 	glDeleteShader(geometryShader);
 }
 
-const GLint & Shader::GetUniformFromCache(const std::string & name)
+const GLint & GLSLProgram::GetUniformFromCache(const std::string & name)
 {
 	if (uniformCache.count(name) == 0)
 	{
@@ -221,7 +221,7 @@ const GLint & Shader::GetUniformFromCache(const std::string & name)
 	return uniformCache[name];
 }
 
-const GLuint & Shader::GetSubroutineIndexFromCache(const SubroutineParameters & parameters)
+const GLuint & GLSLProgram::GetSubroutineIndexFromCache(const SubroutineParameters & parameters)
 {
 	if (subroutineIndexCache.count(parameters.Name) == 0)
 	{
@@ -232,12 +232,12 @@ const GLuint & Shader::GetSubroutineIndexFromCache(const SubroutineParameters & 
 	return subroutineIndexCache[parameters.Name];
 }
 
-Shader::SubroutineParameters::SubroutineParameters(const std::string & name, GLenum shaderType) :
+GLSLProgram::SubroutineParameters::SubroutineParameters(const std::string & name, GLenum shaderType) :
 	Name(name), Shader(shaderType)
 {
 }
 
-bool Shader::SubroutineParameters::operator==(SubroutineParameters & rhs)
+bool GLSLProgram::SubroutineParameters::operator==(SubroutineParameters & rhs)
 {
 	return Name == rhs.Name && Shader == rhs.Shader;
 }

@@ -3,7 +3,7 @@
 #include "gtc/constants.hpp"
 
 Bloom::Bloom() :
-	bloom(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Bloom.fs"))
+	bloom(GLSLProgram(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Bloom.fs"))
 {
 }
 

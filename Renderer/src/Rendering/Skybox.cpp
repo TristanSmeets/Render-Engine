@@ -2,7 +2,7 @@
 #include "Skybox.h"
 
 #include "glad/glad.h"
-#include "Rendering/Shader.h"
+#include "Rendering/GLSLProgram.h"
 #include "Utility/Filepath.h"
 #include "stb_image.h"
 #include "Utility/MeshLoader.h"
@@ -73,7 +73,7 @@ const Texture & Skybox::GetLookup() const
 	return lookup;
 }
 
-void Skybox::BindTexturesToShader(Shader& shader, GLuint position) const
+void Skybox::BindTexturesToShader(GLSLProgram& shader, GLuint position) const
 {
 	glActiveTexture(GL_TEXTURE0 + position);
 	GetIrradiance().Bind();
@@ -91,7 +91,7 @@ void Skybox::Draw() const
 
 void Skybox::ConvertHDRTextureToCubemap(Texture && texture)
 {
-	Shader equirectangularToCubemap(Filepath::ForwardShader + "Cubemap.vs",
+	GLSLProgram equirectangularToCubemap(Filepath::ForwardShader + "Cubemap.vs",
 		Filepath::ForwardShader + "EquirectangularToCubeMap.fs");
 
 	equirectangularToCubemap.Use();
@@ -122,7 +122,7 @@ void Skybox::CreateIrradianceMap()
 	renderbuffer.Bind();
 	renderbuffer.SetStorage(GL_DEPTH_COMPONENT24, irradiance.GetWidth(), irradiance.GetHeight());
 
-	Shader irradianceShader(Filepath::ForwardShader + "Cubemap.vs", Filepath::ForwardShader + "IrradianceConvolution.fs");
+	GLSLProgram irradianceShader(Filepath::ForwardShader + "Cubemap.vs", Filepath::ForwardShader + "IrradianceConvolution.fs");
 	irradianceShader.Use();
 	irradianceShader.SetInt("environmentMap", 0);
 	irradianceShader.SetMat4("projection", captureProjection);
@@ -148,7 +148,7 @@ void Skybox::CreatePrefilterMap()
 	prefilter.SetTextureParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-	Shader prefilterShader(Filepath::ForwardShader + "Cubemap.vs", Filepath::ForwardShader + "Prefilter.fs");
+	GLSLProgram prefilterShader(Filepath::ForwardShader + "Cubemap.vs", Filepath::ForwardShader + "Prefilter.fs");
 	prefilterShader.Use();
 	prefilterShader.SetInt("environmentMap", 0);
 	prefilterShader.SetMat4("projection", captureProjection);
@@ -182,7 +182,7 @@ void Skybox::CreatePrefilterMap()
 
 void Skybox::CreateLookupTexture()
 {
-	Shader brdfShader(Filepath::ForwardShader + "brdf.vs",
+	GLSLProgram brdfShader(Filepath::ForwardShader + "brdf.vs",
 		Filepath::ForwardShader + "brdf.fs");
 
 	lookup = Texture::CreateEmpty("Lookup", 512, 512, GL_RG16F, GL_RG, GL_FLOAT);

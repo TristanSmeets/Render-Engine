@@ -3,7 +3,7 @@
 #include "Utility/Filepath.h"
 
 FXAA::FXAA() : 
-	shader(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "FXAA.fs"))
+	shader(GLSLProgram(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "FXAA.fs"))
 {
 }
 

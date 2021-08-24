@@ -2,7 +2,20 @@
 #include <glad/glad.h>
 #include <glm.hpp>
 
-class Shader
+namespace GLSLShader
+{
+	enum GLSLShaderType
+	{
+		VERTEX = GL_VERTEX_SHADER,
+		FRAGMENT = GL_FRAGMENT_SHADER,
+		GEOMETRY = GL_GEOMETRY_SHADER,
+		TESS_CONTROL = GL_TESS_CONTROL_SHADER,
+		TESS_EVALUATION = GL_TESS_EVALUATION_SHADER,
+		COMPUTE = GL_COMPUTE_SHADER
+	};
+}
+
+class GLSLProgram
 {
 public:
 	struct SubroutineParameters
@@ -15,9 +28,9 @@ public:
 	};
 
 public:
-	Shader(const std::string& vertexPath, const std::string& fragmentPath);
-	Shader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
-	~Shader();
+	GLSLProgram(const std::string& vertexPath, const std::string& fragmentPath);
+	GLSLProgram(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
+	~GLSLProgram();
 	void Use();
 	void SetBool(const std::string& name, bool value);
 	void SetInt(const std::string& name, int value);

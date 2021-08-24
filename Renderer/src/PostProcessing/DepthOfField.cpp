@@ -2,7 +2,7 @@
 #include "DepthOfField.h"
 
 DepthOfField::DepthOfField() : 
-	depthOfField(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::PostProcessing + "DepthOfField.fs"))
+	depthOfField(GLSLProgram(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::PostProcessing + "DepthOfField.fs"))
 {
 }
 

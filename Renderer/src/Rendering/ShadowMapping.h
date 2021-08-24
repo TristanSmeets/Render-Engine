@@ -4,7 +4,7 @@
 #include "Utility/Cubemap.h"
 #include "Core/Light.h"
 #include "Core/Actor.h"
-#include "Rendering/Shader.h"
+#include "Rendering/GLSLProgram.h"
 
 class ShadowMapping
 {
@@ -34,5 +34,5 @@ private:
 	Cubemap cubeMaps[MaximumNumberOfLights];
 	ShadowMapping::Parameters parameters;
 	Framebuffer depthBuffer;
-	Shader shadowDepth;
+	GLSLProgram shadowDepth;
 };

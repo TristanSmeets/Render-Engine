@@ -2,8 +2,8 @@
 #include "SSAO.h"
 
 SSAO::SSAO() : 
-	ssao(Shader(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAO.fs"))),
-	blur(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAOBlur.fs"))
+	ssao(GLSLProgram(GLSLProgram(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAO.fs"))),
+	blur(GLSLProgram(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAOBlur.fs"))
 {
 }
 

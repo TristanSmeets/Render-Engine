@@ -3,7 +3,7 @@
 #include "Utility/Filepath.h"
 
 RenderTechnique::RenderTechnique() :
-	skyboxShader(Shader(Filepath::ForwardShader + "Background.vs", Filepath::ForwardShader + "Background.fs"))
+	skyboxShader(GLSLProgram(Filepath::ForwardShader + "Background.vs", Filepath::ForwardShader + "Background.fs"))
 {
 }
 

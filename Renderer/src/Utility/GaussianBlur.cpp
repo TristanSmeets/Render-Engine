@@ -4,7 +4,7 @@
 #include <gtc/matrix_transform.hpp>
 
 GaussianBlur::GaussianBlur() :
-	blur(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs"))
+	blur(GLSLProgram(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs"))
 {
 	SetupShader();
 }
@@ -64,11 +64,11 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, co
 	{
 		if (horizontal)
 		{
-			blur.SetSubroutine(Shader::SubroutineParameters("Horizontal", GL_FRAGMENT_SHADER));
+			blur.SetSubroutine(GLSLProgram::SubroutineParameters("Horizontal", GL_FRAGMENT_SHADER));
 		}
 		else
 		{
-			blur.SetSubroutine(Shader::SubroutineParameters("Vertical", GL_FRAGMENT_SHADER));
+			blur.SetSubroutine(GLSLProgram::SubroutineParameters("Vertical", GL_FRAGMENT_SHADER));
 		}
 		framebuffers[horizontal].Bind();
 		glActiveTexture(GL_TEXTURE0);

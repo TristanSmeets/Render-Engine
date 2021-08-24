@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/Scene.h"
-#include "Rendering/Shader.h"
+#include "Rendering/GLSLProgram.h"
 #include "PostProcessing/PostProcessing.h"
 #include "Rendering/RenderComponent.h"
 #include "PostProcessing/FXAA.h"
@@ -32,7 +32,7 @@ public:
 	const PostProcessing& GetPostProcessing() const;
 
 protected:
-	Shader skyboxShader;
+	GLSLProgram skyboxShader;
 
 	DeferredParameters deferredParameters;
 	PostProcessing* postProcessing;

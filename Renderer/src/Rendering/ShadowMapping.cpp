@@ -4,7 +4,7 @@
 #include <gtc/matrix_transform.hpp>
 
 ShadowMapping::ShadowMapping() :
-	shadowDepth(Shader(Filepath::ForwardShader + "PointLightDepthMap.vs", Filepath::ForwardShader + "PointLightDepthMap.fs", Filepath::ForwardShader + "PointLightDepthMap.gs"))
+	shadowDepth(GLSLProgram(Filepath::ForwardShader + "PointLightDepthMap.vs", Filepath::ForwardShader + "PointLightDepthMap.fs", Filepath::ForwardShader + "PointLightDepthMap.gs"))
 {
 }
 

@@ -4,7 +4,7 @@
 #include "Utility/Renderbuffer.h"
 #include "Utility/NDCQuad.h"
 #include "Core/Window.h"
-#include "Rendering/Shader.h"
+#include "Rendering/GLSLProgram.h"
 #include "Rendering/Texture.h"
 #include "Utility/Filepath.h"
 
