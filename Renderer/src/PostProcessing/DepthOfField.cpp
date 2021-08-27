@@ -54,9 +54,9 @@ void DepthOfField::Apply(const DepthOfField::Parameters& parameters)
 {
 	gaussian.BlurTexture(colourBuffer, blurredScene, parameters.BlurParameters);
 	depthOfField.Use();
-	depthOfField.SetFloat("focalDistance", parameters.FocalDistance);
-	depthOfField.SetFloat("focalRange", parameters.FocalRange);
-	depthOfField.SetFloat("rangeCutoff", parameters.RangeCutoff);
+	depthOfField.SetUniform("focalDistance", parameters.FocalDistance);
+	depthOfField.SetUniform("focalRange", parameters.FocalRange);
+	depthOfField.SetUniform("rangeCutoff", parameters.RangeCutoff);
 	Apply();
 }
 
@@ -105,7 +105,7 @@ void DepthOfField::SetupFramebuffer(const Window::Parameters& parameters)
 void DepthOfField::SetupShaders()
 {
 	depthOfField.Use();
-	depthOfField.SetInt("scene", 0);
-	depthOfField.SetInt("depthTexture", 1);
-	depthOfField.SetInt("blurredScene", 2);
+	depthOfField.SetUniform("scene", 0);
+	depthOfField.SetUniform("depthTexture", 1);
+	depthOfField.SetUniform("blurredScene", 2);
 }

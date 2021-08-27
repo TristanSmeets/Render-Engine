@@ -30,29 +30,50 @@ public:
 public:
 	GLSLProgram(const std::string& vertexPath, const std::string& fragmentPath);
 	GLSLProgram(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
+	GLSLProgram();
 	~GLSLProgram();
-	void Use();
-	void SetBool(const std::string& name, bool value);
-	void SetInt(const std::string& name, int value);
-	void SetFloat(const std::string& name, float value);
-	void SetVec2(const std::string& name, glm::vec2 value);
-	void SetVec3(const std::string& name, glm::vec3 value);
-	void SetVec4(const std::string& name, glm::vec4 value);
-	void SetMat3(const std::string& name, glm::mat3 value);
-	void SetMat4(const std::string& name, glm::mat4 value);
-	void SetSubroutine(const SubroutineParameters& parameters);
-	const GLuint GetID() const;
 
+	// Make sure it GLSL programs can not be copied.
+	GLSLProgram(const GLSLProgram&) = delete;
+	GLSLProgram& operator= (const GLSLProgram&) = delete;
+
+	void CompileShader(const std::string& filename);
+	void CompileShader(const std::string& filename, GLSLShader::GLSLShaderType type);
+	void CompileShader(const char* source, GLSLShader::GLSLShaderType type, const std::string& filename = std::string());
+	void Link();
+	void Use();
+	void Validate();
+	const GLuint GetHandle() const;
+	const bool IsLinked() const;
+
+	void BindAttribLocation(GLuint location, const std::string& name);
+	void BindFragDataLocation(GLuint location, const std::string& name);
+	
+	void SetUniform(const std::string& name, bool value);
+	void SetUniform(const std::string& name, int value);
+	void SetUniform(const std::string& name, unsigned int value);
+	void SetUniform(const std::string& name, float value);
+	void SetUniform(const std::string& name, glm::vec2 value);
+	void SetUniform(const std::string& name, glm::vec3 value);
+	void SetUniform(const std::string& name, glm::vec4 value);
+	void SetUniform(const std::string& name, glm::mat3 value);
+	void SetUniform(const std::string& name, glm::mat4 value);
+	void SetSubroutine(const SubroutineParameters& parameters);
+	
 private:
+	std::unordered_map<std::string, GLint> uniformLocationCache;
+	std::unordered_map<std::string,GLuint> subroutineIndexCache;
+	GLuint programHandle = 0;
+	bool linked = false;
+	
+	void detachAndDeleteShaderObjects();
+	bool fileExists(const std::string& filename);
+	std::string getExtension(const std::string& filename);
 	std::string getShaderCode(const char* filePath);
 	GLuint compileShader(const char* shaderCode, GLuint shaderType);
 	void linkShaders(GLuint vertexShader, GLuint fragmentShader);
 	void linkShaders(GLuint vertexShader, GLuint fragmentShader, GLuint geometryShader);
-	const GLint& GetUniformFromCache(const std::string& name);
+	const GLint& GetUniformLocation(const std::string& name);
 	const GLuint& GetSubroutineIndexFromCache(const SubroutineParameters& parameters);
-
-	std::unordered_map<std::string, GLint> uniformCache;
-	std::unordered_map<std::string,GLuint> subroutineIndexCache;
-	GLuint id = 0;
 
 };

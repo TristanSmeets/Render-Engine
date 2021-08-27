@@ -27,7 +27,7 @@ void ShadowMapping::MapPointLights(const std::vector<Light>& lights, const std::
 	glViewport(0, 0, parameters.Resolution.x, parameters.Resolution.y);
 	depthBuffer.Bind();
 	shadowDepth.Use();
-	shadowDepth.SetFloat("farPlane", parameters.FarPlane);
+	shadowDepth.SetUniform("farPlane", parameters.FarPlane);
 
 	glm::mat4 shadowProjection = glm::perspective(glm::radians(90.0f), parameters.AspectRatio, parameters.NearPlane, parameters.FarPlane);
 
@@ -42,7 +42,7 @@ void ShadowMapping::MapPointLights(const std::vector<Light>& lights, const std::
 
 		const Light& light = lights[i];
 		const glm::vec3 lightPosition = light.GetWorldPosition();
-		shadowDepth.SetVec3("lightPosition", lightPosition);
+		shadowDepth.SetUniform("lightPosition", lightPosition);
 		
 		glm::mat4 shadowTransforms[6] =
 		{
@@ -56,12 +56,12 @@ void ShadowMapping::MapPointLights(const std::vector<Light>& lights, const std::
 
 		for (unsigned int i = 0; i < 6; ++i)
 		{
-			shadowDepth.SetMat4(std::string("shadowMatrices[") + std::to_string(i) + std::string("]"), shadowTransforms[i]);
+			shadowDepth.SetUniform(std::string("shadowMatrices[") + std::to_string(i) + std::string("]"), shadowTransforms[i]);
 		}
 
 		for (int i = 0; i < actors.size(); ++i)
 		{
-			shadowDepth.SetMat4("model", actors[i].GetWorldMatrix());
+			shadowDepth.SetUniform("model", actors[i].GetWorldMatrix());
 			actors[i].GetRenderComponent().GetMesh().Draw();
 		}
 	}

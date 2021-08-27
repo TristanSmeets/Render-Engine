@@ -32,7 +32,7 @@ void FXAA::Initialize(const Parameters & parameters)
 		printf("Error: FXAA framebuffer not complete\n");
 	}
 	shader.Use();
-	shader.SetInt("colourTexture", 0);
+	shader.SetUniform("colourTexture", 0);
 }
 
 void FXAA::Bind()
@@ -54,10 +54,10 @@ void FXAA::Blit(const Framebuffer::BlitParameters & parameters)
 void FXAA::Apply(const Parameters& parameters)
 {
 	shader.Use();
-	shader.SetFloat("spanMax", parameters.SpanMax);
-	shader.SetFloat("reduceMinimum", parameters.ReduceMinumum);
-	shader.SetFloat("reduceMultiplier", parameters.ReduceMultiplier);
-	shader.SetVec3("inverseFilterTextureSize", glm::vec3((1.0f / fxaaParameters.Resolution.x), (1.0f / fxaaParameters.Resolution.y), 0.0f));
+	shader.SetUniform("spanMax", parameters.SpanMax);
+	shader.SetUniform("reduceMinimum", parameters.ReduceMinumum);
+	shader.SetUniform("reduceMultiplier", parameters.ReduceMultiplier);
+	shader.SetUniform("inverseFilterTextureSize", glm::vec3((1.0f / fxaaParameters.Resolution.x), (1.0f / fxaaParameters.Resolution.y), 0.0f));
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fxaaColourAttachment.GetID());
 	glDisable(GL_DEPTH_TEST);

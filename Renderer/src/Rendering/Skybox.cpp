@@ -95,8 +95,8 @@ void Skybox::ConvertHDRTextureToCubemap(Texture && texture)
 		Filepath::ForwardShader + "EquirectangularToCubeMap.fs");
 
 	equirectangularToCubemap.Use();
-	equirectangularToCubemap.SetInt("equirectangularMap", 0);
-	equirectangularToCubemap.SetMat4("projection", captureProjection);
+	equirectangularToCubemap.SetUniform("equirectangularMap", 0);
+	equirectangularToCubemap.SetUniform("projection", captureProjection);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture.GetID());
@@ -105,7 +105,7 @@ void Skybox::ConvertHDRTextureToCubemap(Texture && texture)
 	framebuffer.Bind();
 	for (unsigned int i = 0; i < 6; ++i)
 	{
-		equirectangularToCubemap.SetMat4("view", captureViews[i]);
+		equirectangularToCubemap.SetUniform("view", captureViews[i]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, environment.GetID(), 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		skyboxMesh.Draw();
@@ -124,8 +124,8 @@ void Skybox::CreateIrradianceMap()
 
 	GLSLProgram irradianceShader(Filepath::ForwardShader + "Cubemap.vs", Filepath::ForwardShader + "IrradianceConvolution.fs");
 	irradianceShader.Use();
-	irradianceShader.SetInt("environmentMap", 0);
-	irradianceShader.SetMat4("projection", captureProjection);
+	irradianceShader.SetUniform("environmentMap", 0);
+	irradianceShader.SetUniform("projection", captureProjection);
 	glActiveTexture(GL_TEXTURE0);
 	environment.Bind();
 
@@ -134,7 +134,7 @@ void Skybox::CreateIrradianceMap()
 
 	for (unsigned int i = 0; i < 6; ++i)
 	{
-		irradianceShader.SetMat4("view", captureViews[i]);
+		irradianceShader.SetUniform("view", captureViews[i]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradiance.GetID(), 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		skyboxMesh.Draw();
@@ -150,8 +150,8 @@ void Skybox::CreatePrefilterMap()
 
 	GLSLProgram prefilterShader(Filepath::ForwardShader + "Cubemap.vs", Filepath::ForwardShader + "Prefilter.fs");
 	prefilterShader.Use();
-	prefilterShader.SetInt("environmentMap", 0);
-	prefilterShader.SetMat4("projection", captureProjection);
+	prefilterShader.SetUniform("environmentMap", 0);
+	prefilterShader.SetUniform("projection", captureProjection);
 	glActiveTexture(GL_TEXTURE0);
 	environment.Bind();
 	framebuffer.Bind();
@@ -167,11 +167,11 @@ void Skybox::CreatePrefilterMap()
 		glViewport(0, 0, mipWidth, mipHeight);
 
 		float roughness = (float)mip / (float)(maxMipLevels - 1);
-		prefilterShader.SetFloat("roughness", roughness);
+		prefilterShader.SetUniform("roughness", roughness);
 
 		for (unsigned int i = 0; i < 6; ++i)
 		{
-			prefilterShader.SetMat4("view", captureViews[i]);
+			prefilterShader.SetUniform("view", captureViews[i]);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilter.GetID(), mip);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			skyboxMesh.Draw();

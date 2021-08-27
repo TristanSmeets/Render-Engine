@@ -25,8 +25,8 @@ void Bloom::Initialize(const Window::Parameters & parameters)
 void Bloom::SetupShaders()
 {
 	bloom.Use();
-	bloom.SetInt("scene", 0);
-	bloom.SetInt("bloomBlur", 1);
+	bloom.SetUniform("scene", 0);
+	bloom.SetUniform("bloomBlur", 1);
 }
 
 void Bloom::SetupHDRFramebuffer(const Window::Parameters & parameters)
@@ -94,8 +94,8 @@ void Bloom::Apply(const Bloom::Parameters& parameters)
 {
 	BlurTextureBuffers();
 	bloom.Use();
-	bloom.SetFloat("exposure", parameters.Exposure);
-	bloom.SetFloat("gammaCorrection", parameters.GammaCorrection);
+	bloom.SetUniform("exposure", parameters.Exposure);
+	bloom.SetUniform("gammaCorrection", parameters.GammaCorrection);
 	Apply();
 }
 

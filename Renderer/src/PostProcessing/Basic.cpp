@@ -31,7 +31,7 @@ void Basic::Initialize(const Window::Parameters & parameters)
 	framebuffer.Unbind();
 
 	shader.Use();
-	shader.SetInt("colourTexture", 0);
+	shader.SetUniform("colourTexture", 0);
 }
 
 void Basic::Bind()
@@ -49,8 +49,8 @@ void Basic::Unbind()
 void Basic::Draw()
 {
 	shader.Use();
-	shader.SetFloat("gammaCorrection", parameters.GammaCorrection);
-	shader.SetFloat("exposure", parameters.Exposure);
+	shader.SetUniform("gammaCorrection", parameters.GammaCorrection);
+	shader.SetUniform("exposure", parameters.Exposure);
 	empty.Bind(shader, Texture::Albedo);
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
