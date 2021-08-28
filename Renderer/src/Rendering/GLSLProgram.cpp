@@ -184,9 +184,78 @@ void GLSLProgram::CompileShader(const char* source, GLSLShader::GLSLShaderType t
 	glAttachShader(programHandle, shaderHandle);
 }
 
-void GLSLProgram::Use()
+void GLSLProgram::Link()
+{
+	if(linked)
+	{
+		return;
+	}
+	if(programHandle <=0 )
+	{
+		throw GLSLProgramException("Program has not been compiled.");
+	}
+
+	glLinkProgram(programHandle);
+
+	// Check for errors
+	int status = 0;
+
+	glGetProgramiv(programHandle, GL_LINK_STATUS, &status);
+
+	if(GL_FALSE == status)
+	{
+		int length = 0;
+		glGetShaderiv(programHandle, GL_INFO_LOG_LENGTH, &length);
+		std::string errorMessage = "Program link failed:\n";
+		
+		if (length > 0)
+		{
+			std::string log(length, ' ');
+			int written = 0;
+			glGetProgramInfoLog(programHandle, length, &written, &log[0]);
+			errorMessage += log;
+		}
+		throw GLSLProgramException(errorMessage);
+	}
+	findUniformLocations();
+	linked = true;
+	detachAndDeleteShaderObjects();
+	
+}
+
+void GLSLProgram::Use() const
 {
 	glUseProgram(programHandle);
+}
+
+void GLSLProgram::Validate() const
+{
+	if (!IsLinked())
+	{
+		throw GLSLProgramException("Program is not linked");
+	}
+
+	GLint status;
+	glValidateProgram(programHandle);
+	glGetProgramiv(programHandle, GL_VALIDATE_STATUS, &status);
+
+	if (GL_FALSE == status) {
+		// Store log and return false
+		int length = 0;
+		std::string logString;
+
+		glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &length);
+
+		if (length > 0) {
+			char* c_log = new char[length];
+			int written = 0;
+			glGetProgramInfoLog(programHandle, length, &written, c_log);
+			logString = c_log;
+			delete[] c_log;
+		}
+
+		throw GLSLProgramException(std::string("Program failed to validate\n") + logString);
+	}
 }
 
 void GLSLProgram::SetUniform(const std::string & name, bool value)
@@ -239,6 +308,142 @@ void GLSLProgram::SetSubroutine(const SubroutineParameters & parameters)
 	glUniformSubroutinesuiv(parameters.Shader, 1, &GetSubroutineIndexFromCache(parameters));
 }
 
+void GLSLProgram::findUniformLocations()
+{
+	uniformLocationCache.clear();
+	GLint numberOfUniforms = 0;
+
+	glGetProgramInterfaceiv(programHandle, GL_UNIFORM, GL_ACTIVE_RESOURCES, &numberOfUniforms);
+	GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE, GL_LOCATION, GL_BLOCK_INDEX };
+
+	for(GLint i = 0; i < numberOfUniforms; ++i)
+	{
+		GLint results[4];
+
+		glGetProgramResourceiv(programHandle, GL_UNIFORM, i, 4, properties, 4, nullptr, results);
+
+		if(results[3] != -1)
+		{
+			continue;
+		}
+
+		GLint nameBufferSize = results[0] + 1;
+		char* name = new char[nameBufferSize];
+		glGetProgramResourceName(programHandle, GL_UNIFORM, i, nameBufferSize, nullptr, name);
+		uniformLocationCache[name] = results[2];
+		delete[] name;
+	}
+}
+
+void GLSLProgram::PrintActiveUniforms()
+{
+	GLint numUniforms = 0;
+	glGetProgramInterfaceiv(programHandle, GL_UNIFORM, GL_ACTIVE_RESOURCES, &numUniforms);
+
+	GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE, GL_LOCATION, GL_BLOCK_INDEX };
+
+	printf("Active uniforms:\n");
+	for (int i = 0; i < numUniforms; ++i) {
+		GLint results[4];
+		glGetProgramResourceiv(programHandle, GL_UNIFORM, i, 4, properties, 4, NULL, results);
+
+		if (results[3] != -1) continue;  // Skip uniforms in blocks
+		GLint nameBufSize = results[0] + 1;
+		char* name = new char[nameBufSize];
+		glGetProgramResourceName(programHandle, GL_UNIFORM, i, nameBufSize, NULL, name);
+		printf("%-5d %s (%s)\n", results[2], name, getTypeString(results[1]).c_str());
+		delete[] name;
+	}
+}
+
+void GLSLProgram::PrintActiveUniformBlocks()
+{
+	GLint numBlocks = 0;
+
+	glGetProgramInterfaceiv(programHandle, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numBlocks);
+	GLenum blockProps[] = { GL_NUM_ACTIVE_VARIABLES, GL_NAME_LENGTH };
+	GLenum blockIndex[] = { GL_ACTIVE_VARIABLES };
+	GLenum props[] = { GL_NAME_LENGTH, GL_TYPE, GL_BLOCK_INDEX };
+
+	for (int block = 0; block < numBlocks; ++block) {
+		GLint blockInfo[2];
+		glGetProgramResourceiv(programHandle, GL_UNIFORM_BLOCK, block, 2, blockProps, 2, NULL, blockInfo);
+		GLint numUnis = blockInfo[0];
+
+		char* blockName = new char[blockInfo[1] + 1];
+		glGetProgramResourceName(programHandle, GL_UNIFORM_BLOCK, block, blockInfo[1] + 1, NULL, blockName);
+		printf("Uniform block \"%s\":\n", blockName);
+		delete[] blockName;
+
+		GLint* unifIndexes = new GLint[numUnis];
+		glGetProgramResourceiv(programHandle, GL_UNIFORM_BLOCK, block, 1, blockIndex, numUnis, NULL, unifIndexes);
+
+		for (int unif = 0; unif < numUnis; ++unif) {
+			GLint uniIndex = unifIndexes[unif];
+			GLint results[3];
+			glGetProgramResourceiv(programHandle, GL_UNIFORM, uniIndex, 3, props, 3, NULL, results);
+
+			GLint nameBufSize = results[0] + 1;
+			char* name = new char[nameBufSize];
+			glGetProgramResourceName(programHandle, GL_UNIFORM, uniIndex, nameBufSize, NULL, name);
+			printf("    %s (%s)\n", name, getTypeString(results[1]).c_str());
+			delete[] name;
+		}
+
+		delete[] unifIndexes;
+	}
+}
+
+void GLSLProgram::PrintActiveAttribs()
+{
+	GLint numberOfAttribs;
+	glGetProgramInterfaceiv(programHandle, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &numberOfAttribs);
+
+	GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE, GL_LOCATION };
+
+	printf("Active attributes:\n");
+	for (int i = 0; i < numberOfAttribs; ++i) {
+		GLint results[3];
+		glGetProgramResourceiv(programHandle, GL_PROGRAM_INPUT, i, 3, properties, 3, NULL, results);
+
+		GLint nameBufSize = results[0] + 1;
+		char* name = new char[nameBufSize];
+		glGetProgramResourceName(programHandle, GL_PROGRAM_INPUT, i, nameBufSize, NULL, name);
+		printf("%-5d %s (%s)\n", results[2], name, getTypeString(results[1]).c_str());
+		delete[] name;
+	}
+}
+
+std::string GLSLProgram::getTypeString(GLenum type)
+{
+	switch (type) {
+	case GL_FLOAT:
+		return "float";
+	case GL_FLOAT_VEC2:
+		return "vec2";
+	case GL_FLOAT_VEC3:
+		return "vec3";
+	case GL_FLOAT_VEC4:
+		return "vec4";
+	case GL_DOUBLE:
+		return "double";
+	case GL_INT:
+		return "int";
+	case GL_UNSIGNED_INT:
+		return "unsigned int";
+	case GL_BOOL:
+		return "bool";
+	case GL_FLOAT_MAT2:
+		return "mat2";
+	case GL_FLOAT_MAT3:
+		return "mat3";
+	case GL_FLOAT_MAT4:
+		return "mat4";
+	default:
+		return "?";
+	}
+}
+
 const GLuint GLSLProgram::GetHandle() const
 {
 	return programHandle;
@@ -247,6 +452,16 @@ const GLuint GLSLProgram::GetHandle() const
 const bool GLSLProgram::IsLinked() const
 {
 	return linked;
+}
+
+void GLSLProgram::BindAttribLocation(GLuint location, const std::string& name)
+{
+	glBindAttribLocation(programHandle, location, name.c_str());
+}
+
+void GLSLProgram::BindFragDataLocation(GLuint location, const std::string& name)
+{
+	glBindFragDataLocation(programHandle, location, name.c_str());
 }
 
 void GLSLProgram::detachAndDeleteShaderObjects()

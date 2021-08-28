@@ -41,8 +41,8 @@ public:
 	void CompileShader(const std::string& filename, GLSLShader::GLSLShaderType type);
 	void CompileShader(const char* source, GLSLShader::GLSLShaderType type, const std::string& filename = std::string());
 	void Link();
-	void Use();
-	void Validate();
+	void Use() const;
+	void Validate() const;
 	const GLuint GetHandle() const;
 	const bool IsLinked() const;
 
@@ -59,6 +59,10 @@ public:
 	void SetUniform(const std::string& name, glm::mat3 value);
 	void SetUniform(const std::string& name, glm::mat4 value);
 	void SetSubroutine(const SubroutineParameters& parameters);
+
+	void PrintActiveUniforms();
+	void PrintActiveUniformBlocks();
+	void PrintActiveAttribs();
 	
 private:
 	std::unordered_map<std::string, GLint> uniformLocationCache;
@@ -76,4 +80,6 @@ private:
 	const GLint& GetUniformLocation(const std::string& name);
 	const GLuint& GetSubroutineIndexFromCache(const SubroutineParameters& parameters);
 
+	void findUniformLocations();
+	std::string getTypeString(GLenum type);
 };
