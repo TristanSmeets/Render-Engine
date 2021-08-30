@@ -28,8 +28,6 @@ public:
 	};
 
 public:
-	GLSLProgram(const std::string& vertexPath, const std::string& fragmentPath);
-	GLSLProgram(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath);
 	GLSLProgram();
 	~GLSLProgram();
 
@@ -70,16 +68,13 @@ private:
 	GLuint programHandle = 0;
 	bool linked = false;
 	
-	void detachAndDeleteShaderObjects();
-	bool fileExists(const std::string& filename);
-	std::string getExtension(const std::string& filename);
-	std::string getShaderCode(const char* filePath);
-	GLuint compileShader(const char* shaderCode, GLuint shaderType);
-	void linkShaders(GLuint vertexShader, GLuint fragmentShader);
-	void linkShaders(GLuint vertexShader, GLuint fragmentShader, GLuint geometryShader);
+	void DetachAndDeleteShaderObjects();
+	bool FileExists(const std::string& filename);
+	std::string GetExtension(const std::string& filename);
+	std::string GetShaderCode(const char* filePath);
 	const GLint& GetUniformLocation(const std::string& name);
 	const GLuint& GetSubroutineIndexFromCache(const SubroutineParameters& parameters);
 
-	void findUniformLocations();
-	std::string getTypeString(GLenum type);
+	void FindUniformLocations();
+	std::string GetTypeString(GLenum type);
 };

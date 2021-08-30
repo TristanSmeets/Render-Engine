@@ -1,18 +1,25 @@
 #include "Rendererpch.h"
 #include "SSAO.h"
 
-SSAO::SSAO() : 
-	ssao(GLSLProgram(GLSLProgram(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAO.fs"))),
-	blur(GLSLProgram(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAOBlur.fs"))
-{
-}
+SSAO::SSAO()
+= default;
 
 SSAO::~SSAO()
-{
-}
+= default;
 
 void SSAO::Initialize(const Window::Parameters & parameters)
 {
+	ssao.CompileShader(Filepath::DeferredShader + "PBR/PBRLighting.vs");
+	ssao.CompileShader(Filepath::DeferredShader + "ADS/SSAO.fs");
+	ssao.Link();
+	ssao.Validate();
+	
+	blur.CompileShader(Filepath::DeferredShader + "PBR/PBRLighting.vs");
+	blur.CompileShader(Filepath::DeferredShader + "ADS/SSAOBlur.fs");
+	blur.Link();
+	blur.Validate();
+	
+	
 	//Setting up framebuffers
 	for (int i = 0; i < 2; ++i)
 	{

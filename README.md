@@ -1,10 +1,19 @@
 # Render-Engine
 
 ![](https://raw.githubusercontent.com/TristanSmeets/Render-Engine/develop/Images/thumb.jpg)
+Originally a part of a university semester where I focussed on learning more about C++ and OpenGL.
+I'm currently working on refactoring the render engine into a game engine.
 
-As part of a university semester, where I could focus on developing a skill set of my choice, I made a OpenGL 3D renderer to work on my C++ and OpenGL skills.
+Currently plans:
+- ~~Refactoring Shader class.~~
+- Refactor post processing shaders into 1 shader.
+- Rework mesh loading.
+- Rework texture loading.
+- More rendering clean up.
+- Add ECS structure.
 
 ### Demo Video
+This is a demo video of the render engine at the end of the university semester.
 [Youtube](https://youtu.be/ufwLdmk4k64)
 
 ### Basic Information
@@ -19,6 +28,7 @@ C++, GLSL
 - [GLM 0.9.9](https://glm.g-truc.net/0.9.9/index.html)
 
 **Features**
+These feature were in at the end of the original university assignment.
 - Lambertian reflectance
 - Cook-Torrance specular lighting
 - Image based lighting

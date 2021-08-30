@@ -2,8 +2,7 @@
 #include "Bloom.h"
 #include "gtc/constants.hpp"
 
-Bloom::Bloom() :
-	bloom(GLSLProgram(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Bloom.fs"))
+Bloom::Bloom()
 {
 }
 
@@ -13,6 +12,11 @@ Bloom::~Bloom()
 
 void Bloom::Initialize(const Window::Parameters & parameters)
 {
+	bloom.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.vs");
+	bloom.CompileShader(Filepath::ForwardShader + "Bloom.fs");
+	bloom.Link();
+	bloom.Validate();
+	
 	SetupHDRFramebuffer(parameters);
 	SetupShaders();
 	gaussian.SetupFramebuffers(glm::ivec2(parameters.Width, parameters.Height));

@@ -3,10 +3,8 @@
 #include "Utility/Filepath.h"
 #include <gtc/matrix_transform.hpp>
 
-ShadowMapping::ShadowMapping() :
-	shadowDepth(GLSLProgram(Filepath::ForwardShader + "PointLightDepthMap.vs", Filepath::ForwardShader + "PointLightDepthMap.fs", Filepath::ForwardShader + "PointLightDepthMap.gs"))
-{
-}
+ShadowMapping::ShadowMapping()
+= default;
 
 ShadowMapping::~ShadowMapping()
 {
@@ -18,6 +16,12 @@ ShadowMapping::~ShadowMapping()
 
 void ShadowMapping::Initialize(const ShadowMapping::Parameters& parameters)
 {
+	shadowDepth.CompileShader(Filepath::ForwardShader + "PointLightDepthMap.vs");
+	shadowDepth.CompileShader(Filepath::ForwardShader + "PointLightDepthMap.fs");
+	shadowDepth.CompileShader(Filepath::ForwardShader + "PointLightDepthMap.gs");
+	shadowDepth.Link();
+	shadowDepth.Validate();
+	
 	SetParameters(parameters);
 	SetupPointLightBuffer();
 }

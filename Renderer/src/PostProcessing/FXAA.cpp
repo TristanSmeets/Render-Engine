@@ -2,17 +2,19 @@
 #include "FXAA.h"
 #include "Utility/Filepath.h"
 
-FXAA::FXAA() : 
-	shader(GLSLProgram(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "FXAA.fs"))
-{
-}
+FXAA::FXAA()
+= default;
 
 FXAA::~FXAA()
-{
-}
+= default;
 
 void FXAA::Initialize(const Parameters & parameters)
 {
+	shader.CompileShader(Filepath::DeferredShader + "PBR/PBRLighting.vs");
+	shader.CompileShader(Filepath::DeferredShader + "FXAA.fs");
+	shader.Link();
+	shader.Validate();
+	
 	fxaaParameters = parameters;
 	framebuffer.Generate();
 	framebuffer.Bind();

@@ -1,8 +1,7 @@
 #include "Rendererpch.h"
 #include "DepthOfField.h"
 
-DepthOfField::DepthOfField() : 
-	depthOfField(GLSLProgram(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::PostProcessing + "DepthOfField.fs"))
+DepthOfField::DepthOfField()
 {
 }
 
@@ -12,6 +11,12 @@ DepthOfField::~DepthOfField()
 
 void DepthOfField::Initialize(const Window::Parameters & parameters)
 {
+
+	depthOfField.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.vs");
+	depthOfField.CompileShader(Filepath::PostProcessing + "DepthOfField.fs");
+	depthOfField.Link();
+	depthOfField.Validate();
+	
 	SetupFramebuffer(parameters);
 	SetupShaders();
 	gaussian.SetupFramebuffers(glm::ivec2(parameters.Width, parameters.Height));

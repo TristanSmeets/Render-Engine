@@ -3,8 +3,7 @@
 #include "Utility/Filepath.h"
 #include <gtc/matrix_transform.hpp>
 
-GaussianBlur::GaussianBlur() :
-	blur(GLSLProgram(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs"))
+GaussianBlur::GaussianBlur()
 {
 	SetupShader();
 }
@@ -89,6 +88,12 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, co
 
 void GaussianBlur::SetupShader()
 {
+
+	blur.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.vs");
+	blur.CompileShader(Filepath::ForwardShader + "Blur.fs");
+	blur.Link();
+	blur.Validate();
+	
 	blur.Use();
 
 	blur.SetUniform("image", 0);

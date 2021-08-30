@@ -39,5 +39,5 @@ private:
 	NDCQuad quad;
 	Parameters parameters;
 
-	glm::vec3 kernel[64];
+	glm::vec3 kernel[64]{};
 };

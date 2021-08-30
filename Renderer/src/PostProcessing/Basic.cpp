@@ -1,8 +1,7 @@
 #include "Rendererpch.h"
 #include "Basic.h"
 
-Basic::Basic() : PostProcessing(),
-shader(GLSLProgram(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "BasicPostProcessing.fs"))
+Basic::Basic() : PostProcessing()
 {
 }
 
@@ -13,6 +12,11 @@ Basic::~Basic()
 
 void Basic::Initialize(const Window::Parameters & parameters)
 {
+	shader.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.vs");
+	shader.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.fs");
+	shader.Link();
+	shader.Validate();
+	
 	framebuffer.Generate();
 	framebuffer.Bind();
 

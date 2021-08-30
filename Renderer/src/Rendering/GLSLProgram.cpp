@@ -30,52 +30,8 @@ namespace GLSLShaderInfo {
 	};
 }
 
-GLSLProgram::GLSLProgram(const std::string& vertexPath, const std::string& fragmentPath)
-{
-	std::string vertexCode = getShaderCode(vertexPath.c_str());
-	const char* vertexShaderCode = vertexCode.c_str();
-
-	std::string fragmentCode = getShaderCode(fragmentPath.c_str());
-	const char* fragmentShaderCode = fragmentCode.c_str();
-
-	//Compile Shaders
-	printf("Compiling %s\n", vertexPath.c_str());
-	GLuint vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
-
-	printf("Compiling %s\n", fragmentPath.c_str());
-	GLuint fragmentShader = compileShader(fragmentShaderCode, GL_FRAGMENT_SHADER);
-
-	// Link shaders
-	linkShaders(vertexShader, fragmentShader);
-}
-
-GLSLProgram::GLSLProgram(const std::string & vertexPath, const std::string & fragmentPath, const std::string & geometryPath)
-{
-	std::string vertexCode = getShaderCode(vertexPath.c_str());
-	const char* vertexShaderCode = vertexCode.c_str();
-
-	std::string fragmentCode = getShaderCode(fragmentPath.c_str());
-	const char* fragmentShaderCode = fragmentCode.c_str();
-
-	std::string geometryCode = getShaderCode(geometryPath.c_str());
-	const char* geometryShaderCode = geometryCode.c_str();
-
-	printf("Compiling %s\n", vertexPath.c_str());
-	GLuint vertexShader = compileShader(vertexShaderCode, GL_VERTEX_SHADER);
-
-	printf("Compiling %s\n", fragmentPath.c_str());
-	GLuint fragmentShader = compileShader(fragmentShaderCode, GL_FRAGMENT_SHADER);
-
-	printf("Compiling %s\n", geometryPath.c_str());
-	GLuint geometryShader = compileShader(geometryShaderCode, GL_GEOMETRY_SHADER);
-
-	linkShaders(vertexShader, fragmentShader, geometryShader);
-
-}
-
 GLSLProgram::GLSLProgram()
-{
-}
+= default;
 
 GLSLProgram::~GLSLProgram()
 {
@@ -84,13 +40,13 @@ GLSLProgram::~GLSLProgram()
 		return;
 	}
 
-	detachAndDeleteShaderObjects();
+	DetachAndDeleteShaderObjects();
 	glDeleteProgram(programHandle);
 }
 
 void GLSLProgram::CompileShader(const std::string& filename)
 {
-	std::string extension = getExtension(filename);
+	std::string extension = GetExtension(filename);
 	GLSLShader::GLSLShaderType type = GLSLShader::VERTEX;
 	auto iterator = GLSLShaderInfo::extensions.find(extension);
 
@@ -106,7 +62,7 @@ void GLSLProgram::CompileShader(const std::string& filename)
 
 void GLSLProgram::CompileShader(const std::string& filename, GLSLShader::GLSLShaderType type)
 {
-	if(!fileExists(filename))
+	if(!FileExists(filename))
 	{
 		std::string message = std::string("Shader: ") + filename + " not found.";
 		throw GLSLProgramException(message);
@@ -217,9 +173,9 @@ void GLSLProgram::Link()
 		}
 		throw GLSLProgramException(errorMessage);
 	}
-	findUniformLocations();
+	FindUniformLocations();
 	linked = true;
-	detachAndDeleteShaderObjects();
+	DetachAndDeleteShaderObjects();
 	
 }
 
@@ -308,7 +264,7 @@ void GLSLProgram::SetSubroutine(const SubroutineParameters & parameters)
 	glUniformSubroutinesuiv(parameters.Shader, 1, &GetSubroutineIndexFromCache(parameters));
 }
 
-void GLSLProgram::findUniformLocations()
+void GLSLProgram::FindUniformLocations()
 {
 	uniformLocationCache.clear();
 	GLint numberOfUniforms = 0;
@@ -351,7 +307,7 @@ void GLSLProgram::PrintActiveUniforms()
 		GLint nameBufSize = results[0] + 1;
 		char* name = new char[nameBufSize];
 		glGetProgramResourceName(programHandle, GL_UNIFORM, i, nameBufSize, NULL, name);
-		printf("%-5d %s (%s)\n", results[2], name, getTypeString(results[1]).c_str());
+		printf("%-5d %s (%s)\n", results[2], name, GetTypeString(results[1]).c_str());
 		delete[] name;
 	}
 }
@@ -386,7 +342,7 @@ void GLSLProgram::PrintActiveUniformBlocks()
 			GLint nameBufSize = results[0] + 1;
 			char* name = new char[nameBufSize];
 			glGetProgramResourceName(programHandle, GL_UNIFORM, uniIndex, nameBufSize, NULL, name);
-			printf("    %s (%s)\n", name, getTypeString(results[1]).c_str());
+			printf("    %s (%s)\n", name, GetTypeString(results[1]).c_str());
 			delete[] name;
 		}
 
@@ -409,12 +365,12 @@ void GLSLProgram::PrintActiveAttribs()
 		GLint nameBufSize = results[0] + 1;
 		char* name = new char[nameBufSize];
 		glGetProgramResourceName(programHandle, GL_PROGRAM_INPUT, i, nameBufSize, NULL, name);
-		printf("%-5d %s (%s)\n", results[2], name, getTypeString(results[1]).c_str());
+		printf("%-5d %s (%s)\n", results[2], name, GetTypeString(results[1]).c_str());
 		delete[] name;
 	}
 }
 
-std::string GLSLProgram::getTypeString(GLenum type)
+std::string GLSLProgram::GetTypeString(GLenum type)
 {
 	switch (type) {
 	case GL_FLOAT:
@@ -464,7 +420,7 @@ void GLSLProgram::BindFragDataLocation(GLuint location, const std::string& name)
 	glBindFragDataLocation(programHandle, location, name.c_str());
 }
 
-void GLSLProgram::detachAndDeleteShaderObjects()
+void GLSLProgram::DetachAndDeleteShaderObjects()
 {
 	GLint numberOfShaders = 0;
 
@@ -480,7 +436,7 @@ void GLSLProgram::detachAndDeleteShaderObjects()
 	
 }
 
-bool GLSLProgram::fileExists(const std::string& filename)
+bool GLSLProgram::FileExists(const std::string& filename)
 {
 	struct stat info;
 	int ret = -1;
@@ -489,7 +445,7 @@ bool GLSLProgram::fileExists(const std::string& filename)
 	return 0 == ret;
 }
 
-std::string GLSLProgram::getExtension(const std::string& filename)
+std::string GLSLProgram::GetExtension(const std::string& filename)
 {
 	size_t dotLocation = filename.find_last_of('.');
 	if(dotLocation != std::string::npos)
@@ -516,7 +472,7 @@ std::string GLSLProgram::getExtension(const std::string& filename)
 	return std::string();
 }
 
-std::string GLSLProgram::getShaderCode(const char * filePath)
+std::string GLSLProgram::GetShaderCode(const char * filePath)
 {
 	std::string shaderCode;
 	std::ifstream shaderFile;
@@ -537,84 +493,6 @@ std::string GLSLProgram::getShaderCode(const char * filePath)
 	}
 
 	return shaderCode;
-}
-
-GLuint GLSLProgram::compileShader(const char * shaderCode, GLuint shaderType)
-{
-	int success;
-	char infoLog[512];
-	GLuint shader = glCreateShader(shaderType);
-	glShaderSource(shader, 1, &shaderCode, nullptr);
-	glCompileShader(shader);
-	//Print compile errors if any
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-	if (success)
-	{
-		printf("SUCCES: Compiled shader\n");
-	}
-	else
-	{
-		glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-		std::cout << "Error: " << infoLog << std::endl;
-	}
-	return shader;
-}
-
-void GLSLProgram::linkShaders(GLuint vertexShader, GLuint fragmentShader)
-{
-	programHandle = glCreateProgram();
-	glAttachShader(programHandle, vertexShader);
-	glAttachShader(programHandle, fragmentShader);
-
-	glLinkProgram(programHandle);
-
-	//print linking errors if any
-	int success;
-	char infoLog[512];
-
-	glGetProgramiv(programHandle, GL_LINK_STATUS, &success);
-	if (success)
-	{
-		printf("SUCCESS: Linked shaders\n");
-	}
-	else
-	{
-		glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-		std::cout << "Error: " << infoLog << std::endl;
-	}
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-}
-
-void GLSLProgram::linkShaders(GLuint vertexShader, GLuint fragmentShader, GLuint geometryShader)
-{
-	programHandle = glCreateProgram();
-	glAttachShader(programHandle, vertexShader);
-	glAttachShader(programHandle, fragmentShader);
-	glAttachShader(programHandle, geometryShader);
-
-	glLinkProgram(programHandle);
-
-	//print linking errors if any
-	int success;
-	char infoLog[512];
-
-	glGetProgramiv(programHandle, GL_LINK_STATUS, &success);
-	if (success)
-	{
-		printf("SUCCESS: Linked shaders\n");
-	}
-	else
-	{
-		glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-		std::cout << "Error: " << infoLog << std::endl;
-	}
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	glDeleteShader(geometryShader);
 }
 
 const GLint & GLSLProgram::GetUniformLocation(const std::string & name)

@@ -3,10 +3,7 @@
 #include "Utility/Filepath.h"
 
 DeferredPBR::DeferredPBR(const Window & window) :
-	window(window),
-	lamp(GLSLProgram(Filepath::DeferredShader + "ADS/DeferredLamp.vs", Filepath::DeferredShader + "ADS/DeferredLamp.fs")),
-	geometry(GLSLProgram(Filepath::DeferredShader + "PBR/GBuffer.vert.glsl", Filepath::DeferredShader + "PBR/GBuffer.frag.glsl")),
-	deferredLighting(GLSLProgram(Filepath::DeferredShader + "PBR/Lighting.vert.glsl", Filepath::DeferredShader + "PBR/Lighting.frag.glsl"))
+	window(window)
 {
 }
 
@@ -16,9 +13,23 @@ DeferredPBR::~DeferredPBR()
 
 void DeferredPBR::Initialize(Scene & scene)
 {
+	lamp.CompileShader(Filepath::DeferredShader + "ADS/DeferredLamp.vs");
+	lamp.CompileShader(Filepath::DeferredShader + "ADS/DeferredLamp.fs");
+	lamp.Link();
+	lamp.Validate();
+	
+	geometry.CompileShader(Filepath::DeferredShader + "PBR/GBuffer.vert.glsl");
+	geometry.CompileShader(Filepath::DeferredShader + "PBR/GBuffer.frag.glsl");
+	geometry.Link();
+	geometry.Validate();
+
+	deferredLighting.CompileShader(Filepath::DeferredShader + "PBR/Lighting.vert.glsl");
+	deferredLighting.CompileShader(Filepath::DeferredShader + "PBR/Lighting.frag.glsl");
+	deferredLighting.Link();
+	deferredLighting.Validate();
+	
 	const Window::Parameters parameters = window.GetWindowParameters();
 	SetupGBuffers(parameters);
-
 	SetupShaders(scene);
 
 	glViewport(0, 0, parameters.Width, parameters.Height);
