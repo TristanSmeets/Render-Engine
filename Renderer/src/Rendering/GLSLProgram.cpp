@@ -188,7 +188,7 @@ void GLSLProgram::Validate() const
 {
 	if (!IsLinked())
 	{
-		throw GLSLProgramException("Program is not linked");
+		throw GLSLProgramException("Program is not linked.");
 	}
 
 	GLint status;
@@ -209,8 +209,7 @@ void GLSLProgram::Validate() const
 			logString = c_log;
 			delete[] c_log;
 		}
-
-		throw GLSLProgramException(std::string("Program failed to validate\n") + logString);
+		throw GLSLProgramException(std::string("Program failed to validate: \n") + logString);
 	}
 }
 
@@ -350,21 +349,21 @@ void GLSLProgram::PrintActiveUniformBlocks()
 	}
 }
 
-void GLSLProgram::PrintActiveAttribs()
+void GLSLProgram::PrintActiveAttributes()
 {
-	GLint numberOfAttribs;
-	glGetProgramInterfaceiv(programHandle, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &numberOfAttribs);
+	GLint numberOfAttributes;
+	glGetProgramInterfaceiv(programHandle, GL_PROGRAM_INPUT, GL_ACTIVE_RESOURCES, &numberOfAttributes);
 
 	GLenum properties[] = { GL_NAME_LENGTH, GL_TYPE, GL_LOCATION };
 
 	printf("Active attributes:\n");
-	for (int i = 0; i < numberOfAttribs; ++i) {
+	for (int i = 0; i < numberOfAttributes; ++i) {
 		GLint results[3];
 		glGetProgramResourceiv(programHandle, GL_PROGRAM_INPUT, i, 3, properties, 3, NULL, results);
 
-		GLint nameBufSize = results[0] + 1;
-		char* name = new char[nameBufSize];
-		glGetProgramResourceName(programHandle, GL_PROGRAM_INPUT, i, nameBufSize, NULL, name);
+		GLint nameBufferSize = results[0] + 1;
+		char* name = new char[nameBufferSize];
+		glGetProgramResourceName(programHandle, GL_PROGRAM_INPUT, i, nameBufferSize, NULL, name);
 		printf("%-5d %s (%s)\n", results[2], name, GetTypeString(results[1]).c_str());
 		delete[] name;
 	}
@@ -408,16 +407,6 @@ const GLuint GLSLProgram::GetHandle() const
 const bool GLSLProgram::IsLinked() const
 {
 	return linked;
-}
-
-void GLSLProgram::BindAttribLocation(GLuint location, const std::string& name)
-{
-	glBindAttribLocation(programHandle, location, name.c_str());
-}
-
-void GLSLProgram::BindFragDataLocation(GLuint location, const std::string& name)
-{
-	glBindFragDataLocation(programHandle, location, name.c_str());
 }
 
 void GLSLProgram::DetachAndDeleteShaderObjects()
@@ -470,29 +459,6 @@ std::string GLSLProgram::GetExtension(const std::string& filename)
 		}
 	}
 	return std::string();
-}
-
-std::string GLSLProgram::GetShaderCode(const char * filePath)
-{
-	std::string shaderCode;
-	std::ifstream shaderFile;
-
-	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-	try
-	{
-		shaderFile.open(filePath);
-		std::stringstream shaderStream;
-		shaderStream << shaderFile.rdbuf();
-		shaderFile.close();
-		shaderCode = shaderStream.str();
-	}
-	catch (std::ifstream::failure e)
-	{
-		printf("Error: %s not succesfully read\n", filePath);
-	}
-
-	return shaderCode;
 }
 
 const GLint & GLSLProgram::GetUniformLocation(const std::string & name)
