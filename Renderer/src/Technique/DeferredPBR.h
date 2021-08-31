@@ -29,8 +29,8 @@ private:
 	Framebuffer gBuffer;
 	Renderbuffer renderbuffer;
 	Texture gBufferTextures[4];
-	Shader lamp;
-	Shader geometry;
-	Shader deferredLighting;
+	GLSLProgram lamp;
+	GLSLProgram geometry;
+	GLSLProgram deferredLighting;
 	NDCQuad quad;
 };

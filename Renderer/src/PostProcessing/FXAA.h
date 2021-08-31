@@ -1,6 +1,6 @@
 #pragma once
 #include "Utility/Framebuffer.h"
-#include "Rendering/Shader.h"
+#include "Rendering/GLSLProgram.h"
 #include "Utility/NDCQuad.h"
 
 class FXAA
@@ -28,6 +28,6 @@ private:
 	Renderbuffer renderbuffer;
 	Texture fxaaColourAttachment;
 	NDCQuad quad;
-	Shader shader;
+	GLSLProgram shader;
 	Parameters fxaaParameters;
 };

@@ -1,18 +1,25 @@
 #include "Rendererpch.h"
 #include "SSAO.h"
 
-SSAO::SSAO() : 
-	ssao(Shader(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAO.fs"))),
-	blur(Shader(Filepath::DeferredShader + "PBR/PBRLighting.vs", Filepath::DeferredShader + "ADS/SSAOBlur.fs"))
-{
-}
+SSAO::SSAO()
+= default;
 
 SSAO::~SSAO()
-{
-}
+= default;
 
 void SSAO::Initialize(const Window::Parameters & parameters)
 {
+	ssao.CompileShader(Filepath::DeferredShader + "PBR/PBRLighting.vs");
+	ssao.CompileShader(Filepath::DeferredShader + "ADS/SSAO.fs");
+	ssao.Link();
+	ssao.Validate();
+	
+	blur.CompileShader(Filepath::DeferredShader + "PBR/PBRLighting.vs");
+	blur.CompileShader(Filepath::DeferredShader + "ADS/SSAOBlur.fs");
+	blur.Link();
+	blur.Validate();
+	
+	
 	//Setting up framebuffers
 	for (int i = 0; i < 2; ++i)
 	{
@@ -124,10 +131,10 @@ void SSAO::TextureCreationPass(const Texture& positions, const Texture& normals)
 	buffers[0].Bind();
 	glClear(GL_COLOR_BUFFER_BIT);
 	ssao.Use();
-	ssao.SetInt("occlusionPower", parameters.OcclusionPower);
-	ssao.SetInt("kernelSize", parameters.KernelSize);
-	ssao.SetFloat("radius", parameters.Radius);
-	ssao.SetFloat("bias", parameters.Bias);
+	ssao.SetUniform("occlusionPower", parameters.OcclusionPower);
+	ssao.SetUniform("kernelSize", parameters.KernelSize);
+	ssao.SetUniform("radius", parameters.Radius);
+	ssao.SetUniform("bias", parameters.Bias);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, positions.GetID());
@@ -153,16 +160,16 @@ void SSAO::TextureBlurPass()
 void SSAO::SetupShaders(const glm::mat4& projection)
 {
 	ssao.Use();
-	ssao.SetInt("gPosition", 0);
-	ssao.SetInt("gNormal", 1);
-	ssao.SetInt("noise", 2);
-	ssao.SetMat4("projection", projection);
+	ssao.SetUniform("gPosition", 0);
+	ssao.SetUniform("gNormal", 1);
+	ssao.SetUniform("noise", 2);
+	ssao.SetUniform("projection", projection);
 	for (unsigned int i = 0; i < 64; ++i)
 	{
-		ssao.SetVec3("samples[" + std::to_string(i) + "]", kernel[i]);
+		ssao.SetUniform("samples[" + std::to_string(i) + "]", kernel[i]);
 	}
 
 	blur.Use();
-	blur.SetInt("ssaoInput", 0);
+	blur.SetUniform("ssaoInput", 0);
 
 }

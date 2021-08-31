@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Rendering/Texture.h"
-#include "Rendering/Shader.h"
+#include "Rendering/GLSLProgram.h"
 
 class Material
 {

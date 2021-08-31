@@ -3,10 +3,7 @@
 #include "Utility/Filepath.h"
 
 DeferredPBR::DeferredPBR(const Window & window) :
-	window(window),
-	lamp(Shader(Filepath::DeferredShader + "ADS/DeferredLamp.vs", Filepath::DeferredShader + "ADS/DeferredLamp.fs")),
-	geometry(Shader(Filepath::DeferredShader + "PBR/GBuffer.vert.glsl", Filepath::DeferredShader + "PBR/GBuffer.frag.glsl")),
-	deferredLighting(Shader(Filepath::DeferredShader + "PBR/Lighting.vert.glsl", Filepath::DeferredShader + "PBR/Lighting.frag.glsl"))
+	window(window)
 {
 }
 
@@ -16,9 +13,23 @@ DeferredPBR::~DeferredPBR()
 
 void DeferredPBR::Initialize(Scene & scene)
 {
+	lamp.CompileShader(Filepath::DeferredShader + "ADS/DeferredLamp.vs");
+	lamp.CompileShader(Filepath::DeferredShader + "ADS/DeferredLamp.fs");
+	lamp.Link();
+	lamp.Validate();
+	
+	geometry.CompileShader(Filepath::DeferredShader + "PBR/GBuffer.vert.glsl");
+	geometry.CompileShader(Filepath::DeferredShader + "PBR/GBuffer.frag.glsl");
+	geometry.Link();
+	geometry.Validate();
+
+	deferredLighting.CompileShader(Filepath::DeferredShader + "PBR/Lighting.vert.glsl");
+	deferredLighting.CompileShader(Filepath::DeferredShader + "PBR/Lighting.frag.glsl");
+	deferredLighting.Link();
+	deferredLighting.Validate();
+	
 	const Window::Parameters parameters = window.GetWindowParameters();
 	SetupGBuffers(parameters);
-
 	SetupShaders(scene);
 
 	glViewport(0, 0, parameters.Width, parameters.Height);
@@ -63,7 +74,7 @@ void DeferredPBR::Render(Scene & scene)
 
 	glDepthFunc(GL_LEQUAL);
 	skyboxShader.Use();
-	skyboxShader.SetMat4("view", scene.GetCamera().GetViewMatrix());
+	skyboxShader.SetUniform("view", scene.GetCamera().GetViewMatrix());
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
 	bloom.Apply(deferredParameters.BloomParameters);
@@ -118,26 +129,26 @@ void DeferredPBR::SetupShaders(Scene & scene)
 	glm::mat4 projection = scene.GetCamera().GetProjectionMatrix();
 
 	geometry.Use();
-	geometry.SetInt("Material.Albedo", 0);
-	geometry.SetInt("Material.Normal", 1);
-	geometry.SetInt("Material.MRAO", 2);
+	geometry.SetUniform("Material.Albedo", 0);
+	geometry.SetUniform("Material.Normal", 1);
+	geometry.SetUniform("Material.MRAO", 2);
 
 	skyboxShader.Use();
-	skyboxShader.SetInt("environmentMap", 0);
-	skyboxShader.SetMat4("projection", projection);
+	skyboxShader.SetUniform("environmentMap", 0);
+	skyboxShader.SetUniform("projection", projection);
 
 	lamp.Use();
-	lamp.SetMat4("projection", projection);
+	lamp.SetUniform("projection", projection);
 
 	deferredLighting.Use();
-	deferredLighting.SetInt("GBuffer.gPosition", 0);
-	deferredLighting.SetInt("GBuffer.gNormal", 1);
-	deferredLighting.SetInt("GBuffer.gAlbedo", 2);
-	deferredLighting.SetInt("GBuffer.gMRAO", 3);
-	deferredLighting.SetInt("IBL.Irradiance", 4);
-	deferredLighting.SetInt("IBL.Prefilter", 5);
-	deferredLighting.SetInt("IBL.BrdfLUT", 6);
-	deferredLighting.SetInt("ssaoTexture", 7);
+	deferredLighting.SetUniform("GBuffer.gPosition", 0);
+	deferredLighting.SetUniform("GBuffer.gNormal", 1);
+	deferredLighting.SetUniform("GBuffer.gAlbedo", 2);
+	deferredLighting.SetUniform("GBuffer.gMRAO", 3);
+	deferredLighting.SetUniform("IBL.Irradiance", 4);
+	deferredLighting.SetUniform("IBL.Prefilter", 5);
+	deferredLighting.SetUniform("IBL.BrdfLUT", 6);
+	deferredLighting.SetUniform("ssaoTexture", 7);
 }
 
 void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
@@ -148,15 +159,15 @@ void DeferredPBR::GeometryPass(const glm::mat4 & view, Scene & scene)
 	geometry.Use();
 	const Camera& camera = scene.GetCamera();
 	glm::mat4 projection = camera.GetProjectionMatrix();
-	geometry.SetMat4("Matrix.Projection", projection);
+	geometry.SetUniform("Matrix.Projection", projection);
 
 	const std::vector<Actor>& actors = scene.GetActors();
 	for (unsigned int i = 0; i < actors.size(); ++i)
 	{
 		glm::mat4 vm = view * actors[i].GetWorldMatrix();
-		geometry.SetMat4("Matrix.ModelView", vm);
-		geometry.SetMat4("Matrix.MVP", projection * vm);
-		geometry.SetMat3("Matrix.Normal", glm::mat3(vm));
+		geometry.SetUniform("Matrix.ModelView", vm);
+		geometry.SetUniform("Matrix.MVP", projection * vm);
+		geometry.SetUniform("Matrix.Normal", glm::mat3(vm));
 
 		actors[i].GetRenderComponent().Draw();
 	}
@@ -168,8 +179,8 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	deferredLighting.Use();
-	deferredLighting.SetInt("NumberOfLights", scene.GetNumberOfLights());
-	deferredLighting.SetMat4("InverseView", glm::inverse(scene.GetCamera().GetViewMatrix()));
+	deferredLighting.SetUniform("NumberOfLights", scene.GetNumberOfLights());
+	deferredLighting.SetUniform("InverseView", glm::inverse(scene.GetCamera().GetViewMatrix()));
 	
 	//Binding GBuffer
 	for (unsigned int i = 0; i < 4; ++i)
@@ -193,8 +204,8 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 		std::string lightIntensity = std::string("Lights[") + std::to_string(i) + std::string("].Intensity");
 
 		const Light::Parameters& parameters = lights[i].GetParameters();
-		deferredLighting.SetVec4(lightPosition, view * glm::vec4(lights[i].GetWorldPosition(),1.0f));
-		deferredLighting.SetVec3(lightIntensity, parameters.Colour);
+		deferredLighting.SetUniform(lightPosition, view * glm::vec4(lights[i].GetWorldPosition(),1.0f));
+		deferredLighting.SetUniform(lightIntensity, parameters.Colour);
 	}
 	glActiveTexture(GL_TEXTURE0);
 
@@ -206,12 +217,12 @@ void DeferredPBR::LightingPass(const std::vector<Light>& lights, Scene & scene)
 void DeferredPBR::RenderLights(const glm::mat4 & view, const std::vector<Light>& lights, int numberOfLights)
 {
 	lamp.Use();
-	lamp.SetMat4("view", view);
+	lamp.SetUniform("view", view);
 
 	for (int i = 0; i < numberOfLights; ++i)
 	{
-		lamp.SetMat4("model", lights[i].GetWorldMatrix());
-		lamp.SetVec3("lightColour", lights[i].GetColour());
+		lamp.SetUniform("model", lights[i].GetWorldMatrix());
+		lamp.SetUniform("lightColour", lights[i].GetColour());
 		lights[i].GetRenderComponent().GetMesh().Draw();
 	}
 }

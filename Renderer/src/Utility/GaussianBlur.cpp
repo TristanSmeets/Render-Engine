@@ -3,8 +3,7 @@
 #include "Utility/Filepath.h"
 #include <gtc/matrix_transform.hpp>
 
-GaussianBlur::GaussianBlur() :
-	blur(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "Blur.fs"))
+GaussianBlur::GaussianBlur()
 {
 	SetupShader();
 }
@@ -51,11 +50,11 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, co
 	}
 
 	blur.Use();
-	blur.SetInt("AmountOfWeights", amountOfWeights);
+	blur.SetUniform("AmountOfWeights", amountOfWeights);
 	//Normalize the weights and set the uniform
 	for (unsigned int i = 0; i < amountOfWeights; i++)
 	{
-		blur.SetFloat("weight[" + std::to_string(i) + "]", weights[i] / sum);
+		blur.SetUniform("weight[" + std::to_string(i) + "]", weights[i] / sum);
 	}
 
 	bool horizontal = true;
@@ -64,11 +63,11 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, co
 	{
 		if (horizontal)
 		{
-			blur.SetSubroutine(Shader::SubroutineParameters("Horizontal", GL_FRAGMENT_SHADER));
+			blur.SetSubroutine(GLSLProgram::SubroutineParameters("Horizontal", GL_FRAGMENT_SHADER));
 		}
 		else
 		{
-			blur.SetSubroutine(Shader::SubroutineParameters("Vertical", GL_FRAGMENT_SHADER));
+			blur.SetSubroutine(GLSLProgram::SubroutineParameters("Vertical", GL_FRAGMENT_SHADER));
 		}
 		framebuffers[horizontal].Bind();
 		glActiveTexture(GL_TEXTURE0);
@@ -89,9 +88,15 @@ void GaussianBlur::BlurTexture(const Texture & source, Texture & destination, co
 
 void GaussianBlur::SetupShader()
 {
+
+	blur.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.vs");
+	blur.CompileShader(Filepath::ForwardShader + "Blur.fs");
+	blur.Link();
+	blur.Validate();
+	
 	blur.Use();
 
-	blur.SetInt("image", 0);
+	blur.SetUniform("image", 0);
 }
 
 float GaussianBlur::Gauss(float x, float sigma2)

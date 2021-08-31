@@ -29,7 +29,7 @@ private:
 	void SetupHDRFramebuffer(const Window::Parameters & parameters);
 	void SetupShaders();
 	
-	Shader bloom;
+	GLSLProgram bloom;
 	Framebuffer hdrFBO;
 	Renderbuffer depthRenderbuffer;
 	Texture colourBuffers[2];

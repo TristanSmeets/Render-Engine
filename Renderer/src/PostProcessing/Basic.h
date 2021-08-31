@@ -26,7 +26,7 @@ private:
 	Renderbuffer renderbuffer;
 	Texture empty;
 	NDCQuad quad;
-	Shader shader;
+	GLSLProgram shader;
 	Parameters parameters;
 
 };

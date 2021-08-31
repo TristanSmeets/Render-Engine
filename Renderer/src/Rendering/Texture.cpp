@@ -96,10 +96,10 @@ const std::string & Texture::GetName() const
 	return properties.Name;
 }
 
-void Texture::Bind(Shader & shader, Type type) const
+void Texture::Bind(GLSLProgram & shader, Type type) const
 {
 	glActiveTexture(GL_TEXTURE0 + type);
-	shader.SetInt(EnumToString(type), type);
+	shader.SetUniform(EnumToString(type), type);
 
 	glBindTexture(GL_TEXTURE_2D, GetID());
 

@@ -1,8 +1,7 @@
 #include "Rendererpch.h"
 #include "Basic.h"
 
-Basic::Basic() : PostProcessing(),
-shader(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::ForwardShader + "BasicPostProcessing.fs"))
+Basic::Basic() : PostProcessing()
 {
 }
 
@@ -13,6 +12,11 @@ Basic::~Basic()
 
 void Basic::Initialize(const Window::Parameters & parameters)
 {
+	shader.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.vs");
+	shader.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.fs");
+	shader.Link();
+	shader.Validate();
+	
 	framebuffer.Generate();
 	framebuffer.Bind();
 
@@ -31,7 +35,7 @@ void Basic::Initialize(const Window::Parameters & parameters)
 	framebuffer.Unbind();
 
 	shader.Use();
-	shader.SetInt("colourTexture", 0);
+	shader.SetUniform("colourTexture", 0);
 }
 
 void Basic::Bind()
@@ -49,8 +53,8 @@ void Basic::Unbind()
 void Basic::Draw()
 {
 	shader.Use();
-	shader.SetFloat("gammaCorrection", parameters.GammaCorrection);
-	shader.SetFloat("exposure", parameters.Exposure);
+	shader.SetUniform("gammaCorrection", parameters.GammaCorrection);
+	shader.SetUniform("exposure", parameters.Exposure);
 	empty.Bind(shader, Texture::Albedo);
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Rendering/Shader.h"
+#include "Rendering/GLSLProgram.h"
 #include "Utility/Framebuffer.h"
 #include "Utility/NDCQuad.h"
 
@@ -22,7 +22,7 @@ private:
 	void SetupShader();
 	float Gauss(float x, float sigma2);
 
-	Shader blur;
+	GLSLProgram blur;
 	Framebuffer framebuffers[2];
 	Texture textures[2];
 	NDCQuad quad;

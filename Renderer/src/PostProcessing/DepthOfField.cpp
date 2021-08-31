@@ -1,8 +1,7 @@
 #include "Rendererpch.h"
 #include "DepthOfField.h"
 
-DepthOfField::DepthOfField() : 
-	depthOfField(Shader(Filepath::ForwardShader + "BasicPostProcessing.vs", Filepath::PostProcessing + "DepthOfField.fs"))
+DepthOfField::DepthOfField()
 {
 }
 
@@ -12,6 +11,12 @@ DepthOfField::~DepthOfField()
 
 void DepthOfField::Initialize(const Window::Parameters & parameters)
 {
+
+	depthOfField.CompileShader(Filepath::ForwardShader + "BasicPostProcessing.vs");
+	depthOfField.CompileShader(Filepath::PostProcessing + "DepthOfField.fs");
+	depthOfField.Link();
+	depthOfField.Validate();
+	
 	SetupFramebuffer(parameters);
 	SetupShaders();
 	gaussian.SetupFramebuffers(glm::ivec2(parameters.Width, parameters.Height));
@@ -54,9 +59,9 @@ void DepthOfField::Apply(const DepthOfField::Parameters& parameters)
 {
 	gaussian.BlurTexture(colourBuffer, blurredScene, parameters.BlurParameters);
 	depthOfField.Use();
-	depthOfField.SetFloat("focalDistance", parameters.FocalDistance);
-	depthOfField.SetFloat("focalRange", parameters.FocalRange);
-	depthOfField.SetFloat("rangeCutoff", parameters.RangeCutoff);
+	depthOfField.SetUniform("focalDistance", parameters.FocalDistance);
+	depthOfField.SetUniform("focalRange", parameters.FocalRange);
+	depthOfField.SetUniform("rangeCutoff", parameters.RangeCutoff);
 	Apply();
 }
 
@@ -105,7 +110,7 @@ void DepthOfField::SetupFramebuffer(const Window::Parameters& parameters)
 void DepthOfField::SetupShaders()
 {
 	depthOfField.Use();
-	depthOfField.SetInt("scene", 0);
-	depthOfField.SetInt("depthTexture", 1);
-	depthOfField.SetInt("blurredScene", 2);
+	depthOfField.SetUniform("scene", 0);
+	depthOfField.SetUniform("depthTexture", 1);
+	depthOfField.SetUniform("blurredScene", 2);
 }

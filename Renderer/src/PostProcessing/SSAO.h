@@ -34,10 +34,10 @@ private:
 	Framebuffer buffers[2];
 	Texture textures[2];
 	Texture noise;
-	Shader ssao;
-	Shader blur;
+	GLSLProgram ssao;
+	GLSLProgram blur;
 	NDCQuad quad;
 	Parameters parameters;
 
-	glm::vec3 kernel[64];
+	glm::vec3 kernel[64]{};
 };

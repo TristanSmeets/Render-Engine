@@ -1,7 +1,7 @@
 #pragma once
 
 #include "glad/glad.h"
-#include "Rendering/Shader.h"
+#include "Rendering/GLSLProgram.h"
 
 class Texture
 {
@@ -37,7 +37,7 @@ public:
 	static const std::string TypeToString(Type type);
 	const GLuint& GetID() const;
 	const std::string& GetName() const;
-	void Bind(Shader& shader, Type type) const;
+	void Bind(GLSLProgram& shader, Type type) const;
 	const glm::ivec2& GetResolution() const;
 private:
 	void GenerateTexture();
