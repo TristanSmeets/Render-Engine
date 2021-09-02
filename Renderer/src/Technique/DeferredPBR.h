@@ -22,9 +22,8 @@ private:
 	void RenderLights(const glm::mat4 &view, const std::vector<Light> & lights, int numberOfLights);
 
 	const Window& window;
-	Bloom bloom;
-	FXAA fxaa;
 	SSAO ssao;
+	PostProcessing postProcessing;
 
 	Framebuffer gBuffer;
 	Renderbuffer renderbuffer;

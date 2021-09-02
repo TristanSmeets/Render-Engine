@@ -1,7 +1,7 @@
 #version 460 core
 
 out vec4 FragmentColour;
-in Vec2 UVs;
+in vec2 UVs;
 
 uniform sampler2D ColourTexture;
 
@@ -109,6 +109,7 @@ vec3 ApplyFXAA(in vec3 colour)
 /* Apply tone mapping to the colour.
  * Uses Krzysztof Narkowicz' ACES approximation:
  * https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/
+ * TODO: Play around with other TMO https://64.github.io/tonemapping/
  */
 vec3 ApplyToneMapping(in vec3 colour)
 {
@@ -119,14 +120,13 @@ vec3 ApplyToneMapping(in vec3 colour)
     const float c = 2.43f;
     const float d = 0.59f;
     const float e = 0.14f;
-
     return clamp((colour * ( a * colour + b))/ (colour * (c * colour + d)+ e), 0.0, 1.0f);
 }
 
 /* Correct for the monitor's non-linear output */
 vec3 ApplyGammaCorrection(in vec3 colour)
 {
-    return pow(colour, vec3(1.0f / Gamma))
+    return pow(colour, vec3(1.0f / Gamma));
 }
 
 void main()
@@ -134,9 +134,9 @@ void main()
     vec3 scene = texture(ColourTexture, UVs).rgb;
     vec3 endResult = vec3(0.0);
     
-    endResult = ApplyToneMapping(ColourTexture);
+    endResult = ApplyFXAA(scene);
+    endResult = ApplyToneMapping(endResult);
     endResult = ApplyGammaCorrection(endResult);
-    endResult = ApplyFXAA(endResult);
 
     FragmentColour = vec4(endResult, 1.0);
 }

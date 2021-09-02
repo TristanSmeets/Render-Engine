@@ -8,8 +8,7 @@ DeferredPBR::DeferredPBR(const Window & window) :
 }
 
 DeferredPBR::~DeferredPBR()
-{
-}
+= default;
 
 void DeferredPBR::Initialize(Scene & scene)
 {
@@ -37,22 +36,16 @@ void DeferredPBR::Initialize(Scene & scene)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	FXAA::Parameters fxaaParameters = deferredParameters.FxaaParameters;
-	fxaaParameters.Resolution = glm::ivec2(parameters.Width, parameters.Height);
-	fxaa.Initialize(fxaaParameters);
-
-	bloom.Initialize(parameters);
+	postProcessing.Initialize(parameters);
 	ssao.Initialize(parameters, scene.GetCamera().GetProjectionMatrix());
 }
 
 void DeferredPBR::Render(Scene & scene)
 {
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	glViewport(0, 0, window.GetWindowParameters().Width, window.GetWindowParameters().Height);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 view = scene.GetCamera().GetViewMatrix();
 
@@ -60,12 +53,15 @@ void DeferredPBR::Render(Scene & scene)
 
 	ssao.Apply(gBufferTextures[0], gBufferTextures[1], deferredParameters.SsaoParameters);
 
+	// Copy depth buffer over to default frame buffer.
 	Framebuffer::BlitParameters blitParameters;
-	blitParameters.Destination = &bloom.GetFramebuffer();
+	blitParameters.Destination = &postProcessing.GetFramebuffer();
 	blitParameters.Resolution = glm::ivec2(window.GetWindowParameters().Width, window.GetWindowParameters().Height);
 	blitParameters.Mask = GL_DEPTH_BUFFER_BIT;
 	blitParameters.Filter = GL_NEAREST;
 	gBuffer.BlitFramebuffer(blitParameters);
+
+	postProcessing.Bind();
 
 	//Lighting pass
 	const std::vector<Light>& lights = scene.GetLights();
@@ -77,11 +73,9 @@ void DeferredPBR::Render(Scene & scene)
 	skyboxShader.SetUniform("view", scene.GetCamera().GetViewMatrix());
 	scene.GetSkybox().Draw();
 	glDepthFunc(GL_LESS);
-	bloom.Apply(deferredParameters.BloomParameters);
-	fxaa.Bind();
-	bloom.Draw();
-	fxaa.Unbind();
-	fxaa.Apply(deferredParameters.FxaaParameters);
+
+	postProcessing.Unbind();
+	postProcessing.Apply();
 }
 
 void DeferredPBR::SetupGBuffers(const Window::Parameters & parameters)

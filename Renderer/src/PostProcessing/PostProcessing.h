@@ -13,11 +13,17 @@ class PostProcessing
 public:
 	PostProcessing();
 	virtual ~PostProcessing();
-	virtual void Initialize(const Window::Parameters& parameters) = 0;
-	virtual void Bind() = 0;
-	virtual void Unbind() = 0;
-	virtual void Draw() = 0;
-	virtual void Apply() = 0;
-	virtual const Framebuffer& GetFramebuffer() const = 0;
-	virtual const Texture& GetTexture() const = 0;
+	virtual void Initialize(const Window::Parameters& parameters);
+	virtual void Bind();
+	virtual void Unbind();
+	virtual void Apply();
+	virtual const Framebuffer& GetFramebuffer() const;
+	virtual const Texture& GetTexture() const;
+
+private:
+	GLSLProgram program;
+	Framebuffer framebuffer;
+	Renderbuffer renderbuffer;
+	Texture colourAttachment;
+	NDCQuad quad;
 };
