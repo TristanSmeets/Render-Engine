@@ -1,12 +1,13 @@
 # Render-Engine
 
 ![](https://raw.githubusercontent.com/TristanSmeets/Render-Engine/develop/Images/thumb.jpg)
+
 Originally a part of a university semester where I focussed on learning more about C++ and OpenGL.
 I'm currently working on refactoring the render engine into a game engine.
 
-Currently plans:
+Currently plan:
 - ~~Refactoring Shader class.~~
-- Refactor post processing shaders into 1 shader.
+- ~~Refactor post processing shaders into 1 shader.~~
 - Rework mesh loading.
 - Rework texture loading.
 - More rendering clean up.
