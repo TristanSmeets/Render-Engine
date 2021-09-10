@@ -3,7 +3,6 @@
 #include "Utility/Framebuffer.h"
 #include "Utility/Renderbuffer.h"
 #include "Rendering/Texture.h"
-#include "PostProcessing/Basic.h"
 #include "Rendering/ShadowMapping.h"
 
 class DeferredPBR : public RenderTechnique

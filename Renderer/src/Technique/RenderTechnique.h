@@ -3,7 +3,6 @@
 #include "Rendering/GLSLProgram.h"
 #include "PostProcessing/PostProcessing.h"
 #include "Rendering/RenderComponent.h"
-#include "PostProcessing/FXAA.h"
 #include "PostProcessing/DepthOfField.h"
 #include "PostProcessing/Bloom.h"
 #include "PostProcessing/SSAO.h"
