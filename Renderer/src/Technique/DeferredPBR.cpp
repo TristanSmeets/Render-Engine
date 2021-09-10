@@ -75,7 +75,8 @@ void DeferredPBR::Render(Scene & scene)
 	glDepthFunc(GL_LESS);
 
 	postProcessing.Unbind();
-	postProcessing.Apply(deferredParameters.PostProcessing);
+	postProcessing.SetUniforms(deferredParameters.PostProcessing);
+	postProcessing.Apply();
 }
 
 void DeferredPBR::SetupGBuffers(const Window::Parameters & parameters)

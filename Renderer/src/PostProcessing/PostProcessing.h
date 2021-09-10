@@ -13,7 +13,7 @@ enum ToneMapping
 	NONE,
 	SIMPLE,
 	ACES_SIMPLE,
-	ACES_COMPLEX,
+	JOHN_HABLE,
 	COUNT
 };
 
@@ -43,12 +43,32 @@ public:
 public:
 	PostProcessing();
 	virtual ~PostProcessing();
+
+	/* Compiles all the shaders and setups the frame buffer.
+	 * @param const Window::Parameters& parameters
+	 */
 	virtual void Initialize(const Window::Parameters& parameters);
+
+	/* Binds the post processing frame buffer */
 	virtual void Bind();
+
+	/* Unbinds the post processing frame buffer */
 	virtual void Unbind();
+
+	/* Applies the post processing effects */
 	virtual void Apply();
-	void Apply(const Parameters& parameters);
+
+	/* Sets all the shader uniforms and calls Apply() */
+	void SetUniforms(const Parameters& parameters);
+
+	/* Gets the framebuffer used for the post processing
+	 * @return Framebuffer& framebuffer
+	 */
 	virtual const Framebuffer& GetFramebuffer() const;
+
+	/* Gets the texture the post processing framebuffer writes to.
+	 * @return Texture& colourAttachment
+	 */
 	virtual const Texture& GetTexture() const;
 
 private:

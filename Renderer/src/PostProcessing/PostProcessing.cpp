@@ -6,8 +6,7 @@ PostProcessing::PostProcessing()
 = default;
 
 PostProcessing::~PostProcessing()
-{
-}
+= default;
 
 void PostProcessing::Initialize(const Window::Parameters& parameters)
 {
@@ -53,17 +52,13 @@ void PostProcessing::Unbind()
 
 void PostProcessing::Apply()
 {
-	program.SetUniform("colourTexture", 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, colourAttachment.GetID());
-
 	// Render results to a full screen quad.
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
 }
 
-void PostProcessing::Apply(const Parameters& parameters)
+void PostProcessing::SetUniforms(const Parameters& parameters)
 {
 	program.Use();
 	program.SetUniform("TMO_Properties.exposure", parameters.Exposure);
@@ -78,7 +73,9 @@ void PostProcessing::Apply(const Parameters& parameters)
 	program.SetUniform("FXAA_Properties.reductionMultiplier", parameters.ReductionMultiplier);
 	program.SetUniform("FXAA_Properties.texelStep", parameters.TexelStep);
 
-	Apply();
+	program.SetUniform("colourTexture", 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, colourAttachment.GetID());
 }
 
 const Framebuffer& PostProcessing::GetFramebuffer() const
