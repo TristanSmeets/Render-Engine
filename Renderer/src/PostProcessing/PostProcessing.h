@@ -8,8 +8,38 @@
 #include "Rendering/Texture.h"
 #include "Utility/Filepath.h"
 
+enum ToneMapping
+{
+	NONE,
+	SIMPLE,
+	ACES_SIMPLE,
+	ACES_COMPLEX,
+	COUNT
+};
+
 class PostProcessing
 {
+public:
+	struct Parameters
+	{
+		// Tone Mapping
+		ToneMapping Type = ACES_SIMPLE;
+		float Exposure = 0.6f;
+		
+		// Gamma Correction
+		float Correction = 2.2f;
+		bool UseGammaCorrection = true;
+		
+		// FXAA
+		glm::vec2 TexelStep = glm::vec2(1.0f / 1280.0f, 1.0f / 720.0f);
+		float LumaThreshold = 1.0f / 8.0f;
+		float MaxSpan = 8.0f;
+		float ReductionMinimum = 1.0f / 16.0f;
+		float ReductionMultiplier = 1.0f / 8.0f;
+		bool UseFXAA = true;
+		bool ShowEdges = false;
+	};
+	
 public:
 	PostProcessing();
 	virtual ~PostProcessing();
@@ -17,6 +47,7 @@ public:
 	virtual void Bind();
 	virtual void Unbind();
 	virtual void Apply();
+	void Apply(const Parameters& parameters);
 	virtual const Framebuffer& GetFramebuffer() const;
 	virtual const Texture& GetTexture() const;
 
@@ -26,4 +57,5 @@ private:
 	Renderbuffer renderbuffer;
 	Texture colourAttachment;
 	NDCQuad quad;
+	Parameters parameters;
 };

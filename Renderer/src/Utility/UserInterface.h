@@ -31,6 +31,7 @@ private:
 	void RenderText(const char* text, ...);
 	void RenderInt(const char* name, int& value, int minimum, int maximum);
 	void RenderFloat(const char* name, float& value, float minimum, float maximum);
+	void RenderVec2(const char* name, const glm::vec2& vec2);
 	void RenderVec3(const char* name,const glm::vec3& vec3);
 	void RenderColour(const glm::vec3& colour);
 	void RenderTransform(const Transform& transform);
@@ -42,8 +43,9 @@ private:
 	void RenderCamera(const Camera& camera);
 	void RenderLight(const Light& light);
 	void RenderDeferredParameters(RenderTechnique::DeferredParameters& deferredParameters);
-	void RenderFXAAParameters(FXAA::Parameters& fxaaParamters);
-	void RenderBloomParameters(Bloom::Parameters& bloomParameters);
+	void RenderPostProcessingParameters(PostProcessing::Parameters& ppParameters);
+	/*void RenderFXAAParameters(FXAA::Parameters& fxaaParamters);
+	void RenderBloomParameters(Bloom::Parameters& bloomParameters);*/
 	void RenderSSAOParameters(SSAO::Parameters& ssoaParameters);
 	void RenderGaussianBlurParameters(GaussianBlur::Parameters& blurParameters);
 

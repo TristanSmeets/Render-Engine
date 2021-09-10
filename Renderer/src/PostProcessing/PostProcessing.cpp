@@ -53,16 +53,6 @@ void PostProcessing::Unbind()
 
 void PostProcessing::Apply()
 {
-	program.Use();
-	program.SetUniform("Exposure", 0.6f);
-	program.SetUniform("Gamma", 2.2f);
-	program.SetUniform("FXAA_Properties.fxaaOn", true);
-	program.SetUniform("FXAA_Properties.showEdges", false);
-	program.SetUniform("FXAA_Properties.lumaThreshold", (1.0f / 8.0f));
-	program.SetUniform("FXAA_Properties.maxSpan", 8.0f);
-	program.SetUniform("FXAA_Properties.reductionMinimum", (1.0f / 16.0f));
-	program.SetUniform("FXAA_Properties.reductionMultiplier", (1.0f / 8.0f));
-	program.SetUniform("FXAA_Properties.texelStep", glm::vec2(1.0f / 1280.0f, 1.0f / 720.0f));
 	program.SetUniform("colourTexture", 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, colourAttachment.GetID());
@@ -71,6 +61,24 @@ void PostProcessing::Apply()
 	glDisable(GL_DEPTH_TEST);
 	quad.Render();
 	glEnable(GL_DEPTH_TEST);
+}
+
+void PostProcessing::Apply(const Parameters& parameters)
+{
+	program.Use();
+	program.SetUniform("TMO_Properties.exposure", parameters.Exposure);
+	program.SetUniform("TMO_Properties.tmo", parameters.Type);
+	program.SetUniform("GC_Properties.correction", parameters.Correction);
+	program.SetUniform("GC_Properties.useGammaCorrection", parameters.UseGammaCorrection);
+	program.SetUniform("FXAA_Properties.fxaaOn", parameters.UseFXAA);
+	program.SetUniform("FXAA_Properties.showEdges", parameters.ShowEdges);
+	program.SetUniform("FXAA_Properties.lumaThreshold", parameters.LumaThreshold);
+	program.SetUniform("FXAA_Properties.maxSpan", parameters.MaxSpan);
+	program.SetUniform("FXAA_Properties.reductionMinimum", parameters.ReductionMinimum);
+	program.SetUniform("FXAA_Properties.reductionMultiplier", parameters.ReductionMultiplier);
+	program.SetUniform("FXAA_Properties.texelStep", parameters.TexelStep);
+
+	Apply();
 }
 
 const Framebuffer& PostProcessing::GetFramebuffer() const

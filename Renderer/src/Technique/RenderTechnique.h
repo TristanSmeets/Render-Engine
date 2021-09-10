@@ -13,8 +13,7 @@ class RenderTechnique
 public:
 	struct DeferredParameters
 	{
-		FXAA::Parameters FxaaParameters;
-		Bloom::Parameters BloomParameters;
+		PostProcessing::Parameters PostProcessing;
 		SSAO::Parameters SsaoParameters;
 
 		DeferredParameters();

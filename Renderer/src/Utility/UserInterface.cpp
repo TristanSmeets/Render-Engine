@@ -48,6 +48,8 @@ void UserInterface::EndFrame()
 
 void UserInterface::Render(Scene & scene)
 {
+	//ImGui::ShowDemoWindow();
+	
 	ImGui::Begin("Properties");
 	ImGui::End();
 	ImGui::Begin("Scene");
@@ -187,7 +189,6 @@ void UserInterface::RenderRenderComponent(RenderComponent & renderComponent)
 {
 	RenderText("Mesh:\n\t%s", renderComponent.GetMesh().GetName().c_str());
 	RenderText("Material");
-	//RenderPBRParameters(renderComponent.GetPBRParameters());
 	RenderMaterial(renderComponent.GetMaterial());
 }
 
@@ -238,25 +239,39 @@ void UserInterface::RenderDeferredParameters(RenderTechnique::DeferredParameters
 		ImGui::TreePop();
 	}
 	ImGui::Separator();
-	if (ImGui::TreeNode("Bloom"))
+	/*if (ImGui::TreeNode("Bloom"))
 	{
 		RenderBloomParameters(deferredParameters.BloomParameters);
+		ImGui::TreePop();
+	}*/
+	if(ImGui::TreeNode("Effects"))
+	{
+		RenderPostProcessingParameters(deferredParameters.PostProcessing);
 		ImGui::TreePop();
 	}
 }
 
-void UserInterface::RenderFXAAParameters(FXAA::Parameters & fxaaParameters)
+void UserInterface::RenderPostProcessingParameters(PostProcessing::Parameters& ppParameters)
 {
-	RenderFloat("Span Max", (float&)fxaaParameters.SpanMax, 0.0f, 16.0f);
-	RenderFloat("Reduce Minimum", (float&)fxaaParameters.ReduceMinumum, 0.0f, 1.0f);
-	RenderFloat("Reduce Multiplier", (float&)fxaaParameters.ReduceMultiplier, .01f, 1.0f);
-}
+	// Tone Mapping
+	const char* items[] = { "None", "Simple", "ACES (simple)", "John Hable"};
+	static int item_current = 2;
+	ImGui::Combo("Tone Mapping", &item_current, items, IM_ARRAYSIZE(items));
+	ppParameters.Type = static_cast<ToneMapping>(item_current);
+	RenderFloat("Exposure", (float&)ppParameters.Exposure, 0.0f, 2.0f);
 
-void UserInterface::RenderBloomParameters(Bloom::Parameters & bloomParameters)
-{
-	RenderFloat("Gamma Correction", (float&)bloomParameters.GammaCorrection, 0.1f, 3.0f);
-	RenderFloat("Exposure", (float&)bloomParameters.Exposure, 0.1f, 2.0f);
-	RenderGaussianBlurParameters(bloomParameters.BlurParameters);
+	// Gamma Correction
+	ImGui::Checkbox("Use Gamma Correction", &ppParameters.UseGammaCorrection);
+	RenderFloat("Gamma Correction", (float&)ppParameters.Correction, 0.0f, 5.0f);
+
+	// FXAA
+	ImGui::Checkbox("Use FXAA", &ppParameters.UseFXAA);
+	ImGui::Checkbox("Show edges", &ppParameters.ShowEdges);
+	RenderFloat("Luma Threshold", static_cast<float&>(ppParameters.LumaThreshold), 0.0f, 1.0f);
+	RenderFloat("Reduction minimum", static_cast<float&>(ppParameters.ReductionMinimum), 0.0f, 1.0f);
+	RenderFloat("Reduction multiplier", static_cast<float&>(ppParameters.ReductionMultiplier), 0.0f, 1.0f);
+	RenderFloat("Maximum span", static_cast<float&>(ppParameters.MaxSpan), 0.0f, 1.0f);
+	//RenderVec2("Texel Step", ppParameters.TexelStep);
 }
 
 void UserInterface::RenderSSAOParameters(SSAO::Parameters & ssoaParameters)
@@ -276,6 +291,11 @@ void UserInterface::RenderGaussianBlurParameters(GaussianBlur::Parameters & blur
 void UserInterface::RenderColour(const glm::vec3& colour)
 {
 	ImGui::ColorEdit3("Colour", (float*)&colour, ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+}
+
+void UserInterface::RenderVec2(const char* name, const glm::vec2& vec2)
+{
+	ImGui::DragFloat2(name, (float*)&vec2, 0.01f, -1000.0f, 1000.0f, "%.2f");
 }
 
 void UserInterface::RenderVec3(const char * name, const glm::vec3 & vec3)
