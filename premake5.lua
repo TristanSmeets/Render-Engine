@@ -39,7 +39,8 @@ project (projectName)
         "dependencies/termcolor",
         "dependencies/assimp/include",
         "dependencies/imgui",
-        "dependencies/glm"
+        "dependencies/glm",
+        "dependencies/spdlog/include"
     }
 
     libdirs

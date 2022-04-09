@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "Event/EventQueue.h"
 #include "Event/KeyEvent.h"
+#include <Utility/Log.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -12,7 +13,6 @@ Window::Window() :
 
 Window::~Window()
 {
-	printf("Destroying Window");
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }
@@ -104,7 +104,7 @@ const bool Window::IsOpen() const
 
 bool Window::InitializeGLFW()
 {
-	printf("Initializing GLFW\n");
+	Log::Trace("Initializing GLFW");
 	if (glfwInit())
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -115,20 +115,20 @@ bool Window::InitializeGLFW()
 	}
 	else
 	{
-		printf("Error initializing GLFW");
+		Log::Error("Error initializing GLFW");
 		return false;
 	}
 }
 
 bool Window::InitializeGLFWwindow(const Parameters& parameters)
 {
-	printf("Initializing GLFWwindow\n");
+	Log::Trace("Initializing GLFWwindow");
 	title = parameters.Title;
 	window = glfwCreateWindow(parameters.Width, parameters.Height, parameters.Title.c_str(), nullptr, nullptr);
 
 	if (window == nullptr)
 	{
-		printf("Error initializing GLFWwindow");
+		Log::Error("Error initializing GLFWwindow");
 		glfwTerminate();
 		return false;
 	}

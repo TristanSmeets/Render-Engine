@@ -3,6 +3,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <Utility/Log.h>
 
 Texture::Texture()
 {
@@ -98,8 +99,8 @@ const std::string & Texture::GetName() const
 
 void Texture::Bind(GLSLProgram & shader, Type type) const
 {
-	glActiveTexture(GL_TEXTURE0 + type);
-	shader.SetUniform(EnumToString(type), type);
+	glActiveTexture(GL_TEXTURE0 + (int)type);
+	shader.SetUniform(EnumToString(type), (int)type);
 
 	glBindTexture(GL_TEXTURE_2D, GetID());
 
@@ -116,11 +117,11 @@ const std::string Texture::TypeToString(Type type)
 {
 	switch (type)
 	{
-	case Texture::Albedo:
+	case Texture::Type::Albedo:
 		return "Albedo";
-	case Texture::Normal:
+	case Texture::Type::Normal:
 		return "Normal";
-	case Texture::MRAO:
+	case Texture::Type::MRAO:
 		return "MRAO";
 	default:
 		return "Not a texture type";
@@ -192,11 +193,11 @@ void Texture::Load(const std::string & filepath, bool usingLinearSpace)
 		}
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
-		printf("SUCCESS: Loaded: %s\n", filepath.c_str());
+		Log::Info("SUCCESS: Loaded: {}", filepath.c_str());
 	}
 	else
 	{
-		printf("ERROR: Failed to load texture: %s\n", filepath.c_str());
+		Log::Error("ERROR: Failed to load texture: {}", filepath.c_str());
 	}
 
 	stbi_set_flip_vertically_on_load(false);
@@ -210,7 +211,7 @@ void Texture::Load(const std::string & filepath, GLenum internalformat, GLenum f
 
 	stbi_set_flip_vertically_on_load(true);
 
-	printf("Trying to load Texture: %s\n", filepath.c_str());
+	Log::Info("Trying to load Texture: {}", filepath.c_str());
 	float *data = stbi_loadf(filepath.c_str(), &width, &height, &nrChannels, 0);
 
 	properties.Resolution = glm::ivec2(width, height);
@@ -226,11 +227,11 @@ void Texture::Load(const std::string & filepath, GLenum internalformat, GLenum f
 		properties.Resolution = glm::ivec2(width, height);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
-		printf("SUCCESS: Loaded: %s\n", filepath.c_str());
+		Log::Info("SUCCESS: Loaded:{}", filepath.c_str());
 	}
 	else
 	{
-		printf("ERROR: Failed to load texture: %s\n", filepath.c_str());
+		Log::Error("ERROR: Failed to load texture: {}", filepath.c_str());
 	}
 
 	stbi_set_flip_vertically_on_load(false);
@@ -240,11 +241,11 @@ const std::string Texture::EnumToString(Type type) const
 {
 	switch (type)
 	{
-	case Albedo:
+	case Type::Albedo:
 		return "material.Albedo";
-	case Normal:
+	case Type::Normal:
 		return "material.Normal";
-	case MRAO:
+	case Type::MRAO:
 		return "material.MRAO";
 	default:
 		return "";

@@ -176,7 +176,7 @@ void UserInterface::RenderMaterial(const Material & material)
 {
 	if (ImGui::TreeNode(material.GetName().c_str()))
 	{
-		for (int i = 0; i < Texture::Count; ++i)
+		for (int i = 0; i < (int)Texture::Type::Count; ++i)
 		{
 			RenderText(Texture::TypeToString((Texture::Type)i).c_str());
 			RenderTexture(material.GetTexture((Texture::Type)i));
