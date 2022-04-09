@@ -4,7 +4,6 @@
 
 int main()
 {
-	printf("Starting application\n");
 	Application application;
 	try
 	{

@@ -1,6 +1,7 @@
 #include "Rendererpch.h"
 #include "Application.h"
 #include "Technique/DeferredPBR.h"
+#include "Utility/Log.h"
 
 Application::Application()
 {
@@ -8,13 +9,13 @@ Application::Application()
 
 Application::~Application()
 {
-	printf("Destroying application\n");
 	delete renderTechnique;
 }
 
 void Application::Initialize()
 {
-	printf("Initializing application\n");
+	Log::Init();
+	Log::Trace("Initializing application.");
 	window.Initialize(Window::Parameters());
 	InitializeGlad();
 	const GLubyte* renderer = glGetString(GL_RENDERER);
@@ -29,17 +30,17 @@ void Application::Initialize()
 	GLint nExtensions;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &nExtensions);
 
-	printf("GL Vendor\t\t\t: %s\n", vendor);
-	printf("GL Renderer\t\t\t: %s\n", renderer);
-	printf("GL Version (string)\t\t: %s\n", version);
-	printf("GL Version (int)\t\t: %d.%d\n", major, minor);
-	printf("GLSL Version\t\t\t: %s\n", glslVersion);
+	Log::Trace("GL Vendor\t\t\t: {}", vendor);
+	Log::Trace("GL Renderer\t\t: {}", renderer);
+	Log::Trace("GL Version (string)\t: {}", version);
+	Log::Trace("GL Version (int)\t\t: {}.{}", major, minor);
+	Log::Trace("GLSL Version\t\t: {}", glslVersion);
 
 	scene.Initialize();
 	renderTechnique = new DeferredPBR(window);
 	renderTechnique->Initialize(scene);
 	ui.Initialize(window);
-	printf("Application initialization complete\n");
+	Log::Trace("Application initialization complete");
 }
 
 void Application::Run()
@@ -70,6 +71,7 @@ void Application::Run()
 		window.PollEvents();
 		window.SwapBuffers();
 	}
+	Log::Close();
 }
 
 bool Application::InitializeGlad()

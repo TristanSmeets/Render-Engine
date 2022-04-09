@@ -90,8 +90,8 @@ void Bloom::Draw()
 
 void Bloom::Apply()
 {
-	colourBuffers[0].Bind(bloom, Texture::Albedo);
-	bloomTexture.Bind(bloom, Texture::Normal);
+	colourBuffers[0].Bind(bloom, Texture::Type::Albedo);
+	bloomTexture.Bind(bloom, Texture::Type::Normal);
 }
 
 void Bloom::Apply(const Bloom::Parameters& parameters)

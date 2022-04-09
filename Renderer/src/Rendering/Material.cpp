@@ -16,7 +16,7 @@ void Material::AddTexture(Texture::Type type, const std::string & filepath, bool
 	{
 		return;
 	}
-	textures[type] = Texture(filepath, usingLinearSpace);
+	textures[(int)type] = Texture(filepath, usingLinearSpace);
 }
 
 void Material::AddTexture(Texture::Type type, const Texture & texture)
@@ -25,12 +25,12 @@ void Material::AddTexture(Texture::Type type, const Texture & texture)
 	{
 		return;
 	}
-	textures[type] = texture;
+	textures[(int)type] = texture;
 }
 
 void Material::BindTextures() const
 {
-	for (int i = 0; i < Texture::Count; ++i)
+	for (int i = 0; i < (int)Texture::Type::Count; ++i)
 	{
 		if(textures[i].GetID() == 0)
 		{
@@ -44,7 +44,7 @@ void Material::BindTextures() const
 
 const Texture & Material::GetTexture(Texture::Type type) const
 {
-	return textures[type];
+	return textures[(int)type];
 }
 
 const std::string & Material::GetName() const

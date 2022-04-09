@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Utility/MeshLoader.h"
 #include "Utility/Filepath.h"
+#include <Utility/Log.h>
 
 static int counter = 0;
 
@@ -60,13 +61,13 @@ const Skybox & Scene::GetSkybox() const
 
 void Scene::Initialize()
 {
-	printf("\nInitializing Scene\n");
+	Log::Trace("Initializing Scene");
 	InitializeMeshes();
 	InitializeMaterials();
 	InitializeActors();
 	skybox.Initialize();
 	skybox.LoadHDR(Filepath::Skybox + "Tropical_Beach/Tropical_Beach_3k.hdr");
-	printf("Initializing complete\n\n");
+	Log::Trace("Initializing complete");
 }
 
 const unsigned int& Scene::GetNumberOfLights() const
@@ -87,7 +88,7 @@ Scene & Scene::operator=(const Scene & rhs)
 
 void Scene::InitializeMeshes()
 {
-	printf("Initializing Meshes\n");
+	Log::Trace("Initializing Meshes");
 
 	const std::vector<Mesh>& cubeMeshes = MeshLoader::LoadModel(Filepath::Mesh + "cube.obj");
 	for (unsigned int i = 0; i < cubeMeshes.size(); ++i)
@@ -112,43 +113,43 @@ void Scene::InitializeMeshes()
 	{
 		meshes.push_back(sphereMesh[i]);
 	}
-	printf("Created %d meshes\n", (int)meshes.size());
+	Log::Trace("Finished creating meshes.");
 }
 
 void Scene::InitializeMaterials()
 {
-	printf("Initializing Materials\n");
+	Log::Trace("Initializing Materials.");
 	Material aluminium = Material("Aluminium");
-	aluminium.AddTexture(Texture::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
-	aluminium.AddTexture(Texture::Normal, Filepath::Texture + "Aluminium/Normal.png");
-	aluminium.AddTexture(Texture::MRAO, Filepath::Texture + "Aluminium/MRAO.png");
+	aluminium.AddTexture(Texture::Type::Albedo, Filepath::Texture + "Aluminium/Albedo.png", true);
+	aluminium.AddTexture(Texture::Type::Normal, Filepath::Texture + "Aluminium/Normal.png");
+	aluminium.AddTexture(Texture::Type::MRAO, Filepath::Texture + "Aluminium/MRAO.png");
 
 	Material rustedIron = Material("Rusted_Iron");
-	rustedIron.AddTexture(Texture::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
-	rustedIron.AddTexture(Texture::Normal, Filepath::Texture + "RustedIron/Normal.png");
-	rustedIron.AddTexture(Texture::MRAO, Filepath::Texture + "RustedIron/MRAO.png");
+	rustedIron.AddTexture(Texture::Type::Albedo, Filepath::Texture + "RustedIron/Albedo.png", true);
+	rustedIron.AddTexture(Texture::Type::Normal, Filepath::Texture + "RustedIron/Normal.png");
+	rustedIron.AddTexture(Texture::Type::MRAO, Filepath::Texture + "RustedIron/MRAO.png");
 
 	Material cobblestone = Material("Cobblestone");
-	cobblestone.AddTexture(Texture::Albedo, Filepath::Texture + "cobblestone/Albedo.png", true);
-	cobblestone.AddTexture(Texture::Normal, Filepath::Texture + "cobblestone/Normal.png");
-	cobblestone.AddTexture(Texture::MRAO, Filepath::Texture + "cobblestone/MRAO.png");
+	cobblestone.AddTexture(Texture::Type::Albedo, Filepath::Texture + "cobblestone/Albedo.png", true);
+	cobblestone.AddTexture(Texture::Type::Normal, Filepath::Texture + "cobblestone/Normal.png");
+	cobblestone.AddTexture(Texture::Type::MRAO, Filepath::Texture + "cobblestone/MRAO.png");
 
 	Material demo = Material("Demo");
-	demo.AddTexture(Texture::Albedo, Filepath::Texture + "Demo/Albedo.png", true);
-	demo.AddTexture(Texture::Normal, Filepath::Texture + "Demo/Normal.png");
-	demo.AddTexture(Texture::MRAO, Filepath::Texture + "Demo/MRAO.png");
+	demo.AddTexture(Texture::Type::Albedo, Filepath::Texture + "Demo/Albedo.png", true);
+	demo.AddTexture(Texture::Type::Normal, Filepath::Texture + "Demo/Normal.png");
+	demo.AddTexture(Texture::Type::MRAO, Filepath::Texture + "Demo/MRAO.png");
 
 	materials.push_back(aluminium);
 	materials.push_back(rustedIron);
 	materials.push_back(cobblestone);
 	materials.push_back(demo);
 
-	printf("Created %d materials\n", (int)materials.size());
+	Log::Trace("Finished creating materials.");
 }
 
 void Scene::InitializeActors()
 {
-	printf("Initializing actors\n");
+	Log::Trace("Initializing actors.");
 	srand(NumberOfLights);
 
 	if (NumberOfLights > MaximumNumberOfLights)
@@ -230,5 +231,5 @@ void Scene::InitializeActors()
 	terrain.GetRenderComponent().SetMaterial(materials[2]);
 	actors.push_back(terrain);
 
-	printf("Created %d actors\n", (int)actors.size());
+	Log::Trace("Finished creating actors.");
 }

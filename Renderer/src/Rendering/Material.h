@@ -15,6 +15,6 @@ public:
 	const std::string& GetName() const;
 
 private:
-	Texture textures[Texture::Type::Count];
+	Texture textures[(int)Texture::Type::Count];
 	std::string name;
 };

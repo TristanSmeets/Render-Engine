@@ -6,7 +6,7 @@
 class Texture
 {
 public:
-	enum Type
+	enum class Type
 	{
 		Albedo,
 		Normal,
